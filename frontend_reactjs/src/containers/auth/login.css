@@ -3,19 +3,20 @@
 .login-container {
   width: 100%;
   max-width: 400px;
-  margin: 50px auto;
-  padding: 20px;
+  margin: 100px auto; /* Cải thiện khoảng cách trên */
+  padding: 30px;
   border: 1px solid #ddd;
   border-radius: 8px;
-  background-color: #f4f4f9;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 h2 {
   text-align: center;
-  margin-bottom: 20px;
-  font-size: 24px;
+  margin-bottom: 30px; /* Tăng khoảng cách giữa tiêu đề và form */
+  font-size: 28px;
   color: #333;
+  font-weight: bold; /* Làm cho tiêu đề đậm */
 }
 
 form {
@@ -24,39 +25,42 @@ form {
 }
 
 form div {
-  margin-bottom: 15px;
+  margin-bottom: 20px; /* Thêm khoảng cách giữa các trường nhập */
 }
 
 label {
-  font-size: 14px;
-  margin-bottom: 5px;
+  font-size: 16px; /* Tăng kích thước chữ của label */
+  margin-bottom: 8px; /* Khoảng cách giữa label và input */
   color: #555;
 }
 
 input {
+  box-sizing: border-box;
   width: 100%;
-  padding: 10px;
-  font-size: 14px;
+  padding: 12px; /* Tăng padding để input thoải mái hơn */
+  font-size: 16px; /* Tăng kích thước font cho dễ đọc */
   border: 1px solid #ccc;
-  border-radius: 4px;
+  border-radius: 6px; /* Cải thiện hình dạng bo góc */
   background-color: #fff;
-  transition: border-color 0.3s;
+  transition: all 0.3s ease; /* Mượt mà hơn khi thay đổi màu sắc */
 }
 
 input:focus {
   border-color: #4caf50;
   outline: none;
+  box-shadow: 0 0 5px rgba(76, 175, 80, 0.3); /* Thêm bóng nhẹ khi input được focus */
 }
 
 button {
-  padding: 12px;
-  font-size: 16px;
+  padding: 14px;
+  font-size: 18px;
   color: white;
   background-color: #4caf50;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: background-color 0.3s ease;
+  margin-top: 10px; /* Thêm khoảng cách trên cho nút */
 }
 
 button:hover {
@@ -72,6 +76,10 @@ button:disabled {
   cursor: not-allowed;
 }
 
+button:focus {
+  outline: none;
+}
+
 /* src/container/auth/login.css */
 
 .password-container {
@@ -80,9 +88,15 @@ button:disabled {
 
 .eye-icon {
   position: absolute;
-  right: 10px;
-  top: 50%;
-  /* transform: translateY(-50%); */
+  right: 15px; /* Đặt biểu tượng mắt ở phía bên phải */
+  top: 70%; /* Đặt biểu tượng vào giữa chiều cao của input */
+  transform: translateY(-50%); /* Căn chỉnh chính xác vào giữa */
   cursor: pointer;
-  color: black;
+  color: #888;
+  font-size: 18px; /* Điều chỉnh kích thước biểu tượng mắt */
+  transition: color 0.3s ease;
+}
+
+.eye-icon:hover {
+  color: #4caf50; /* Màu khi hover */
 }

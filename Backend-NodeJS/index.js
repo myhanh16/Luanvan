@@ -9,6 +9,7 @@ const configViewEngine = require("./src/config/viewEngine");
 const webRouter = require("./src/routes/web");
 const connect = require("./src/config/connectDB");
 const fileupload = require("express-fileupload");
+const cors = require("cors");
 
 const hostname = process.env.HOSTNAME;
 const port = process.env.PORT || 3000;
@@ -20,6 +21,12 @@ app.use(
     resave: false,
     saveUninitialized: true,
     cookie: { secure: false }, // secure: true nếu sử dụng HTTPS
+  })
+);
+
+app.use(
+  cors({
+    origin: true, // Địa chỉ của front-end
   })
 );
 
