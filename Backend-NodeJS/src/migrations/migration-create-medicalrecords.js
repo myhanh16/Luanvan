@@ -2,7 +2,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("medicalrecordss", {
+    await queryInterface.createTable("medicalrecords", {
       // diagnosis: DataTypes.STRING,
       // treatment: DataTypes.STRING,
       // create_at: DataTypes.DATE,
@@ -26,10 +26,10 @@ module.exports = {
         type: Sequelize.DATE,
       },
 
-      userID: {
+      bookingID: {
         type: Sequelize.INTEGER,
         references: {
-          model: "booking", // Tên bảng mà khóa ngoại tham chiếu
+          model: "bookings", // Tên bảng mà khóa ngoại tham chiếu
           key: "id", // Tên trường khóa chính
         },
         onUpdate: "CASCADE", // Cập nhật khi khóa chính thay đổi
@@ -47,6 +47,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("medicalrecordss");
+    await queryInterface.dropTable("medicalrecords");
   },
 };

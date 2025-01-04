@@ -29,21 +29,21 @@ module.exports = {
       doctorID: {
         type: Sequelize.INTEGER,
         references: {
-          model: "doctor", // Tên bảng mà khóa ngoại tham chiếu
-          key: "id", // Tên trường khóa chính
+          model: "doctor", // Đảm bảo tên bảng chính xác (nếu bảng tên là Doctors)
+          key: "id",
         },
-        onUpdate: "CASCADE", // Cập nhật khi khóa chính thay đổi
-        onDelete: "SET NULL", // Đặt giá trị NULL khi khóa chính bị xóa
+        onUpdate: "CASCADE",
+        onDelete: "SET NULL",
       },
 
       userID: {
         type: Sequelize.INTEGER,
         references: {
-          model: "User", // Tên bảng mà khóa ngoại tham chiếu
-          key: "id", // Tên trường khóa chính
+          model: "users", // Đúng với tên bảng Users đã tạo
+          key: "id",
         },
-        onUpdate: "CASCADE", // Cập nhật khi khóa chính thay đổi
-        onDelete: "SET NULL", // Đặt giá trị NULL khi khóa chính bị xóa
+        onUpdate: "CASCADE",
+        onDelete: "SET NULL",
       },
 
       createdAt: {

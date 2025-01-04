@@ -2,7 +2,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("scheduless", {
+    await queryInterface.createTable("schedules", {
       //   /time: DataTypes.DATE,
       //   status: DataTypes.STRING,
 
@@ -42,6 +42,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("scheduless");
+    await queryInterface.dropTable("schedules");
   },
 };
