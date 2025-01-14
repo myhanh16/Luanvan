@@ -10,15 +10,21 @@ module.exports = {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER,
+        type: Sequelize.INTEGER, // Kiểu dữ liệu INTEGER cho id
       },
 
       name: {
         type: Sequelize.STRING,
       },
 
-      specialization: {
-        type: Sequelize.STRING,
+      specialtyID: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: "specialty", // Tên bảng mà khóa ngoại tham chiếu
+          key: "id", // Tên trường khóa chính
+        },
+        onUpdate: "CASCADE", // Cập nhật khi khóa chính thay đổi
+        onDelete: "SET NULL", // Đặt giá trị NULL khi khóa chính bị xóa
       },
 
       createdAt: {

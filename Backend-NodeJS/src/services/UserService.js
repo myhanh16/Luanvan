@@ -1,11 +1,13 @@
 const session = require("express-session");
 const { format } = require("date-fns");
-const { vi, el } = require("date-fns/locale");
+const { vi, el, ca } = require("date-fns/locale");
 const crypto = require("crypto");
 const db = require("../models");
 const { getUserbyID } = require("../controllers/CRUDController");
 const { where } = require("sequelize");
 const { resolve } = require("path");
+const { getAllUser } = require("./CRUD");
+const { rejects } = require("assert");
 
 const handelUserLogin = (email, password) => {
   return new Promise(async (resolve, reject) => {
@@ -73,6 +75,129 @@ const checkUserEmail = (email) => {
     }
   });
 };
+
+const getAllUsers = (id) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let users = "";
+      if (id === "ALL") {
+        users = await db.User.findAll({
+          attributes: {
+            exclude: ["password"],
+          },
+        });
+      }
+      if (id && id !== "ALL") {
+        const user = await db.User.findOne({
+          where: {
+            id: id,
+          },
+          attributes: {
+            exclude: ["password"],
+          },
+        });
+        // Trả về mảng dù chỉ có một người dùng
+        users = user ? [user] : [];
+      }
+      resolve(users);
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
+const CreateUser = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      // Kiểm tra xem email đã tồn tại chưa
+      const existingUser = await db.User.findOne({
+        where: {
+          email: data.email,
+        },
+      });
+
+      if (existingUser) {
+        // Nếu email đã tồn tại, reject và thông báo lỗi
+        reject("Email đã tồn tại.");
+        return;
+      }
+      // Mã hóa mật khẩu bằng SHA-1
+      const hashedPassword = crypto
+        .createHash("sha1")
+        .update(data.password)
+        .digest("hex");
+      await db.User.create({
+        email: data.email,
+        password: hashedPassword,
+        fullname: data.fullname,
+        phone: data.phone,
+        address: data.address,
+        gender: data.gender === "1" ? true : false,
+      });
+      resolve({
+        errCode: 0,
+        message: "OK",
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
+const DeleteUser = (id) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const user = await db.User.findOne({
+        where: {
+          id: id,
+        },
+      });
+      if (user) {
+        await user.destroy();
+        resolve(true);
+      } else {
+        resolve(false);
+      }
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
+const EditUser = (data) => {
+  return new Promise(async (resolve, rejects) => {
+    try {
+      const user = await db.User.findOne({
+        where: {
+          id: data.id,
+        },
+      });
+      if (user) {
+        user.fullname = data.fullname;
+        user.phone = data.phone;
+        user.address = data.address;
+
+        await user.save();
+        resolve({
+          errCode: 0,
+          errMessage: "Sua thanh cong",
+        });
+      } else {
+        resolve({
+          errCode: 1,
+          errMessage: "Khong tim thay user",
+        });
+      }
+    } catch (e) {
+      rejects(e);
+    }
+  });
+};
+
 module.exports = {
   handelUserLogin,
+  getAllUsers,
+  CreateUser,
+  DeleteUser,
+  EditUser,
 };

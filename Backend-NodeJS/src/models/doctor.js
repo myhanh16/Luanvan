@@ -14,7 +14,6 @@ module.exports = (sequelize, DataTypes) => {
   doctor.init(
     {
       name: DataTypes.STRING,
-      specialization: DataTypes.STRING,
     },
     {
       sequelize,

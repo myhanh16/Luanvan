@@ -46,6 +46,16 @@ module.exports = {
         onDelete: "SET NULL",
       },
 
+      statusID: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: "status", // Đúng với tên bảng Users đã tạo
+          key: "id",
+        },
+        onUpdate: "CASCADE",
+        onDelete: "SET NULL",
+      },
+
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

@@ -26,7 +26,8 @@ app.use(
 
 app.use(
   cors({
-    origin: true, // Địa chỉ của front-end
+    origin: "http://localhost:3000", // Domain được phép
+    credentials: true, // Để gửi cookie hoặc thông tin xác thực
   })
 );
 

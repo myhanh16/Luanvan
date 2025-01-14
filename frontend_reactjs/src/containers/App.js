@@ -1,15 +1,37 @@
-// src/containers/App.js
+// // src/containers/App.js
+
+// import React from "react";
+// import Login from "./auth/login";
+// import Home from "./auth/home";
+
+// const App = () => {
+//   return (
+//     <div className="App">
+//       <Login />
+//       <Home />
+//     </div>
+//   );
+// };
+
+// export default App;
 
 import React from "react";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Login from "./auth/login";
+// import Home from "./HomeCRUD/home";
+// import Homeheader from "./page/header";
+import Homepage from "./page/homepage";
 
-const App = () => {
+function App() {
   return (
-    <div className="App">
-      {/* <h1>Welcome to React App</h1> */}
-      <Login /> {/* Đảm bảo component Login được render */}
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Homepage />} />
+        {/* <Route path="/home" element={<Home />} /> */}
+        <Route path="/login" element={<Login />} />
+      </Routes>
+    </Router>
   );
-};
+}
 
 export default App;

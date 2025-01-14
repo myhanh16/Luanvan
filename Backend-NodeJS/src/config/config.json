@@ -4,7 +4,10 @@
     "password": null,
     "database": "phongkham",
     "host": "127.0.0.1",
-    "dialect": "mysql"
+    "dialect": "mysql",
+    "logging": false,
+    "timezone": "+07:00",
+    "raw": true
   },
   "test": {
     "username": "root",

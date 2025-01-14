@@ -11,7 +11,13 @@ const {
   Delete,
 } = require("../controllers/CRUDController");
 
-const { handelLogin } = require("../controllers/Usercontroller");
+const {
+  handelLogin,
+  handleGetAll,
+  handleCreate,
+  handleDelete,
+  handleEdit,
+} = require("../controllers/Usercontroller");
 
 router.get("/", gethome);
 
@@ -28,6 +34,15 @@ router.post("/edit", editUser);
 
 router.get("/delete", Delete);
 
+/*---------------- REACTJS -------------------------*/
+
 router.post("/api/login", handelLogin);
 
+router.get("/api/get-all-user", handleGetAll);
+
+router.post("/api/create-user", handleCreate);
+
+router.delete("/api/delete-user", handleDelete);
+
+router.post("/api/edit-user", handleEdit);
 module.exports = router;

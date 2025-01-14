@@ -13,8 +13,8 @@ module.exports = (sequelize, DataTypes) => {
   }
   schedules.init(
     {
-      time: DataTypes.DATE,
-      status: DataTypes.STRING,
+      doctorID: DataTypes.INTEGER,
+      timeID: DataTypes.INTEGER,
     },
     {
       sequelize,
