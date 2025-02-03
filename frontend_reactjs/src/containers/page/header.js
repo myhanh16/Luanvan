@@ -14,7 +14,7 @@ import {
   FaMicroscope,
 } from "react-icons/fa";
 import "./homeheader.css";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 
 const Homeheader = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -78,7 +78,7 @@ const Homeheader = () => {
         <div className="home-header-content">
           <div className="left-content">
             <FaBars className="fa-bars" onClick={toggleMenu} />
-            <div className="header-logo"></div>
+            <div className="header-logo" onClick={handleGoToHome}></div>
           </div>
           <div className="center-content">
             <div className="child-content">
@@ -119,7 +119,7 @@ const Homeheader = () => {
       </div>
 
       {/* Chỉ hiển thị banner khi không ở trang login */}
-      {location.pathname !== "/login" && (
+      {location.pathname === "/" && (
         <div className="home-header-banner">
           <div className="content-up">
             <div className="title1">ĐẶT LỊCH DỄ DÀNG</div>

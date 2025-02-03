@@ -1,0 +1,151 @@
+body {
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.specialty-page {
+  padding: 20px;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.breadcrumb {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.breadcrumb a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+h1 {
+  font-size: 24px;
+  margin-bottom: 10px;
+  font-weight: 30px;
+}
+
+/* h2 {
+  font-size: 10px;
+  margin-bottom: 10px;
+  text-align: justify;
+} */
+
+.doctor-info {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 10px;
+}
+
+.doctor-info li {
+  margin-bottom: 5px;
+}
+
+.read-more {
+  color: #007bff;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.filter {
+  margin: 20px 0;
+}
+
+.filter select {
+  padding: 8px;
+  font-size: 16px;
+}
+
+.doctor-card {
+  display: flex;
+  gap: 20px;
+  background: #f9f9f9;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.doctor-card img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+}
+
+.doctor-details {
+  flex: 2;
+}
+
+.doctor-details h3 {
+  margin: 0 0 10px;
+  font-size: 18px;
+}
+
+.favorite {
+  background: #ffcc00;
+  color: white;
+  padding: 2px 5px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.schedule {
+  flex: 1;
+}
+
+.schedule h4 {
+  margin: 0 0 10px;
+  font-size: 16px;
+}
+
+.time-slots {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.time-slots div {
+  background: #e9f5ff;
+  padding: 5px 10px;
+  text-align: center;
+  border: 1px solid #007bff;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.book-btn {
+  margin-top: 10px;
+  padding: 10px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.specialty-page h2 {
+  margin: 0;
+  padding: 0;
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.breadcrumb a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.breadcrumb span {
+  margin-left: 10px;
+}

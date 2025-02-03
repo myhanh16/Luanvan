@@ -30,3 +30,11 @@
   margin-top: 20px; /* Khoảng cách từ phía trên */
   display: block; /* Đẩy nút ra một dòng riêng */
 }
+
+.title {
+  font-size: 2rem; /* Tăng kích thước chữ */
+  font-weight: bold; /* Làm chữ đậm hơn (tuỳ chọn) */
+  margin-top: 20px; /* Cách header phía trên */
+  margin-bottom: 15px; /* Cách phần dưới một chút */
+  text-transform: uppercase; /* In hoa chữ (tuỳ chọn) */
+}

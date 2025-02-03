@@ -15,10 +15,12 @@ module.exports = (sequelize, DataTypes) => {
     {
       doctorID: DataTypes.INTEGER,
       timeID: DataTypes.INTEGER,
+      date: DataTypes.DATE,
     },
     {
       sequelize,
       modelName: "schedules",
+      tableName: "schedules",
     }
   );
   return schedules;

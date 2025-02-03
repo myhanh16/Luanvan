@@ -88,8 +88,6 @@ const RegisterUserModal = ({ isOpen, toggle, title, children, onConfirm }) => {
             right: "20px",
             cursor: "pointer",
             textAlign: "center",
-            display: "block",
-            visibility: "visible",
           }}
         />
       </ModalHeader>

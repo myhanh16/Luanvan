@@ -16,10 +16,14 @@ module.exports = (sequelize, DataTypes) => {
       appointment_date: DataTypes.DATE,
       time_solt: DataTypes.DATE,
       status: DataTypes.STRING,
+      doctorID: DataTypes.INTEGER,
+      userID: DataTypes.INTEGER,
+      statusID: DataTypes.INTEGER,
     },
     {
       sequelize,
       modelName: "booking",
+      tableName: "booking",
     }
   );
   return booking;

@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Slider from "react-slick";
 import specialty from "./specialty.css";
@@ -10,6 +11,8 @@ import img3 from "../../../assets/specialty/tieu-hoa.png";
 import img4 from "../../../assets/specialty/tim-mach.png";
 import img6 from "../../../assets/specialty/cot-song.png";
 import img5 from "../../../assets/specialty/tai-mui-hong.png";
+import UserService from "../../../services/UserService";
+import doctorList from "../list/doctorList";
 
 function SampleNextArrow(props) {
   const { className, style, onClick } = props;
@@ -33,7 +36,22 @@ function SamplePrevArrow(props) {
   );
 }
 
+// Anh xa hinh anh theo ten chuyen khoa
+const imageMapping = {
+  "Cơ xương khớp": img1,
+  "Thần kinh": img2,
+  "Tiêu hóa": img3,
+  "Tim mạch": img4,
+  "Tai Mũi Họng": img5,
+  "Cột sống": img6,
+};
+
 const Specialty = () => {
+  const [specailty, setSpecialty] = useState([]);
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+
+  //Slider cho section specialty
   const settings = {
     dots: true, //An dau . neu la false
     infinite: true,
@@ -44,6 +62,27 @@ const Specialty = () => {
     prevArrow: <SamplePrevArrow />,
   };
 
+  //Lay du lieu specialty
+  const fetchSpecialty = async () => {
+    try {
+      const response = await UserService.GetAllSpecialty();
+      setSpecialty(response.data.specialty);
+      console.log(response.data.specialty);
+    } catch (e) {
+      console.log(e);
+      setError("Loi: ", e);
+    }
+  };
+
+  //Chuyen sang trang danh sach doctor khi chon vao 1 chuyen khoan cu the
+  const handleToDoctor = (specialtyId) => {
+    navigate(`/doctor/${specialtyId}`);
+  };
+
+  useEffect(() => {
+    fetchSpecialty();
+  }, []);
+
   return (
     <div className="section-specialty">
       <div className="specialty-container">
@@ -53,30 +92,20 @@ const Specialty = () => {
         </div>
         <div className="specailty-body">
           <Slider {...settings}>
-            <div className="specialty-customize">
-              <img src={img1} />
-              <div className="text-content">Cơ xương khớp</div>
-            </div>
-            <div className="specialty-customize">
-              <img src={img2} />
-              <div className="text-content">Thần kinh</div>
-            </div>
-            <div className="specialty-customize">
-              <img src={img3} />
-              <div className="text-content">Tiêu hóa</div>
-            </div>
-            <div className="specialty-customize">
-              <img src={img4} />
-              <div className="text-content">Tim mạch</div>
-            </div>
-            <div className="specialty-customize">
-              <img src={img5} />
-              <div className="text-content">Tai Mũi Họng</div>
-            </div>
-            <div className="specialty-customize">
-              <img src={img6} />
-              <div className="text-content">Cột sống</div>
-            </div>
+            {specailty.length > 0 ? (
+              specailty.map((specialties, index) => (
+                <div
+                  className="specialty-customize"
+                  key={index}
+                  onClick={() => handleToDoctor(specialties.id)}
+                >
+                  <img src={imageMapping[specialties.name] || img1} />
+                  <div className="text-content">{specialties.name}</div>
+                </div>
+              ))
+            ) : (
+              <div className="text-content">Không có dữ liệu</div>
+            )}
           </Slider>
         </div>
       </div>

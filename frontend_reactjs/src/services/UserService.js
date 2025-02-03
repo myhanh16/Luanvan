@@ -21,4 +21,25 @@ const DeleteUser = (userid) => {
 const EditUser = (Inputdata) => {
   return axios.post("/api/edit-user", Inputdata);
 };
-export default { Login, GetAllUser, CreateUser, DeleteUser, EditUser };
+
+const GetAllSpecialty = () => {
+  return axios.get("/api/get-specialty");
+};
+
+const getSpecialtyByID = (id) => {
+  return axios.get(`/api/get-specialtyByid?id=${id}`);
+};
+
+const getDoctorsBySpecialtyID = (specialtyID) => {
+  return axios.get(`/api/get-DoctorsBySpecialtyID?specialtyID=${specialtyID}`);
+};
+export default {
+  Login,
+  GetAllUser,
+  CreateUser,
+  DeleteUser,
+  EditUser,
+  GetAllSpecialty,
+  getSpecialtyByID,
+  getDoctorsBySpecialtyID,
+};

@@ -3,8 +3,8 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable("doctor", {
-      // name: DataTypes.STRING,
-      // specialization: DataTypes.STRING,
+      // experience_years: DataTypes.INTEGER,
+      // workroom: DataTypes.STRING
 
       id: {
         allowNull: false,
@@ -13,8 +13,24 @@ module.exports = {
         type: Sequelize.INTEGER, // Kiểu dữ liệu INTEGER cho id
       },
 
-      name: {
+      experience_years: {
+        type: Sequelize.INTEGER,
+      },
+
+      workroom: {
         type: Sequelize.STRING,
+      },
+      description: {
+        type: Sequelize.STRING,
+      },
+      userID: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: "User", // Đúng với tên bảng Users đã tạo
+          key: "id",
+        },
+        onUpdate: "CASCADE",
+        onDelete: "SET NULL",
       },
 
       specialtyID: {
@@ -26,7 +42,9 @@ module.exports = {
         onUpdate: "CASCADE", // Cập nhật khi khóa chính thay đổi
         onDelete: "SET NULL", // Đặt giá trị NULL khi khóa chính bị xóa
       },
-
+      img: {
+        type: Sequelize.STRING,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

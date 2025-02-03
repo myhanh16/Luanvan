@@ -1,0 +1,72 @@
+.admin-header-container {
+  background-color: white;
+  color: black;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #ddd;
+}
+
+.admin-header-content {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.admin-left .admin-logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.admin-center {
+  display: flex;
+  gap: 20px;
+}
+
+.admin-menu-item {
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 12px; /* Thêm padding để tạo khoảng cách */
+  border-radius: 5px; /* Bo tròn các góc */
+  transition: all 0.3s ease; /* Hiệu ứng chuyển đổi mượt mà */
+}
+
+.admin-menu-item:hover {
+  color: rgb(77, 77, 225);
+  background-color: #f7f7f7;
+}
+
+.admin-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.admin-user {
+  font-size: 1rem;
+}
+
+.admin-logout {
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.admin-logout:hover {
+  color: #d9534f;
+}
+
+.admin-menu-item.active {
+  background-color: #007bff; /* Màu nền khi active */
+  color: white; /* Màu chữ khi active */
+  font-weight: bold; /* Làm đậm chữ khi active */
+  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2); /* Thêm hiệu ứng bóng nhẹ */
+}

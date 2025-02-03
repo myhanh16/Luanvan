@@ -19,6 +19,13 @@ const {
   handleEdit,
 } = require("../controllers/Usercontroller");
 
+const {
+  LoginAdmin,
+  handelgetSpecialty,
+  handelgetSpecialtyByid,
+  CreateDoctor,
+  handelgetDoctorBySpecialtyID,
+} = require("../controllers/Admin");
 router.get("/", gethome);
 
 router.get("/register", (req, res) => {
@@ -34,7 +41,7 @@ router.post("/edit", editUser);
 
 router.get("/delete", Delete);
 
-/*---------------- REACTJS -------------------------*/
+/*---------------- REACTJS USER-------------------------*/
 
 router.post("/api/login", handelLogin);
 
@@ -45,4 +52,15 @@ router.post("/api/create-user", handleCreate);
 router.delete("/api/delete-user", handleDelete);
 
 router.post("/api/edit-user", handleEdit);
+
+/*-----------------REACT ADMIN---------------------- */
+router.post("/api/login-admin", LoginAdmin);
+
+router.get("/api/get-specialty", handelgetSpecialty);
+
+router.get("/api/get-specialtyByid", handelgetSpecialtyByid);
+
+router.post("/api/create-doctor", CreateDoctor);
+
+router.get("/api/get-DoctorsBySpecialtyID", handelgetDoctorBySpecialtyID);
 module.exports = router;

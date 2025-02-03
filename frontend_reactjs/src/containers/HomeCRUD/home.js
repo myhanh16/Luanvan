@@ -2,11 +2,13 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./home.css";
-import UserService from "../../services/UserService";
+import AdminService from "../../services/AdminService";
 import { FaEdit, FaTrashAlt, FaPlus } from "react-icons/fa";
 import EditUserModal from "../auth/modalUser";
 import emitter from "../../utils/emitter";
 import UpdateUserModal from "./modalEdit";
+import AdminHeader from "./adminheader";
+import UserService from "../../services/UserService";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -19,7 +21,7 @@ const Home = () => {
   useEffect(() => {
     const token = sessionStorage.getItem("userToken");
     if (!token) {
-      navigate("/login");
+      navigate("/login-admin");
     } else {
       fetchUsers();
     }
@@ -34,7 +36,7 @@ const Home = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await UserService.GetAllUser("ALL");
+      const response = await AdminService.GetAllUser("ALL");
       setUsers(response.data.Users);
     } catch (err) {
       console.error("Lỗi khi tải danh sách người dùng:", err);
@@ -44,7 +46,7 @@ const Home = () => {
 
   const handleLogout = () => {
     sessionStorage.removeItem("userToken");
-    navigate("/");
+    navigate("/login-admin");
   };
 
   const handleAddUser = () => {
@@ -57,7 +59,7 @@ const Home = () => {
 
   const handleConfirmCreate = async (formData) => {
     try {
-      const response = await UserService.CreateUser(formData);
+      const response = await AdminService.CreateUser(formData);
       if (response && response.data && response.data.errCode !== 0) {
         alert("Tạo tài khoản thất bại: " + response.data.message);
       } else {
@@ -119,80 +121,72 @@ const Home = () => {
   };
 
   return (
-    <div>
-      <div className="users-container">
-        <EditUserModal
-          isOpen={isCreateModalOpen}
-          toggle={toggleCreateModal}
-          onConfirm={handleConfirmCreate}
-        />
-        <UpdateUserModal
-          isOpen={isEditModalOpen}
-          toggle={toggleEditModal}
-          currentUser={selectedUser}
-          onConfirm={handleConfirmUpdate}
-        />
-        <div className="title text-center">Quản lý người dùng</div>
-        {error && <div className="alert alert-danger">{error}</div>}
-        <div className="mx-1">
-          <button className="btn btn-primary px-3" onClick={handleAddUser}>
-            <FaPlus />
-            Tạo tài khoản
-          </button>
-        </div>
-        <div className="user-table mt-4 mx-3">
-          <table id="customers">
-            <thead>
-              <tr>
-                <th>Email</th>
-                <th>Họ Tên</th>
-                <th>Số Điện Thoại</th>
-                <th>Chức Năng</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.length > 0 ? (
-                users.map((user) => (
-                  <tr key={user.id}>
-                    <td>{user.email}</td>
-                    <td>{user.fullname}</td>
-                    <td>{user.phone}</td>
-                    <td>
-                      <button
-                        className="btn btn-primary btn-sm"
-                        onClick={() => handleUpdate(user)}
-                      >
-                        <FaEdit />
-                      </button>
-                      <button
-                        className="btn btn-danger btn-sm mx-2"
-                        onClick={() => handleDelete(user)}
-                      >
-                        <FaTrashAlt />
-                      </button>
+    <React.Fragment>
+      <AdminHeader />
+      <div>
+        <div className="users-container">
+          <UpdateUserModal
+            isOpen={isEditModalOpen}
+            toggle={toggleEditModal}
+            currentUser={selectedUser}
+            onConfirm={handleConfirmUpdate}
+          />
+          <div className="title text-center" style={{ fontSize: "20px" }}>
+            Danh Sách Người Dùng
+          </div>
+          {error && <div className="alert alert-danger">{error}</div>}
+
+          <div className="user-table mt-4 mx-3">
+            <table id="customers">
+              <thead>
+                <tr>
+                  <th>Email</th>
+                  <th>Họ Tên</th>
+                  <th>Số Điện Thoại</th>
+                  <th>Địa chỉ</th>
+                  <th>Giới tính</th>
+                  <th>Chức Năng</th>
+                </tr>
+              </thead>
+              <tbody>
+                {users.length > 0 ? (
+                  users.map((user) => (
+                    <tr key={user.id}>
+                      <td>{user.email}</td>
+                      <td>{user.fullname}</td>
+                      <td>{user.phone}</td>
+                      <td>{user.address}</td>
+                      <td>{Number(user.gender) === 0 ? "Nam" : "Nữ"}</td>
+
+                      <td>
+                        <button
+                          className="btn btn-primary btn-sm"
+                          onClick={() => handleUpdate(user)}
+                        >
+                          <FaEdit />
+                        </button>
+                        <button
+                          className="btn btn-danger btn-sm mx-2"
+                          onClick={() => handleDelete(user)}
+                        >
+                          <FaTrashAlt />
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="4" className="text-center">
+                      Không có dữ liệu.
                     </td>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="4" className="text-center">
-                    Không có dữ liệu.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
-      <div className="mx-3">
-        <button
-          className="btn btn-secondary logout-button"
-          onClick={handleLogout}
-        >
-          Đăng xuất
-        </button>
-      </div>
-    </div>
+    </React.Fragment>
   );
 };
 

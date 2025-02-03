@@ -17,7 +17,7 @@ const handelUserLogin = (email, password) => {
       if (isExit) {
         // Người dùng đã tồn tại
         const user = await db.User.findOne({
-          attributes: ["email", "fullname", "password"],
+          attributes: ["email", "fullname", "password", "role"],
 
           where: {
             email: email,
@@ -133,6 +133,7 @@ const CreateUser = (data) => {
         phone: data.phone,
         address: data.address,
         gender: data.gender === "1" ? true : false,
+        role: "0",
       });
       resolve({
         errCode: 0,

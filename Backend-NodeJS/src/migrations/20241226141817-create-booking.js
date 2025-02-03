@@ -39,7 +39,7 @@ module.exports = {
       userID: {
         type: Sequelize.INTEGER,
         references: {
-          model: "users", // Đúng với tên bảng Users đã tạo
+          model: "user", // Đúng với tên bảng Users đã tạo
           key: "id",
         },
         onUpdate: "CASCADE",

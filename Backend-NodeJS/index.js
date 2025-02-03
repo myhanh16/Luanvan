@@ -46,7 +46,8 @@ app.use(express.urlencoded({ extended: true })); // for form data
 //const storage = multer.memoryStorage();
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "public/img"); // Thư mục để lưu file (đảm bảo thư mục này tồn tại)
+    const specialtyID = req.body.specialtyID;
+    cb(null, `public/img/doctor/${specialtyID}`); // Thư mục để lưu file (đảm bảo thư mục này tồn tại)
   },
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
@@ -55,6 +56,8 @@ const storage = multer.diskStorage({
   },
 });
 const upload = multer({ storage: storage });
+
+app.use(express.static(path.join(__dirname, "public")));
 
 // const fileUpload = require('express-fileupload');
 // app.use(fileUpload());

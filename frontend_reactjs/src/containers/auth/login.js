@@ -30,7 +30,7 @@ const Login = () => {
     return () => {
       emitter.off("USER_ADDED", resetForm); // Hủy đăng ký listener
     };
-  }, []); // Sử dụng useEffect một lần khi component mount
+  }, []);
 
   // Hàm xử lý đăng nhập
   const handleSubmit = async (e) => {
@@ -45,7 +45,12 @@ const Login = () => {
       sessionStorage.setItem("userToken", response.data.token);
       sessionStorage.setItem("userName", response.data.user.fullname);
       console.log(response.data.user.fullname);
-      navigate("/"); // Điều hướng tới trang chủ sau khi đăng nhập thành công
+      if (response.data.user.role == 0) {
+        console.log(response.data.user.role);
+        navigate("/"); // Điều hướng tới trang chủ sau khi đăng nhập thành công
+      } else {
+        setError("Bạn không có quyền truy cập vào trang này");
+      }
     } catch (err) {
       console.error("Lỗi đăng nhập:", err);
       setError("Đăng nhập thất bại, vui lòng kiểm tra lại thông tin.");
