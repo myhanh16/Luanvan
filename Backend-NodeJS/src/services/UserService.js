@@ -17,7 +17,15 @@ const handelUserLogin = (email, password) => {
       if (isExit) {
         // Người dùng đã tồn tại
         const user = await db.User.findOne({
-          attributes: ["email", "fullname", "password", "role"],
+          attributes: [
+            "email",
+            "fullname",
+            "password",
+            "phone",
+            "address",
+            "gender",
+            "role",
+          ],
 
           where: {
             email: email,
@@ -195,10 +203,90 @@ const EditUser = (data) => {
   });
 };
 
+//Booking lịch khám bệnh
+const Booking = (data) => {
+  return new Promise(async (resolve, reject) => {
+    if (!data.userID || !data.doctorID || !data.date || !data.time) {
+      return resolve({
+        errCode: 3,
+        errMessage: "Thiếu thông tin bắt buộc (userID, doctorID, date, time)",
+      });
+    }
+
+    const transaction = await db.sequelize.transaction(); // Bắt đầu transaction
+
+    try {
+      // Kiểm tra xem bác sĩ có tồn tại không
+      const doctor = await db.doctor.findOne({
+        where: { id: data.doctorID },
+        transaction,
+      });
+
+      if (!doctor) {
+        await transaction.rollback();
+        return resolve({
+          errCode: 1,
+          errMessage: "Không tìm thấy bác sĩ",
+        });
+      }
+
+      // Kiểm tra xem user có tồn tại không
+      const user = await db.User.findOne({
+        where: { id: data.userID },
+        transaction,
+      });
+
+      if (!user) {
+        await transaction.rollback();
+        return resolve({
+          errCode: 2,
+          errMessage: "Không tìm thấy người dùng",
+        });
+      }
+
+      // Kiểm tra xem đã có lịch hẹn với bác sĩ trong khung giờ đó chưa
+      // const existingAppointment = await db.Appointment.findOne({
+      //   where: { doctorID: data.doctorID, date: data.date, time: data.time },
+      //   transaction,
+      // });
+
+      // if (existingAppointment) {
+      //   await transaction.rollback();
+      //   return resolve({
+      //     errCode: 4,
+      //     errMessage: "Khung giờ này đã có người đặt",
+      //   });
+      // }
+
+      // Tạo lịch hẹn mới
+      await db.booking.create(
+        {
+          userID: data.userID,
+          doctorID: data.doctorID,
+          date: data.date,
+          time: data.time,
+          status: "1", // Trạng thái mặc định
+        },
+        { transaction }
+      );
+
+      await transaction.commit(); // Lưu tất cả thay đổi nếu không có lỗi
+      resolve({
+        errCode: 0,
+        errMessage: "Đặt lịch thành công",
+      });
+    } catch (e) {
+      await transaction.rollback(); // Quay lại trạng thái ban đầu nếu có lỗi
+      reject(e);
+    }
+  });
+};
+
 module.exports = {
   handelUserLogin,
   getAllUsers,
   CreateUser,
   DeleteUser,
   EditUser,
+  Booking,
 };

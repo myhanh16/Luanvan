@@ -8,9 +8,10 @@ const {
   CreateUser,
   DeleteUser,
   EditUser,
+  Booking,
 } = require("../services/UserService");
 
-const handelLogin = async (req, res) => {
+const handleLogin = async (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
 
@@ -109,10 +110,25 @@ const handleEdit = async (req, res) => {
   return res.status(200).json(message);
 };
 
+const handleBooking = async (req, res) => {
+  try {
+    const message = await Booking(req.body);
+    console.log("Dữ liệu yêu cầu:", req.body);
+    return res.status(200).json(message);
+  } catch (error) {
+    console.error("Lỗi khi xử lý đặt lịch:", error);
+    return res.status(500).json({
+      errCode: 1,
+      message: "Có lỗi xảy ra, vui lòng thử lại",
+    });
+  }
+};
+
 module.exports = {
-  handelLogin,
+  handleLogin,
   handleGetAll,
   handleCreate,
   handleDelete,
   handleEdit,
+  handleBooking,
 };

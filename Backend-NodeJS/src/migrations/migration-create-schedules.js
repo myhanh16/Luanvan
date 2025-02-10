@@ -9,12 +9,18 @@ module.exports = {
       // doctorID: DataTypes.INTEGER,
       // timeID: DataTypes.INTEGER,
       // date: DataTypes.DATE,
+      id: {
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: Sequelize.INTEGER, // Kiểu dữ liệu INTEGER cho id
+      },
 
       doctorID: {
         allowNull: false,
         type: Sequelize.INTEGER,
         allowNull: false,
-        primaryKey: true,
+
         references: {
           model: "doctor", // Tên bảng tham chiếu (ví dụ bảng time hoặc bảng nào chứa thời gian)
           key: "id", // Tên cột tham chiếu trong bảng thời gian
@@ -24,14 +30,14 @@ module.exports = {
       },
 
       date: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.DATEONLY,
       },
 
       timeID: {
         allowNull: false,
         type: Sequelize.INTEGER,
         allowNull: false,
-        primaryKey: true,
+
         references: {
           model: "time", // Tên bảng tham chiếu (ví dụ bảng time hoặc bảng nào chứa thời gian)
           key: "id", // Tên cột tham chiếu trong bảng thời gian

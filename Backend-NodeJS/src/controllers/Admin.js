@@ -2,11 +2,16 @@ const session = require("express-session");
 const { format } = require("date-fns");
 const { vi } = require("date-fns/locale");
 const {
-  handelLogin,
+  handleLogin,
   getAllSpecialty,
   getSpecialtyByID,
   createdoctor,
   getDoctorsBySpecialtyID,
+  getTopExperiencedDoctor,
+  getSchedule,
+  getDoctorByid,
+  EditDoctor,
+  getAlltDoctors,
 } = require("../services/Admin");
 
 const LoginAdmin = async (req, res) => {
@@ -19,7 +24,7 @@ const LoginAdmin = async (req, res) => {
       message: "Email hoặc mật khẩu không được để trống",
     });
   }
-  const userData = await handelLogin(email, password);
+  const userData = await handleLogin(email, password);
 
   if (userData.errCode === 0) {
     // Đăng nhập thành công
@@ -37,7 +42,7 @@ const LoginAdmin = async (req, res) => {
   }
 };
 
-const handelgetSpecialty = async (req, res) => {
+const handlegetSpecialty = async (req, res) => {
   const specialty = await getAllSpecialty();
   return res.status(200).json({
     errCode: 0,
@@ -46,7 +51,7 @@ const handelgetSpecialty = async (req, res) => {
   });
 };
 
-const handelgetSpecialtyByid = async (req, res) => {
+const handlegetSpecialtyByid = async (req, res) => {
   try {
     const id = req.query.id; // Lấy ID từ query string
     if (!id) {
@@ -86,7 +91,7 @@ const CreateDoctor = async (req, res) => {
   }
 };
 
-const handelgetDoctorBySpecialtyID = async (req, res) => {
+const handlegetDoctorBySpecialtyID = async (req, res) => {
   try {
     const id = req.query.specialtyID;
     if (!id) {
@@ -110,10 +115,108 @@ const handelgetDoctorBySpecialtyID = async (req, res) => {
     });
   }
 };
+
+//Lấy danh sach doctor có experince cao nhất để hiển thị bác sĩ nổi bật
+const handlegetTopExperiencedDoctor = async (req, res) => {
+  const doctor = await getTopExperiencedDoctor();
+  return res.status(200).json({
+    errCode: 0,
+    errMessage: "OK",
+    doctor,
+  });
+};
+
+//Lay thoi gian lam viec cua tung bac si
+const handlegetSchedule = async (req, res) => {
+  try {
+    const doctorID = req.query.doctorID;
+    const schedule = await getSchedule(doctorID);
+    res.status(200).json({
+      errCode: 0,
+      errMessage: "OK",
+      schedule,
+    });
+  } catch (error) {
+    res.status(500).json({
+      errCode: 1,
+      errMessage: error,
+    });
+  }
+};
+
+//Lay thong tin bac si theo id
+const handlegetDoctorByid = async (req, res) => {
+  try {
+    const id = req.query.id;
+    if (!id) {
+      return res.status(400).json({
+        errCode: 1,
+        errMessage: "Missing required parameter: id",
+      });
+    } else {
+      const doctor = await getDoctorByid(id);
+      return res.status(200).json({
+        errCode: 0,
+        errMessage: "OK",
+        doctor,
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      errCode: 1,
+      errMessage: "Internal Server Error",
+    });
+  }
+};
+
+const handleEditDoctor = async (req, res) => {
+  try {
+    const data = req.body;
+    const message = await EditDoctor(data);
+    return res.status(200).json(message);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      errCode: 1,
+      errMessage: "Internal Server Error",
+    });
+  }
+};
+
+// lấy toàn bộ danh sách bác sĩ
+const handlegetAllDoctors = async (req, res) => {
+  try {
+    // Gọi hàm lấy bác sĩ từ service
+    const doctors = await getAlltDoctors();
+
+    // Nếu không có bác sĩ
+    if (doctors.length === 0) {
+      return res.status(404).json({ message: "Không có bác sĩ nào." });
+    }
+
+    // Trả về danh sách bác sĩ
+    return res.status(200).json({
+      message: "Danh sách bác sĩ",
+      doctors,
+    });
+  } catch (error) {
+    console.error("Lỗi khi lấy danh sách bác sĩ:", error);
+    return res.status(500).json({
+      message: "Có lỗi xảy ra khi lấy danh sách bác sĩ.",
+    });
+  }
+};
+
 module.exports = {
   LoginAdmin,
-  handelgetSpecialty,
-  handelgetSpecialtyByid,
+  handlegetSpecialty,
+  handlegetSpecialtyByid,
   CreateDoctor,
-  handelgetDoctorBySpecialtyID,
+  handlegetDoctorBySpecialtyID,
+  handlegetTopExperiencedDoctor,
+  handlegetSchedule,
+  handlegetDoctorByid,
+  handleEditDoctor,
+  handlegetAllDoctors,
 };

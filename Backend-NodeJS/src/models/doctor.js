@@ -28,6 +28,11 @@ module.exports = (sequelize, DataTypes) => {
   );
   doctor.associate = (models) => {
     doctor.belongsTo(models.User, { foreignKey: "userID", as: "User" });
+    doctor.belongsTo(models.specialty, {
+      foreignKey: "specialtyID",
+      as: "specialty",
+    });
   };
+
   return doctor;
 };

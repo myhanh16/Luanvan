@@ -43,7 +43,7 @@ const AdminHeader = () => {
             className={`admin-menu-item ${isActive("/homeadmin")}`} // Thêm class active nếu đang ở trang này
             onClick={() => navigate("/homeadmin")}
           >
-            <FaListAlt className="admin-icon" /> Danh Sách Người Dùng
+            <FaListAlt className="admin-icon" /> Danh Sách Bác Sĩ
           </div>
           <div
             className={`admin-menu-item ${isActive("/create-doctor")}`} // Thêm class active nếu đang ở trang này

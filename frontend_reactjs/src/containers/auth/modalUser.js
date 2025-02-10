@@ -92,6 +92,22 @@ const RegisterUserModal = ({ isOpen, toggle, title, children, onConfirm }) => {
         />
       </ModalHeader>
       <ModalBody>
+        <p
+          style={{
+            fontWeight: "bold",
+            color: "#d9534f", // Màu đỏ nhấn mạnh
+            fontSize: "16px",
+            backgroundColor: "#f8d7da", // Màu nền đỏ nhạt
+            padding: "10px",
+            borderRadius: "5px",
+            border: "1px solid #f5c6cb", // Đường viền màu đỏ nhạt
+            marginBottom: "20px",
+          }}
+        >
+          LƯU Ý: Thông tin anh/chị cung cấp sẽ được sử dụng làm hồ sơ khám bệnh.
+          Điền đầy đủ, đúng và vui lòng kiểm tra lại thông tin trước khi ấn "Tạo
+          tài khoản"
+        </p>
         <form>
           <div className="row">
             {/* Email */}

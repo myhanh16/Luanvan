@@ -17,16 +17,6 @@ module.exports = {
         type: Sequelize.INTEGER,
       },
 
-      doctorID: {
-        type: Sequelize.INTEGER,
-        references: {
-          model: "doctor", // Đảm bảo tên bảng chính xác (nếu bảng tên là Doctors)
-          key: "id",
-        },
-        onUpdate: "CASCADE",
-        onDelete: "SET NULL",
-      },
-
       specialtyID: {
         type: Sequelize.INTEGER,
         references: {
@@ -36,9 +26,7 @@ module.exports = {
         onUpdate: "CASCADE", // Cập nhật khi khóa chính thay đổi
         onDelete: "SET NULL", // Đặt giá trị NULL khi khóa chính bị xóa
       },
-      img: {
-        type: Sequelize.STRING,
-      },
+
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

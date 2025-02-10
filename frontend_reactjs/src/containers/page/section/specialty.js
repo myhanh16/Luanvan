@@ -88,7 +88,15 @@ const Specialty = () => {
       <div className="specialty-container">
         <div className="specialty-header">
           <span className="title-section">Chuyên khoa</span>
-          <button className="btn-section">Xem thêm</button>
+          <button
+            className="btn-section"
+            onClick={(e) => {
+              e.preventDefault();
+              navigate("/specialty-list");
+            }}
+          >
+            Xem thêm
+          </button>
         </div>
         <div className="specailty-body">
           <Slider {...settings}>

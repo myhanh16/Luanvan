@@ -1,0 +1,135 @@
+body {
+  background-color: #edf1f5;
+  margin-top: 20px;
+}
+.card {
+  display: flex !important;
+  gap: 20px !important;
+  background: #f9f9f9 !important;
+  padding: 15px !important;
+  border: 1px solid #ddd !important;
+  border-radius: 8px !important;
+  margin-bottom: 20px !important;
+  max-width: 1200px !important;
+}
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  word-wrap: break-word;
+  background-color: #fff;
+  background-clip: border-box;
+  border: 0 solid transparent;
+  border-radius: 0;
+}
+.card .card-subtitle {
+  font-weight: 300;
+  margin-bottom: 10px;
+  color: #8898aa;
+}
+.table-product.table-striped tbody tr:nth-of-type(odd) {
+  background-color: #f3f8fa !important;
+}
+.table-product td {
+  border-top: 0px solid #dee2e6 !important;
+  color: #728299 !important;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 10px;
+  padding: 20px;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.breadcrumb a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.breadcrumb span {
+  margin-left: 10px;
+}
+
+.breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+.specialty-page {
+  padding: 20px;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.times-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.time-button {
+  padding: 8px 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+  margin: 3px;
+}
+
+.time-button:hover {
+  background-color: #0056b3;
+}
+
+.book-btn {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+/* Căn chỉnh tiêu đề "Lịch khám" */
+.mt-4 label {
+  font-size: 1.2rem;
+  /* font-weight: bold; */
+  display: block;
+  margin-bottom: 10px;
+}
+
+/* Chỉnh khoảng cách giữa các phần tử chọn ngày và giờ khám */
+.form-select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  margin-bottom: 15px;
+}
+
+/* Hiển thị danh sách ngày khám đẹp hơn */
+.option-date {
+  padding: 8px;
+  font-size: 1rem;
+}
+
+/* Tạo khoảng cách và kiểu dáng cho giờ khám */
+.mt-3 h5 {
+  font-size: 1.2rem;
+  /* font-weight: bold; */
+  margin-bottom: 10px;
+}
+
+/* Khoảng cách giữa các mục trong lịch khám */
+.mt-3 {
+  margin-top: 20px;
+}

@@ -47,7 +47,7 @@ app.use(express.urlencoded({ extended: true })); // for form data
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     const specialtyID = req.body.specialtyID;
-    cb(null, `public/img/doctor/${specialtyID}`); // Thư mục để lưu file (đảm bảo thư mục này tồn tại)
+    cb(null, `public/img/doctor/${specialtyID}`);
   },
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);

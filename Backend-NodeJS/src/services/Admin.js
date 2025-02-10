@@ -94,6 +94,13 @@ const getSpecialtyByID = (id) => {
     try {
       const Detail = await db.specialty.findOne({
         where: { id: id },
+        include: [
+          {
+            model: db.price, // Nếu giá được lưu trong bảng price
+            as: "price",
+            attributes: ["price"],
+          },
+        ],
       });
 
       if (Detail) {
@@ -173,27 +180,6 @@ const createdoctor = (data) => {
   });
 };
 
-// const getDoctorsBySpecialtyID = (specialtyID) => {
-//   return new Promise(async (resolve, reject) => {
-//     try {
-//       const doctors = await db.doctor.findAll({
-//         where: { specialtyID: specialtyID },
-//         include: [
-//           {
-//             model: db.User, // Kiểm tra lại tên và cách sử dụng model
-//             as: "User", // Kiểm tra xem alias có đúng không
-//             attributes: ["fullname", "email", "phone", "address", "gender"],
-//           },
-//         ],
-//       });
-
-//       resolve(doctors);
-//     } catch (e) {
-//       reject(e);
-//     }
-//   });
-// };
-
 const getDoctorsBySpecialtyID = (specialtyID) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -205,30 +191,197 @@ const getDoctorsBySpecialtyID = (specialtyID) => {
             as: "User", // Kiểm tra xem alias có đúng không
             attributes: ["fullname", "email", "phone", "address", "gender"],
           },
+          {
+            model: db.specialty, // Lấy chuyên khoa
+            as: "specialty",
+            include: [
+              {
+                model: db.price, // Lấy giá từ chuyên khoa
+                as: "price",
+                attributes: ["price"],
+              },
+            ],
+          },
         ],
-        attributes: [
-          "id",
-          "experience_years",
-          "workroom",
-          "description",
-          "img",
-          "specialtyID",
-        ], // Lấy thêm cột img từ bảng doctor
+        order: [["experience_years", "DESC"]],
       });
 
-      // Tạo đường dẫn đầy đủ cho ảnh
-      const doctorsWithImages = doctors.map((doctor) => {
-        const imageUrl = doctor.img
-          ? `http://localhost:3000/public/img/doctor/${doctor.specialtyID}/${doctor.img}` // Cấu trúc đường dẫn tới ảnh
-          : null;
-        return {
-          ...doctor.toJSON(), // Chuyển object sequelize thành plain object
-          imageUrl, // Thêm đường dẫn ảnh
-        };
-      });
-
-      resolve(doctorsWithImages);
+      resolve(doctors);
     } catch (e) {
+      reject(e);
+    }
+  });
+};
+
+//Lấy danh sach top experience doctor
+const getTopExperiencedDoctor = () => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const doctor = await db.doctor.findAll({
+        include: [
+          {
+            model: db.User,
+            as: "User",
+            attributes: ["fullname", "email", "phone", "address", "gender"],
+          },
+          {
+            model: db.specialty, // Thêm bảng chuyên khoa
+            as: "specialty", // Đảm bảo alias đúng với model
+            attributes: ["name"], // Lấy tên chuyên khoa
+          },
+        ],
+        order: [["experience_years", "DESC"]],
+      });
+      resolve(doctor);
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
+//Lay thoi gian lam viec cua bac si
+const getSchedule = (doctorID) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const schedules = await db.schedules.findAll({
+        where: { doctorID: doctorID },
+        attributes: ["doctorID", "timeID", "date"],
+        include: [
+          {
+            model: db.time,
+            as: "Time",
+            attributes: ["starttime", "endtime"],
+          },
+        ],
+        order: [["date", "ASC"]],
+      });
+      resolve(schedules);
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
+//Thông tin bac si theo id
+const getDoctorByid = (doctorID) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const doctor = await db.doctor.findOne({
+        where: { id: doctorID },
+        include: [
+          {
+            model: db.User, // Kiểm tra lại tên và cách sử dụng model
+            as: "User", // Kiểm tra xem alias có đúng không
+            attributes: ["fullname", "email", "phone", "address", "gender"],
+          },
+        ],
+      });
+
+      resolve(doctor);
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
+//Lấy toàn bộ danh sách bác sĩ để admind chỉnh sửa
+const getAlltDoctors = () => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const doctors = await db.doctor.findAll({
+        include: [
+          {
+            model: db.User, // Kiểm tra lại tên và cách sử dụng model
+            as: "User", // Kiểm tra xem alias có đúng không
+            attributes: [
+              "id",
+              "fullname",
+              "email",
+              "phone",
+              "address",
+              "gender",
+            ],
+          },
+          {
+            model: db.specialty, // Lấy chuyên khoa
+            as: "specialty",
+            include: [
+              {
+                model: db.price, // Lấy giá từ chuyên khoa
+                as: "price",
+                attributes: ["price"],
+              },
+            ],
+          },
+        ],
+      });
+
+      resolve(doctors);
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
+//Chỉnh sửa thông tin bác sĩ
+const EditDoctor = (data) => {
+  return new Promise(async (resolve, reject) => {
+    if (!data.userID) {
+      return resolve({
+        errCode: 3,
+        errMessage: "userID là bắt buộc",
+      });
+    }
+
+    const transaction = await db.sequelize.transaction(); // Bắt đầu transaction
+
+    try {
+      // Tìm thông tin User của bác sĩ
+      const user = await db.User.findOne({
+        where: { id: data.id },
+        transaction,
+      });
+
+      if (!user) {
+        await transaction.rollback();
+        return resolve({
+          errCode: 1,
+          errMessage: "Không tìm thấy User của bác sĩ",
+        });
+      }
+
+      // Cập nhật thông tin User
+      user.fullname = data.fullname || user.fullname;
+      user.phone = data.phone || user.phone;
+      user.address = data.address || user.address;
+      await user.save({ transaction });
+
+      // Tìm thông tin Doctor của bác sĩ
+      const doctor = await db.doctor.findOne({
+        where: { userID: data.userID },
+        transaction,
+      });
+
+      if (!doctor) {
+        await transaction.rollback();
+        return resolve({
+          errCode: 2,
+          errMessage: "Không tìm thấy hồ sơ bác sĩ",
+        });
+      }
+
+      // Cập nhật thông tin bác sĩ (nếu có)
+      doctor.experience_years =
+        data.experience_years || doctor.experience_years;
+      await doctor.save({ transaction });
+
+      await transaction.commit(); // Lưu tất cả thay đổi nếu không có lỗi
+      resolve({
+        errCode: 0,
+        errMessage: "Cập nhật thành công",
+      });
+    } catch (e) {
+      await transaction.rollback(); // Quay lại trạng thái ban đầu nếu có lỗi
       reject(e);
     }
   });
@@ -240,4 +393,9 @@ module.exports = {
   getSpecialtyByID,
   createdoctor,
   getDoctorsBySpecialtyID,
+  getTopExperiencedDoctor,
+  getSchedule,
+  getDoctorByid,
+  EditDoctor,
+  getAlltDoctors,
 };

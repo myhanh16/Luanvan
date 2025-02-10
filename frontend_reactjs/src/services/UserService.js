@@ -33,6 +33,22 @@ const getSpecialtyByID = (id) => {
 const getDoctorsBySpecialtyID = (specialtyID) => {
   return axios.get(`/api/get-DoctorsBySpecialtyID?specialtyID=${specialtyID}`);
 };
+
+const getTopExperiencedDoctor = () => {
+  return axios.get("/api/get-TopExperienceDoctor");
+};
+
+const getSchedule = (doctorID) => {
+  return axios.get(`/api/get-schedule?doctorID=${doctorID}`);
+};
+
+const getDoctorByid = (doctorID) => {
+  return axios.get(`/api/get-doctorByid?id=${doctorID}`);
+};
+
+const Booking = (data) => {
+  return axios.post("api/booking", data);
+};
 export default {
   Login,
   GetAllUser,
@@ -42,4 +58,8 @@ export default {
   GetAllSpecialty,
   getSpecialtyByID,
   getDoctorsBySpecialtyID,
+  getTopExperiencedDoctor,
+  getSchedule,
+  getDoctorByid,
+  Booking,
 };

@@ -22,5 +22,17 @@ module.exports = (sequelize, DataTypes) => {
       tableName: "specialty",
     }
   );
+
+  specialty.associate = (models) => {
+    specialty.hasOne(models.doctor, {
+      foreignKey: "specialtyID",
+      as: "doctor",
+    });
+    specialty.hasOne(models.price, {
+      foreignKey: "specialtyID",
+      as: "price", // Alias này phải khớp với alias trong truy vấn
+    });
+  };
+
   return specialty;
 };

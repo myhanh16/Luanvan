@@ -44,7 +44,19 @@ const Login = () => {
       setError("");
       sessionStorage.setItem("userToken", response.data.token);
       sessionStorage.setItem("userName", response.data.user.fullname);
-      console.log(response.data.user.fullname);
+      sessionStorage.setItem("userID", response.data.user.id);
+      sessionStorage.setItem("userPhone", response.data.user.phone);
+      sessionStorage.setItem("userAddress", response.data.user.address);
+      sessionStorage.setItem("userGender", response.data.user.gender);
+      sessionStorage.setItem("userEmail", response.data.user.email);
+      // sessionStorage.setItem("userData", JSON.stringify(response.data.user)); // Lưu toàn bộ user
+      console.log(
+        "User Session Data:",
+        sessionStorage.getItem("userPhone"),
+        sessionStorage.getItem("userAddress"),
+        sessionStorage.getItem("userEmail")
+      );
+
       if (response.data.user.role == 0) {
         console.log(response.data.user.role);
         navigate("/"); // Điều hướng tới trang chủ sau khi đăng nhập thành công

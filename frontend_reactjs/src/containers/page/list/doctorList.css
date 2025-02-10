@@ -68,6 +68,7 @@ h1 {
   border: 1px solid #ddd;
   border-radius: 8px;
   margin-bottom: 20px;
+  margin-top: 10px;
 }
 
 .doctor-card img {
@@ -102,30 +103,40 @@ h1 {
   font-size: 16px;
 }
 
-.time-slots {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+.times-buttons {
+  display: flex;
+  flex-wrap: wrap;
   gap: 10px;
 }
 
-.time-slots div {
-  background: #e9f5ff;
-  padding: 5px 10px;
-  text-align: center;
-  border: 1px solid #007bff;
-  border-radius: 4px;
-  font-size: 14px;
+.time-button {
+  padding: 8px 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
   cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+.time-button:hover {
+  background-color: #0056b3;
 }
 
 .book-btn {
-  margin-top: 10px;
-  padding: 10px;
-  background: #007bff;
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #28a745;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 5px;
   cursor: pointer;
+  font-size: 16px;
+}
+
+.book-btn:hover {
+  background-color: #218838;
 }
 
 .specialty-page h2 {

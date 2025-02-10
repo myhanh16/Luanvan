@@ -65,6 +65,17 @@ const Homeheader = () => {
     }
   }, []);
 
+  //Đi đến trang lịch hẹn, kiểm tra xem đã login chua
+  const handleGoToAppointments = () => {
+    if (isLoggedIn) {
+      alert("hello");
+      // navigate("/appointments"); // Đi đến trang lịch hẹn nếu đã đăng nhập
+    } else {
+      alert("Vui lòng đăng nhập để xem lịch hẹn của bản thân.");
+      navigate("/login"); // Chuyển hướng đến trang đăng nhập nếu chưa đăng nhập
+    }
+  };
+
   useEffect(() => {
     document.addEventListener("click", closeMenuIfClickOutside);
     return () => {
@@ -83,31 +94,41 @@ const Homeheader = () => {
           <div className="center-content">
             <div className="child-content">
               <div>
-                <b>Chuyên Khoa</b>
+                <b
+                  className="item"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigate("/specialty-list");
+                  }}
+                >
+                  Chuyên Khoa
+                </b>
               </div>
               <div className="subs-tilte">Tìm bác sĩ theo chuyên khoa</div>
             </div>
             <div className="child-content">
               <div>
-                <b>Bác Sĩ</b>
+                <b
+                  className="item"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigate("/topdoctor");
+                  }}
+                >
+                  Bác Sĩ
+                </b>
               </div>
               <div className="subs-tilte">Chọn bác sĩ giỏi</div>
             </div>
-            <div className="child-content">
-              <div>
-                <b>Gói Khám</b>
-              </div>
-              <div className="subs-tilte">Khám sức khỏe tổng quát</div>
-            </div>
+
             {/* Chỉ hiển thị phần này khi người dùng đã đăng nhập */}
-            {isLoggedIn && (
-              <div className="child-content">
-                <div>
-                  <b>Lịch hẹn</b>
-                </div>
-                <div className="subs-tilte">Lịch hẹn đã đặt</div>
+
+            <div className="child-content" onClick={handleGoToAppointments}>
+              <div>
+                <b className="item">Lịch hẹn</b>
               </div>
-            )}
+              <div className="subs-tilte">Lịch hẹn đã đặt</div>
+            </div>
           </div>
           <div className="right-content">
             <div className="support">

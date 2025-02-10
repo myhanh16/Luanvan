@@ -13,9 +13,8 @@ module.exports = (sequelize, DataTypes) => {
   }
   booking.init(
     {
-      appointment_date: DataTypes.DATE,
-      time_solt: DataTypes.DATE,
-      status: DataTypes.STRING,
+      booking_date: DataTypes.DATE,
+      scheduleID: DataTypes.INTEGER,
       doctorID: DataTypes.INTEGER,
       userID: DataTypes.INTEGER,
       statusID: DataTypes.INTEGER,
@@ -26,5 +25,20 @@ module.exports = (sequelize, DataTypes) => {
       tableName: "booking",
     }
   );
+  booking.associate = (models) => {
+    booking.belongsTo(models.schedules, {
+      foreignKey: "scheduleID",
+      as: "schedules",
+    });
+    booking.belongsTo(models.doctor, {
+      foreignKey: "doctorID",
+      as: "doctor",
+    });
+    booking.belongsTo(models.status, {
+      foreignKey: "statusID",
+      as: "status",
+    });
+    booking.belongsTo(models.User, { foreignKey: "userID", as: "User" });
+  };
   return booking;
 };

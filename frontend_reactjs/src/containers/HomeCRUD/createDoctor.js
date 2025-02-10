@@ -33,38 +33,89 @@ const DoctorForm = () => {
     });
   };
 
+  // const handleFileChange = (e) => {
+  //   const file = e.target.files[0];
+  //   setFormData({
+  //     ...formData,
+  //     img: file.name,
+  //   });
+
+  //   setImagePreview(URL.createObjectURL(file));
+  // };
   const handleFileChange = (e) => {
     const file = e.target.files[0];
-    setFormData({
-      ...formData,
-      img: file.name,
-    });
+    if (file) {
+      setFormData({
+        ...formData,
+        img: file.name, // Lưu file chứ không chỉ lưu tên
+      });
 
-    setImagePreview(URL.createObjectURL(file));
+      setImagePreview(URL.createObjectURL(file)); // Xem trước ảnh
+    }
   };
 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   console.log("Form Data:", formData);
+  //   const formDataObj = new FormData();
+  //   Object.keys(formData).forEach((key) => {
+  //     formDataObj.append(key, formData[key]);
+  //   });
+
+  //   try {
+  //     const response = await AdminService.CreateDoctor(formDataObj);
+
+  //     if (response && response.data && response.data.errCode !== 0) {
+  //       alert("Tạo tài khoản thất bại: " + response.data.message);
+  //     } else {
+  //       alert("Tạo hồ sơ thành công.");
+
+  //       // Phát sự kiện USER_ADDED để reset form
+  //       emitter.emit("USER_ADDED", formDataObj);
+
+  //       navigate("/homeadmin"); // Điều hướng về trang đăng nhập sau khi tạo tài khoản
+
+  //       // Reset form và hình ảnh sau khi tạo thành công
+  //       setFormData({
+  //         email: "",
+  //         password: "",
+  //         fullname: "",
+  //         phone: "",
+  //         address: "",
+  //         gender: "",
+  //         experience_years: "",
+  //         workroom: "",
+  //         description: "",
+  //         specialty: "",
+  //         img: null,
+  //       });
+
+  //       setImagePreview(null); // Reset hình ảnh preview
+  //     }
+  //   } catch (error) {
+  //     console.error("Lỗi khi tạo tài khoản:", error);
+  //     alert("Có lỗi xảy ra khi tạo tài khoản. Vui lòng thử lại.");
+  //   }
+  // };
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     console.log("Form Data:", formData);
+
     const formDataObj = new FormData();
     Object.keys(formData).forEach((key) => {
       formDataObj.append(key, formData[key]);
     });
 
     try {
-      const response = await AdminService.CreateDoctor(formDataObj);
+      const response = await AdminService.CreateDoctor(formDataObj); // Gửi request
 
       if (response && response.data && response.data.errCode !== 0) {
         alert("Tạo tài khoản thất bại: " + response.data.message);
       } else {
         alert("Tạo hồ sơ thành công.");
+        navigate("/homeadmin");
 
-        // Phát sự kiện USER_ADDED để reset form
-        emitter.emit("USER_ADDED", formDataObj);
-
-        navigate("/homeadmin"); // Điều hướng về trang đăng nhập sau khi tạo tài khoản
-
-        // Reset form và hình ảnh sau khi tạo thành công
         setFormData({
           email: "",
           password: "",
@@ -79,7 +130,7 @@ const DoctorForm = () => {
           img: null,
         });
 
-        setImagePreview(null); // Reset hình ảnh preview
+        setImagePreview(null);
       }
     } catch (error) {
       console.error("Lỗi khi tạo tài khoản:", error);

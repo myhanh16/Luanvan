@@ -12,7 +12,8 @@ import UserService from "../../services/UserService";
 
 const Home = () => {
   const navigate = useNavigate();
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState([]); // Lưu trữ người dùng
+  const [doctors, setDoctors] = useState([]); // Lưu trữ danh sách bác sĩ
   const [error, setError] = useState("");
   const [selectedUser, setSelectedUser] = useState(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -36,8 +37,9 @@ const Home = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await AdminService.GetAllUser("ALL");
-      setUsers(response.data.Users);
+      const response = await AdminService.GetAllDoctors();
+
+      setDoctors(response.data.doctors);
     } catch (err) {
       console.error("Lỗi khi tải danh sách người dùng:", err);
       setError("Không thể tải danh sách người dùng.");
@@ -93,9 +95,9 @@ const Home = () => {
     }
   };
 
-  //Cap nhat tai khoan
-  const handleUpdate = (user) => {
-    setSelectedUser(user);
+  // Cập nhật tài khoản
+  const handleUpdate = (doctor) => {
+    setSelectedUser(doctor);
     setIsEditModalOpen(true); // Mở modal chỉnh sửa
   };
 
@@ -105,7 +107,8 @@ const Home = () => {
 
   const handleConfirmUpdate = async (formData) => {
     try {
-      const response = await UserService.EditUser(formData);
+      const response = await AdminService.EditDoctor(formData);
+
       if (response && response.data && response.data.errCode === 0) {
         alert("Cập nhật thành công!");
         await fetchUsers();
@@ -132,7 +135,7 @@ const Home = () => {
             onConfirm={handleConfirmUpdate}
           />
           <div className="title text-center" style={{ fontSize: "20px" }}>
-            Danh Sách Người Dùng
+            Danh Sách Bác Sĩ
           </div>
           {error && <div className="alert alert-danger">{error}</div>}
 
@@ -145,38 +148,42 @@ const Home = () => {
                   <th>Số Điện Thoại</th>
                   <th>Địa chỉ</th>
                   <th>Giới tính</th>
+                  <th>Chuyên khoa</th>
+                  <th>Năm kinh nghiệm</th>
                   <th>Chức Năng</th>
                 </tr>
               </thead>
               <tbody>
-                {users.length > 0 ? (
-                  users.map((user) => (
-                    <tr key={user.id}>
-                      <td>{user.email}</td>
-                      <td>{user.fullname}</td>
-                      <td>{user.phone}</td>
-                      <td>{user.address}</td>
-                      <td>{Number(user.gender) === 0 ? "Nam" : "Nữ"}</td>
+                {doctors.length > 0 ? (
+                  doctors.map((doctor) => (
+                    <tr key={doctor.User.id}>
+                      <td>{doctor.User.email}</td>
+                      <td>{doctor.User.fullname}</td>
+                      <td>{doctor.User.phone}</td>
+                      <td>{doctor.User.address}</td>
+                      <td>{Number(doctor.User.gender) === 0 ? "Nam" : "Nữ"}</td>
 
+                      <td>{doctor.specialty.name}</td>
+                      <td>{doctor.experience_years}</td>
                       <td>
                         <button
                           className="btn btn-primary btn-sm"
-                          onClick={() => handleUpdate(user)}
+                          onClick={() => handleUpdate(doctor.User)}
                         >
                           <FaEdit />
                         </button>
-                        <button
+                        {/* <button
                           className="btn btn-danger btn-sm mx-2"
-                          onClick={() => handleDelete(user)}
+                          onClick={() => handleDelete(doctor.User)}
                         >
                           <FaTrashAlt />
-                        </button>
+                        </button> */}
                       </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="4" className="text-center">
+                    <td colSpan="8" className="text-center">
                       Không có dữ liệu.
                     </td>
                   </tr>

@@ -23,5 +23,15 @@ module.exports = (sequelize, DataTypes) => {
       tableName: "schedules",
     }
   );
+  schedules.associate = (models) => {
+    schedules.belongsTo(models.doctor, {
+      foreignKey: "doctorID",
+      as: "Doctor",
+    });
+    schedules.belongsTo(models.time, {
+      foreignKey: "timeID",
+      as: "Time",
+    });
+  };
   return schedules;
 };

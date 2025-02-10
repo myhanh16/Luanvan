@@ -14,16 +14,8 @@ module.exports = {
         type: Sequelize.INTEGER,
       },
 
-      appointment_date: {
-        type: Sequelize.DATE,
-      },
-
-      time_slot: {
-        type: Sequelize.DATE,
-      },
-
-      status: {
-        type: Sequelize.STRING,
+      booking_date: {
+        type: Sequelize.DATEONLY,
       },
 
       doctorID: {
@@ -50,6 +42,16 @@ module.exports = {
         type: Sequelize.INTEGER,
         references: {
           model: "status", // Đúng với tên bảng Users đã tạo
+          key: "id",
+        },
+        onUpdate: "CASCADE",
+        onDelete: "SET NULL",
+      },
+
+      scheduleID: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: "schedules", // Liên kết đến lịch trình bác sĩ
           key: "id",
         },
         onUpdate: "CASCADE",

@@ -14,7 +14,6 @@ module.exports = (sequelize, DataTypes) => {
   price.init(
     {
       price: DataTypes.INTEGER,
-      doctorID: DataTypes.INTEGER,
       specialtyID: DataTypes.INTEGER,
     },
     {
@@ -23,5 +22,11 @@ module.exports = (sequelize, DataTypes) => {
       tableName: "price",
     }
   );
+  price.associate = (models) => {
+    price.belongsTo(models.specialty, {
+      foreignKey: "specialtyID",
+      as: "specialty",
+    });
+  };
   return price;
 };

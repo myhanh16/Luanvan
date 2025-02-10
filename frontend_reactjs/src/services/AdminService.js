@@ -14,4 +14,13 @@ const Login = (useremail, userpassword) => {
 const CreateDoctor = (data) => {
   return axios.post("/api/create-doctor", data);
 };
-export default { Login, GetAllUser, CreateDoctor };
+
+const GetAllDoctors = () => {
+  return axios.get("/api/get-alldoctor");
+};
+
+const EditDoctor = (data) => {
+  return axios.post("/api/edit-doctor", data);
+};
+
+export default { Login, GetAllUser, CreateDoctor, EditDoctor, GetAllDoctors };

@@ -8,15 +8,20 @@ const UpdateUserModal = ({ isOpen, toggle, currentUser, onConfirm }) => {
     fullname: "",
     phone: "",
     address: "",
+    userID: "",
+    experience_years: "",
   });
 
   useEffect(() => {
     if (currentUser) {
+      console.log("Dữ liệu currentUser:", currentUser);
       setFormData({
         id: currentUser.id || "",
         fullname: currentUser.fullname || "",
         phone: currentUser.phone || "",
         address: currentUser.address || "",
+        userID: currentUser.id || "",
+        experience_years: currentUser.experience_years || "",
       });
     }
   }, [currentUser]);
@@ -30,14 +35,14 @@ const UpdateUserModal = ({ isOpen, toggle, currentUser, onConfirm }) => {
   };
 
   const handleConfirm = () => {
+    console.log("Dữ liệu form được gửi:", formData);
     if (checkInput()) {
-      console.log("Dữ liệu form được gửi:", formData);
       onConfirm(formData); // Truyền formData gồm cả id
     }
   };
 
   const checkInput = () => {
-    const requiredFields = ["fullname", "phone", "address"];
+    const requiredFields = ["fullname", "phone", "address", "experience_years"];
     for (const field of requiredFields) {
       if (!formData[field]) {
         alert(`Hãy nhập: ${field}`);
@@ -92,6 +97,16 @@ const UpdateUserModal = ({ isOpen, toggle, currentUser, onConfirm }) => {
               className="form-control"
               name="address"
               value={formData.address}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="mb-3">
+            <label>Năm Kinh Nghiệm</label>
+            <input
+              type="number"
+              className="form-control"
+              name="experience_years"
+              value={formData.experience_years}
               onChange={handleChange}
             />
           </div>

@@ -23,6 +23,10 @@ import Homepage from "./page/homepage";
 import LoginAdmin from "./auth/loginAdmin";
 import DoctorList from "./page/list/doctorList";
 import CreateDoctor from "./HomeCRUD/createDoctor";
+import DetailDoctor from "./page/list/DetailDoctor";
+import TopDoctor from "./page/list/TopDoctor";
+import SpecialtyList from "./page/list/SpecialtyList";
+import Booking from "./page/list/Booking";
 function App() {
   return (
     <Router>
@@ -37,6 +41,10 @@ function App() {
         <Route path="/login-admin" element={<LoginAdmin />} />
         <Route path="/homeadmin" element={<HomeAdmin />} />
         <Route path="/create-doctor" element={<CreateDoctor />} />
+        <Route path="/detail/:id" element={<DetailDoctor />} />
+        <Route path="/topdoctor" element={<TopDoctor />} />
+        <Route path="/specialty-list" element={<SpecialtyList />} />
+        <Route path="/booking" element={<Booking />} />
       </Routes>
     </Router>
   );
