@@ -42,6 +42,10 @@ module.exports = {
         type: Sequelize.BOOLEAN,
       },
 
+      birthYear: {
+        type: Sequelize.INTEGER,
+      },
+
       role: {
         type: Sequelize.INTEGER,
       },

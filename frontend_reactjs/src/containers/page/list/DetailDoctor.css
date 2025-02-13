@@ -133,3 +133,7 @@ body {
 .mt-3 {
   margin-top: 20px;
 }
+
+.container {
+  width: 100% !important;
+}

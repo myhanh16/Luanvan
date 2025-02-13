@@ -29,7 +29,7 @@ module.exports = {
       bookingID: {
         type: Sequelize.INTEGER,
         references: {
-          model: "bookings", // Tên bảng mà khóa ngoại tham chiếu
+          model: "booking", // Tên bảng mà khóa ngoại tham chiếu
           key: "id", // Tên trường khóa chính
         },
         onUpdate: "CASCADE", // Cập nhật khi khóa chính thay đổi

@@ -119,7 +119,7 @@ const handleBooking = async (req, res) => {
     console.error("Lỗi khi xử lý đặt lịch:", error);
     return res.status(500).json({
       errCode: 1,
-      message: "Có lỗi xảy ra, vui lòng thử lại",
+      errMessage: "Có lỗi xảy ra, vui lòng thử lại",
     });
   }
 };

@@ -49,6 +49,13 @@ const DoctorList = () => {
         ...prevSchedules,
         [doctorID]: response.data.schedule,
       }));
+
+      // Kiểm tra cấu trúc dữ liệu của response
+      if (response.data.schedule && Array.isArray(response.data.schedule)) {
+        response.data.schedule.forEach((schedule) => {
+          console.log("Schedule ID:", schedule.id);
+        });
+      }
     } catch (e) {
       console.log(e);
     }
@@ -103,54 +110,34 @@ const DoctorList = () => {
     navigate(`/detail/${doctorID}`);
   };
 
-  // const handleTimeSelect = (time) => {
-  //   setSelectedTime(time); // Cập nhật giờ đã chọn
-  // };
-  const handleTimeSelect = (time, doctor) => {
-    setSelectedTime(time); // Lưu thời gian đã chọn
-
-    // Chuyển hướng tới trang xác nhận và truyền dữ liệu bác sĩ, người dùng, và thời gian đã chọn
-    navigate("/booking", {
-      state: {
-        doctor: doctor,
-        user: {
-          fullname: user.fullname,
-          email: user.email,
-          phone: user.phone,
-          address: user.address,
+  const handleTimeSelect = (schedule, doctor) => {
+    console.log("Selected Schedule ID:", schedule);
+    if (isLoggedIn) {
+      setSelectedTime(schedule); // Truyền toàn bộ đối tượng lịch
+      navigate("/booking", {
+        state: {
+          doctor: doctor,
+          user: {
+            userID: user.userID,
+            fullname: user.fullname,
+            email: user.email,
+            phone: user.phone,
+            address: user.address,
+            birthYear: user.birthYear,
+          },
+          selectedDate: selectedDates[doctor.id],
+          selectedTime: schedule, // Truyền toàn bộ đối tượng lịch
+          scheduleID: schedule.id, // Truyền ID của lịch
         },
-        selectedDate: selectedDates[doctor.id],
-        selectedTime: time,
-      },
-    });
+      });
+      console.log(selectedTime);
+    } else {
+      alert(
+        "Vui lòng đăng nhập để tiếp tục đặt lịch. Việc đăng nhập giúp chúng tôi lấy thông tin cá nhân của bạn, giúp quá trình đặt lịch nhanh chóng và thuận tiện hơn!"
+      );
+      navigate("/login");
+    }
   };
-
-  //Booking
-  // const handleBooking = async (doctorID) => {
-  //   if (!selectedTime) {
-  //     alert("Vui lòng chọn giờ khám!");
-  //     return;
-  //   }
-
-  //   const appointmentData = {
-  //     userID: user.userID, // userID từ sessionStorage
-  //     doctorID: doctorID,
-  //     date: selectedDates[doctorID], // Ngày đã chọn
-  //     time: selectedTime, // Giờ đã chọn
-  //   };
-
-  //   try {
-  //     const response = await UserService.Booking(appointmentData);
-  //     if (response.errCode === 0) {
-  //       alert("Đặt lịch thành công!");
-  //     } else {
-  //       alert(response.errMessage); // Hiển thị lỗi từ backend nếu có
-  //     }
-  //   } catch (error) {
-  //     console.error("Lỗi khi đặt lịch:", error);
-  //     alert("Có lỗi xảy ra. Vui lòng thử lại.");
-  //   }
-  // };
 
   useEffect(() => {
     fetchSpecialtyByid();
@@ -172,9 +159,9 @@ const DoctorList = () => {
     const email = sessionStorage.getItem("userEmail");
     const phone = sessionStorage.getItem("userPhone");
     const address = sessionStorage.getItem("userAddress");
-
+    const birthYear = sessionStorage.getItem("userbirthYear");
     // const userData = JSON.parse(sessionStorage.getItem("userData"));
-    if (token) {
+    if (token && userID) {
       setIsLoggedIn(true);
       setUser({
         fullname: name,
@@ -182,6 +169,7 @@ const DoctorList = () => {
         email: email,
         phone: phone,
         address: address,
+        birthYear: birthYear,
       });
     }
   }, []);
@@ -266,7 +254,7 @@ const DoctorList = () => {
                         <button
                           key={index}
                           className="time-button"
-                          onClick={() => handleTimeSelect(s.Time, doctor)}
+                          onClick={() => handleTimeSelect(s, doctor)}
                         >
                           {s.Time.starttime} - {s.Time.endtime}
                         </button>

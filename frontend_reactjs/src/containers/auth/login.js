@@ -49,12 +49,14 @@ const Login = () => {
       sessionStorage.setItem("userAddress", response.data.user.address);
       sessionStorage.setItem("userGender", response.data.user.gender);
       sessionStorage.setItem("userEmail", response.data.user.email);
+      sessionStorage.setItem("userbirthYear", response.data.user.birthYear);
       // sessionStorage.setItem("userData", JSON.stringify(response.data.user)); // Lưu toàn bộ user
       console.log(
         "User Session Data:",
-        sessionStorage.getItem("userPhone"),
+        sessionStorage.getItem("userID"),
         sessionStorage.getItem("userAddress"),
-        sessionStorage.getItem("userEmail")
+        sessionStorage.getItem("userEmail"),
+        sessionStorage.getItem("userbirthYear")
       );
 
       if (response.data.user.role == 0) {

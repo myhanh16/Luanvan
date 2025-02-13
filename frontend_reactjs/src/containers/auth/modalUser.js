@@ -3,7 +3,14 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 import { FaTimes } from "react-icons/fa";
 import emitter from "../../utils/emitter";
 import "./login.css";
+
 const RegisterUserModal = ({ isOpen, toggle, title, children, onConfirm }) => {
+  const currentYear = new Date().getFullYear(); // Lấy năm hiện tại
+  const years = Array.from(
+    { length: currentYear - 1900 + 1 },
+    (_, i) => 1900 + i
+  ).reverse(); // Tạo danh sách năm từ 1900 đến hiện tại
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -11,9 +18,9 @@ const RegisterUserModal = ({ isOpen, toggle, title, children, onConfirm }) => {
     phone: "",
     address: "",
     gender: "0",
+    birthYear: currentYear.toString(), // Mặc định là năm hiện tại
   });
 
-  // Reset form khi nhận được sự kiện USER_ADDED
   useEffect(() => {
     const resetForm = () => {
       setFormData({
@@ -23,43 +30,43 @@ const RegisterUserModal = ({ isOpen, toggle, title, children, onConfirm }) => {
         phone: "",
         address: "",
         gender: "0",
+        birthYear: currentYear.toString(),
       });
     };
 
     emitter.on("USER_ADDED", resetForm);
-
     return () => {
-      emitter.off("USER_ADDED", resetForm); // Cleanup listener khi component unmount
+      emitter.off("USER_ADDED", resetForm);
     };
   }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
-    console.log(`Đang thay đổi trường: ${name}, Giá trị: ${value}`); // Debug
-
     setFormData((prevState) => ({
       ...prevState,
       [name]: value,
     }));
   };
 
-  // const handleComfirm = () => {
-  //   console.log("Dữ liệu form được gửi:", formData);
-  //   onConfirm(formData); // Gửi formData tới Home
-  // };
   const handleComfirm = () => {
     if (checkInput()) {
       console.log("Dữ liệu form được gửi:", formData);
-      onConfirm(formData); // Gửi formData tới Home
+      onConfirm(formData);
     }
   };
 
   const checkInput = () => {
     let isValid = true;
-    const arr = ["email", "password", "fullname", "phone", "address", "gender"];
+    const arr = [
+      "email",
+      "password",
+      "fullname",
+      "phone",
+      "address",
+      "gender",
+      "birthYear",
+    ];
     for (let i = 0; i < arr.length; i++) {
-      console.log("check", arr[i]);
       if (!formData[arr[i]]) {
         isValid = false;
         alert("Hãy Nhập: " + arr[i]);
@@ -87,7 +94,6 @@ const RegisterUserModal = ({ isOpen, toggle, title, children, onConfirm }) => {
             top: "20px",
             right: "20px",
             cursor: "pointer",
-            textAlign: "center",
           }}
         />
       </ModalHeader>
@@ -95,12 +101,12 @@ const RegisterUserModal = ({ isOpen, toggle, title, children, onConfirm }) => {
         <p
           style={{
             fontWeight: "bold",
-            color: "#d9534f", // Màu đỏ nhấn mạnh
+            color: "#d9534f",
             fontSize: "16px",
-            backgroundColor: "#f8d7da", // Màu nền đỏ nhạt
+            backgroundColor: "#f8d7da",
             padding: "10px",
             borderRadius: "5px",
-            border: "1px solid #f5c6cb", // Đường viền màu đỏ nhạt
+            border: "1px solid #f5c6cb",
             marginBottom: "20px",
           }}
         >
@@ -110,7 +116,6 @@ const RegisterUserModal = ({ isOpen, toggle, title, children, onConfirm }) => {
         </p>
         <form>
           <div className="row">
-            {/* Email */}
             <div className="col-md-6 mb-3">
               <label htmlFor="inputEmail">Email</label>
               <input
@@ -124,7 +129,6 @@ const RegisterUserModal = ({ isOpen, toggle, title, children, onConfirm }) => {
               />
             </div>
 
-            {/* Password */}
             <div className="col-md-6 mb-3">
               <label htmlFor="inputPassword">Mật Khẩu</label>
               <input
@@ -139,7 +143,6 @@ const RegisterUserModal = ({ isOpen, toggle, title, children, onConfirm }) => {
             </div>
           </div>
 
-          {/* Full Name */}
           <div className="mb-3">
             <label htmlFor="inputFullname">Họ Tên</label>
             <input
@@ -153,7 +156,6 @@ const RegisterUserModal = ({ isOpen, toggle, title, children, onConfirm }) => {
             />
           </div>
 
-          {/* Phone Number */}
           <div className="mb-3">
             <label htmlFor="inputPhone">Số Điện Thoại</label>
             <input
@@ -167,7 +169,6 @@ const RegisterUserModal = ({ isOpen, toggle, title, children, onConfirm }) => {
             />
           </div>
 
-          {/* Address */}
           <div className="mb-3">
             <label htmlFor="inputAddress">Địa Chỉ</label>
             <input
@@ -181,7 +182,6 @@ const RegisterUserModal = ({ isOpen, toggle, title, children, onConfirm }) => {
             />
           </div>
 
-          {/* Gender */}
           <div className="mb-3">
             <label htmlFor="inputGender">Giới Tính</label>
             <select
@@ -191,10 +191,26 @@ const RegisterUserModal = ({ isOpen, toggle, title, children, onConfirm }) => {
               value={formData.gender}
               onChange={handleChange}
             >
-              <option value="0" defaultValue>
-                Nam
-              </option>
+              <option value="0">Nam</option>
               <option value="1">Nữ</option>
+            </select>
+          </div>
+
+          {/* Lựa chọn năm sinh */}
+          <div className="mb-3">
+            <label htmlFor="inputBirthYear">Năm Sinh</label>
+            <select
+              id="inputBirthYear"
+              className="form-control"
+              name="birthYear"
+              value={formData.birthYear}
+              onChange={handleChange}
+            >
+              {years.map((year) => (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              ))}
             </select>
           </div>
         </form>
@@ -203,7 +219,6 @@ const RegisterUserModal = ({ isOpen, toggle, title, children, onConfirm }) => {
         <Button color="primary" onClick={handleComfirm}>
           Tạo Tài Khoản
         </Button>
-
         <Button color="secondary" onClick={toggle}>
           Hủy
         </Button>

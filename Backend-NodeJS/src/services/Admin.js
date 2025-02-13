@@ -245,7 +245,7 @@ const getSchedule = (doctorID) => {
     try {
       const schedules = await db.schedules.findAll({
         where: { doctorID: doctorID },
-        attributes: ["doctorID", "timeID", "date"],
+        attributes: ["id", "doctorID", "timeID", "date"],
         include: [
           {
             model: db.time,

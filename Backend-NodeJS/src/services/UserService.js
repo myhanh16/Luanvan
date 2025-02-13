@@ -18,12 +18,14 @@ const handelUserLogin = (email, password) => {
         // Người dùng đã tồn tại
         const user = await db.User.findOne({
           attributes: [
+            "id",
             "email",
             "fullname",
             "password",
             "phone",
             "address",
             "gender",
+            "birthYear",
             "role",
           ],
 
@@ -141,6 +143,7 @@ const CreateUser = (data) => {
         phone: data.phone,
         address: data.address,
         gender: data.gender === "1" ? true : false,
+        birthYear: data.birthYear,
         role: "0",
       });
       resolve({
@@ -263,9 +266,9 @@ const Booking = (data) => {
         {
           userID: data.userID,
           doctorID: data.doctorID,
-          date: data.date,
-          time: data.time,
-          status: "1", // Trạng thái mặc định
+          booking_date: new Date(),
+          scheduleID: data.scheduleID,
+          statusID: "1", // Trạng thái mặc định
         },
         { transaction }
       );

@@ -130,7 +130,7 @@ const DetailDoctor = () => {
           <span>/</span>
           <span>{doctor.User?.fullname}</span>
         </div>
-        <div className="container mt-4">
+        <div className="container  mt-4">
           <div className="card shadow p-4">
             <div className="card-body">
               <div className="row">

@@ -45,6 +45,7 @@ const Homeheader = () => {
     setUserName("");
     sessionStorage.clear();
     setMenuOpen(false);
+    navigate("/");
   };
 
   const handleGoToHome = () => {
