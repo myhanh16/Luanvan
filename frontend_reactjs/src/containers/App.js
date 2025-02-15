@@ -27,6 +27,7 @@ import DetailDoctor from "./page/list/DetailDoctor";
 import TopDoctor from "./page/list/TopDoctor";
 import SpecialtyList from "./page/list/SpecialtyList";
 import Booking from "./page/list/Booking";
+import Appointment from "./page/list/appoinment";
 function App() {
   return (
     <Router>
@@ -45,6 +46,7 @@ function App() {
         <Route path="/topdoctor" element={<TopDoctor />} />
         <Route path="/specialty-list" element={<SpecialtyList />} />
         <Route path="/booking" element={<Booking />} />
+        <Route path="/appointment" element={<Appointment />} />
       </Routes>
     </Router>
   );

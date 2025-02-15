@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       booking_date: DataTypes.DATE,
       scheduleID: DataTypes.INTEGER,
-      doctorID: DataTypes.INTEGER,
+      // doctorID: DataTypes.INTEGER,
       userID: DataTypes.INTEGER,
       statusID: DataTypes.INTEGER,
     },
@@ -30,10 +30,10 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: "scheduleID",
       as: "schedules",
     });
-    booking.belongsTo(models.doctor, {
-      foreignKey: "doctorID",
-      as: "doctor",
-    });
+    // booking.belongsTo(models.doctor, {
+    //   foreignKey: "doctorID",
+    //   as: "doctor",
+    // });
     booking.belongsTo(models.status, {
       foreignKey: "statusID",
       as: "status",

@@ -69,8 +69,8 @@ const Homeheader = () => {
   //Đi đến trang lịch hẹn, kiểm tra xem đã login chua
   const handleGoToAppointments = () => {
     if (isLoggedIn) {
-      alert("hello");
-      // navigate("/appointments"); // Đi đến trang lịch hẹn nếu đã đăng nhập
+      // alert("hello");
+      navigate("/appointment"); // Đi đến trang lịch hẹn nếu đã đăng nhập
     } else {
       alert("Vui lòng đăng nhập để xem lịch hẹn của bản thân.");
       navigate("/login"); // Chuyển hướng đến trang đăng nhập nếu chưa đăng nhập

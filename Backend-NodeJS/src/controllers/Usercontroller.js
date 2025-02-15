@@ -9,6 +9,8 @@ const {
   DeleteUser,
   EditUser,
   Booking,
+  GetAppointment,
+  AbortAppointment,
 } = require("../services/UserService");
 
 const handleLogin = async (req, res) => {
@@ -124,6 +126,62 @@ const handleBooking = async (req, res) => {
   }
 };
 
+const handleGetAppointment = async (req, res) => {
+  try {
+    const userID = req.query.userID;
+    console.log("UserID nhận được:", userID);
+
+    if (!userID) {
+      return res.status(400).json({
+        errCode: 3,
+        errMessage: "Thiếu thông tin bắt buộc (userID)",
+      });
+    }
+
+    const result = await GetAppointment(userID);
+    console.log("Dữ liệu trả về từ GetAppointment:", result); // 🛑 In ra để kiểm tra
+
+    if (!result || result.length === 0) {
+      return res.status(200).json({
+        errCode: 0,
+        errMessage: "Không có lịch hẹn",
+        data: [],
+      });
+    }
+
+    return res.status(200).json({
+      errCode: 0,
+      errMessage: "Lấy lịch hẹn thành công",
+      result,
+    });
+  } catch (error) {
+    console.error("Lỗi trong handleGetAppointment:", error);
+    return res.status(500).json({
+      errCode: 1,
+      errMessage: "Có lỗi xảy ra, vui lòng thử lại",
+    });
+  }
+};
+
+const handleAbortAppointment = async (req, res) => {
+  try {
+    const id = req.query.id;
+    console.log(id);
+    const response = await AbortAppointment(id);
+    return res.status(200).json({
+      errCode: response.errCode,
+      errMessage: response.errMessage,
+      response,
+    });
+  } catch (error) {
+    console.error("Lỗi trong handleGetAppointment:", error);
+    return res.status(500).json({
+      errCode: 1,
+      errMessage: "Có lỗi xảy ra, vui lòng thử lại",
+    });
+  }
+};
+
 module.exports = {
   handleLogin,
   handleGetAll,
@@ -131,4 +189,6 @@ module.exports = {
   handleDelete,
   handleEdit,
   handleBooking,
+  handleGetAppointment,
+  handleAbortAppointment,
 };

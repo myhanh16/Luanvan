@@ -49,6 +49,10 @@ const getDoctorByid = (doctorID) => {
 const Booking = (data) => {
   return axios.post("api/booking", data);
 };
+
+const Appointment = (userID) => {
+  return axios.get(`/api/get-appointment?userID=${userID}`);
+};
 export default {
   Login,
   GetAllUser,
@@ -62,4 +66,5 @@ export default {
   getSchedule,
   getDoctorByid,
   Booking,
+  Appointment,
 };

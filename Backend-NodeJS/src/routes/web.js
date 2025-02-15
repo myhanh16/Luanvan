@@ -18,6 +18,8 @@ const {
   handleDelete,
   handleEdit,
   handleBooking,
+  handleGetAppointment,
+  handleAbortAppointment,
 } = require("../controllers/Usercontroller");
 
 const {
@@ -60,6 +62,10 @@ router.delete("/api/delete-user", handleDelete);
 router.post("/api/edit-user", handleEdit);
 
 router.post("/api/booking", handleBooking);
+
+router.get("/api/get-appointment", handleGetAppointment);
+
+router.post("/api/abort-appointment", handleAbortAppointment);
 /*-----------------REACT ADMIN---------------------- */
 router.post("/api/login-admin", LoginAdmin);
 
@@ -80,4 +86,5 @@ router.get("/api/get-doctorByid", handlegetDoctorByid);
 router.get("/api/get-alldoctor", handlegetAllDoctors);
 
 router.post("/api/edit-doctor", handleEditDoctor);
+
 module.exports = router;

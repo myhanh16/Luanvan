@@ -18,15 +18,15 @@ module.exports = {
         type: Sequelize.DATEONLY,
       },
 
-      doctorID: {
-        type: Sequelize.INTEGER,
-        references: {
-          model: "doctor", // Đảm bảo tên bảng chính xác (nếu bảng tên là Doctors)
-          key: "id",
-        },
-        onUpdate: "CASCADE",
-        onDelete: "SET NULL",
-      },
+      // doctorID: {
+      //   type: Sequelize.INTEGER,
+      //   references: {
+      //     model: "doctor", // Đảm bảo tên bảng chính xác (nếu bảng tên là Doctors)
+      //     key: "id",
+      //   },
+      //   onUpdate: "CASCADE",
+      //   onDelete: "SET NULL",
+      // },
 
       userID: {
         type: Sequelize.INTEGER,
