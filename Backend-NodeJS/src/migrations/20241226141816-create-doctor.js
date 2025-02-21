@@ -45,6 +45,11 @@ module.exports = {
       img: {
         type: Sequelize.STRING,
       },
+
+      onlineConsultation: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false, // Mặc định là false nếu không chỉ định
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

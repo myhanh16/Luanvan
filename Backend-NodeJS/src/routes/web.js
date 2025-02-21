@@ -20,6 +20,7 @@ const {
   handleBooking,
   handleGetAppointment,
   handleAbortAppointment,
+  handleGetUserInfo,
 } = require("../controllers/Usercontroller");
 
 const {
@@ -34,6 +35,15 @@ const {
   handleEditDoctor,
   handlegetAllDoctors,
 } = require("../controllers/Admin");
+
+const {
+  handleGetAppointmentByDoctorID,
+  handleCreateMedicalRecord,
+  handleGetMedicalRecordsByUserID,
+  handleGetAllTimeSlot,
+  handleCreateSchedules,
+} = require("../controllers/Doctor");
+
 router.get("/", gethome);
 
 router.get("/register", (req, res) => {
@@ -66,7 +76,9 @@ router.post("/api/booking", handleBooking);
 router.get("/api/get-appointment", handleGetAppointment);
 
 router.post("/api/abort-appointment", handleAbortAppointment);
-/*-----------------REACT ADMIN---------------------- */
+
+router.get("/api/get-Userinfo", handleGetUserInfo);
+/*-----------------ADMIN---------------------- */
 router.post("/api/login-admin", LoginAdmin);
 
 router.get("/api/get-specialty", handlegetSpecialty);
@@ -87,4 +99,17 @@ router.get("/api/get-alldoctor", handlegetAllDoctors);
 
 router.post("/api/edit-doctor", handleEditDoctor);
 
+/*-----------------DOCTOR---------------------- */
+router.get("/api/get-appointentByDoctorID", handleGetAppointmentByDoctorID);
+
+router.post("/api/create-medicalrecord", handleCreateMedicalRecord);
+
+router.get(
+  "/api/handle-getgetMedicalRecordsByUserID",
+  handleGetMedicalRecordsByUserID
+);
+
+router.get("/api/get-AllTimeSlots", handleGetAllTimeSlot);
+
+router.post("/api/create-schedules", handleCreateSchedules);
 module.exports = router;

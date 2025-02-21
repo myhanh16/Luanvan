@@ -53,6 +53,14 @@ const Booking = (data) => {
 const Appointment = (userID) => {
   return axios.get(`/api/get-appointment?userID=${userID}`);
 };
+
+const AbortAppointment = (bookingID) => {
+  return axios.post(`/api/abort-appointment?id=${bookingID}`);
+};
+
+const UserProfile = (id) => {
+  return axios.get(`/api/get-Userinfo?id=${id}`);
+};
 export default {
   Login,
   GetAllUser,
@@ -67,4 +75,6 @@ export default {
   getDoctorByid,
   Booking,
   Appointment,
+  AbortAppointment,
+  UserProfile,
 };

@@ -56,6 +56,35 @@ const AppointmentGrid = () => {
     return `${day}/${month}/${year}`;
   };
 
+  const handleAbortAppointment = async (bookingID) => {
+    if (!window.confirm("Bạn có chắc chắn muốn hủy lịch hẹn này không?"))
+      return;
+    try {
+      const response = await UserService.AbortAppointment(bookingID);
+      if (response.data.errCode === 0) {
+        alert("Hủy lịch hẹn thành công!");
+        setAppointments((prevAppointments) =>
+          prevAppointments.map((appointment) =>
+            appointment.id === bookingID
+              ? { ...appointment, status: { id: 3, name: "Lịch đã hủy" } }
+              : appointment
+          )
+        );
+        setFilteredAppointments((prevAppointments) =>
+          prevAppointments.map((appointment) =>
+            appointment.id === bookingID
+              ? { ...appointment, status: { id: 3, name: "Lịch đã hủy" } }
+              : appointment
+          )
+        );
+      } else {
+        alert(response.data.errMessage);
+      }
+    } catch (error) {
+      alert("Lỗi khi hủy lịch hẹn, vui lòng thử lại!");
+    }
+  };
+
   useEffect(() => {
     const token = sessionStorage.getItem("userToken");
     const name = sessionStorage.getItem("userName");
@@ -166,7 +195,12 @@ const AppointmentGrid = () => {
                     </p>
 
                     {appointment.status?.id === 1 && (
-                      <button className="abort">Hủy lịch hẹn</button>
+                      <button
+                        className="abort"
+                        onClick={() => handleAbortAppointment(appointment.id)}
+                      >
+                        Hủy lịch hẹn
+                      </button>
                     )}
                   </div>
                 );

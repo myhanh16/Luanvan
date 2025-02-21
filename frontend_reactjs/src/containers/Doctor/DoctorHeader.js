@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom"; // Import useLocation
 import "bootstrap/dist/css/bootstrap.min.css";
-import { FaSignOutAlt, FaUserPlus, FaListAlt, FaBook } from "react-icons/fa";
-import "./adminheader.css";
+import {
+  FaSignOutAlt,
+  FaUserPlus,
+  FaListAlt,
+  FaFileMedical,
+  FaCalendarAlt,
+} from "react-icons/fa";
 
-const AdminHeader = () => {
-  const [isAdmin, setIsAdmin] = useState(false);
+const DoctorHeader = () => {
+  const [isDoctor, setIsDoctor] = useState(false);
   const [userName, setUserName] = useState("");
   const navigate = useNavigate();
   const location = useLocation(); // Hook để lấy đường dẫn hiện tại
@@ -14,8 +19,8 @@ const AdminHeader = () => {
     const role = sessionStorage.getItem("userRole");
     const name = sessionStorage.getItem("userName");
 
-    if (role === "1") {
-      setIsAdmin(true);
+    if (role === "2") {
+      setIsDoctor(true);
       setUserName(name);
     }
   }, []);
@@ -25,7 +30,7 @@ const AdminHeader = () => {
     navigate("/login-admin-doctor");
   };
 
-  if (!isAdmin) return null; // Không hiển thị nếu không phải admin
+  if (!isDoctor) return null; // Không hiển thị nếu không phải admin
 
   // Hàm kiểm tra xem link có khớp với đường dẫn hiện tại hay không
   const isActive = (path) => {
@@ -36,26 +41,26 @@ const AdminHeader = () => {
     <div className="admin-header-container">
       <div className="admin-header-content">
         <div className="admin-left">
-          <div className="admin-logo">Trang Quản Trị Viên</div>
+          <div className="admin-logo">Trang Bác Sĩ</div>
         </div>
         <div className="admin-center">
           <div
-            className={`admin-menu-item ${isActive("/homeadmin")}`} // Thêm class active nếu đang ở trang này
-            onClick={() => navigate("/homeadmin")}
+            className={`admin-menu-item ${isActive("/homedoctor")}`} // Thêm class active nếu đang ở trang này
+            onClick={() => navigate("/homedoctor")}
           >
-            <FaListAlt className="admin-icon" /> Danh Sách Bác Sĩ
+            <FaListAlt className="admin-icon" /> Danh Sách Lịch Hẹn
           </div>
           <div
-            className={`admin-menu-item ${isActive("/create-doctor")}`} // Thêm class active nếu đang ở trang này
-            onClick={() => navigate("/create-doctor")}
+            className={`admin-menu-item ${isActive("/create-shedule")}`} // Thêm class active nếu đang ở trang này
+            onClick={() => navigate("/create-shedule")}
           >
-            <FaUserPlus className="admin-icon" /> Tạo Hồ Sơ Bác Sĩ
+            <FaCalendarAlt className="admin-icon" /> Tạo Lịch Làm Việc
           </div>
           <div
-            className={`admin-menu-item ${isActive("/create-handbook")}`} // Thêm class active nếu đang ở trang này
-            onClick={() => navigate("/create-handbook")}
+            className={`admin-menu-item ${isActive("")}`} // Thêm class active nếu đang ở trang này
+            // onClick={() => navigate("/create-doctor")}
           >
-            <FaBook className="admin-icon" /> Thêm Cẩm Nang
+            <FaFileMedical className="admin-icon" /> Hồ sơ bệnh án
           </div>
         </div>
         <div className="admin-right">
@@ -71,4 +76,4 @@ const AdminHeader = () => {
   );
 };
 
-export default AdminHeader;
+export default DoctorHeader;

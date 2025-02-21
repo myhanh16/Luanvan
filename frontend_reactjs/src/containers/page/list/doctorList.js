@@ -16,9 +16,9 @@ const DoctorList = () => {
   const [doctors, setDoctor] = useState([]);
   const [schedule, setSchedule] = useState([]);
   // const [selectedDate, setSelectedDate] = useState("");
-  const [selectedDates, setSelectedDates] = useState({});
+  const [selectedDates, setSelectedDates] = useState("");
   const [selectedTime, setSelectedTime] = useState(null); // Lưu giờ khám đã chọn
-  const [availableTimes, setAvailableTimes] = useState({});
+  const [availableTimes, setAvailableTimes] = useState("");
   const [doctorSchedules, setDoctorSchedules] = useState({});
 
   const fetchSpecialtyByid = async () => {
@@ -220,6 +220,7 @@ const DoctorList = () => {
                 >
                   {doctor.User.fullname}
                 </h3>
+
                 <p>Kinh nghiệm: {doctor.experience_years} năm kinh nghiệm</p>
                 <p>Giới thiệu: {doctor.description}</p>
                 <p>Phòng khám: {doctor.workroom}</p>

@@ -1,0 +1,96 @@
+.container-schedule {
+  max-width: 700px;
+  margin: 50px auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  /* margin-top: 20px; */
+}
+
+h2 {
+  color: #333;
+}
+
+.label-input-container {
+  display: flex;
+  /* align-items: center; */
+  gap: 10px; /* Tạo khoảng cách giữa label và input */
+  float: left;
+}
+
+label {
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+input[type="date"] {
+  flex: 1; /* Input chiếm hết phần còn lại của dòng */
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  border: 1px solid black !important;
+  border-radius: 8px;
+  background-color: #f7f7f7;
+  color: #333;
+  transition: border-color 0.3s ease;
+  margin: 3px;
+}
+
+.time-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 15px;
+}
+
+.time-btn {
+  color: black;
+  padding: 10px 15px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  background-color: #f1f1f1;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+.time-btn:hover {
+  background-color: #ddd;
+}
+
+.time-btn.selected {
+  background-color: #4caf50;
+  color: white;
+  font-weight: bold;
+}
+
+.submit {
+  padding: 15px;
+  border: none;
+  border-radius: 5px;
+  background-color: #007bff;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 15px;
+  transition: background 0.3s;
+}
+
+.submit:hover {
+  background-color: #0056b3;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  padding: 5px 0;
+  border-bottom: 2px solid #ddd;
+  /* display: inline-block; */
+  /* float: left; */
+}

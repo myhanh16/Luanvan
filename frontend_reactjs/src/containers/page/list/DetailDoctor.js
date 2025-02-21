@@ -11,34 +11,37 @@ const DetailDoctor = () => {
   const navigate = useNavigate();
   const [doctor, setDoctor] = useState(null);
   const [detailSpecialty, setDetailSpecialty] = useState(null);
-  const [error, setError] = useState("");
-  const [doctorSchedules, setDoctorSchedules] = useState({});
-  const [selectedDate, setSelectedDate] = useState("");
-  const [availableTimes, setAvailableTimes] = useState({});
+  const [doctorSchedules, setDoctorSchedules] = useState([]);
+  const [selectedDates, setSelectedDates] = useState("");
+  const [availableTimes, setAvailableTimes] = useState([]);
+  const [selectedTime, setSelectedTime] = useState(null);
+  const [user, setUser] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  // Lấy thông tin bác sĩ theo ID
-  const fetchDoctorByid = async () => {
-    try {
-      const response = await UserService.getDoctorByid(id);
-      if (response.data && response.data.doctor) {
-        setDoctor(response.data.doctor);
-        fetchSpecialtyById(response.data.doctor.specialtyID);
-      } else {
-        setError("Không có dữ liệu bác sĩ");
+  // Lấy thông tin bác sĩ
+  useEffect(() => {
+    const fetchDoctorById = async () => {
+      try {
+        const response = await UserService.getDoctorByid(id);
+        if (response.data && response.data.doctor) {
+          setDoctor(response.data.doctor);
+          fetchSpecialtyById(response.data.doctor.specialtyID);
+          fetchDoctorSchedule(response.data.doctor.id);
+        }
+      } catch (e) {
+        console.error("Lỗi tải thông tin bác sĩ", e);
       }
-    } catch (e) {
-      setError("Lỗi tải thông tin bác sĩ");
-    }
-  };
+    };
+    fetchDoctorById();
+  }, [id]);
 
-  // Lấy thông tin chuyên khoa theo ID
+  // Lấy thông tin chuyên khoa
   const fetchSpecialtyById = async (specialtyID) => {
     try {
       const response = await UserService.getSpecialtyByID(specialtyID);
       setDetailSpecialty(response.data.detail);
     } catch (e) {
-      console.log(e);
-      setError("Lỗi tải thông tin chuyên khoa");
+      console.error("Lỗi tải thông tin chuyên khoa", e);
     }
   };
 
@@ -46,54 +49,80 @@ const DetailDoctor = () => {
   const fetchDoctorSchedule = async (doctorID) => {
     try {
       const response = await UserService.getSchedule(doctorID);
-      setDoctorSchedules((prevSchedules) => ({
-        ...prevSchedules,
-        [doctorID]: response.data.schedule,
-      }));
+      setDoctorSchedules(response.data.schedule);
     } catch (e) {
-      console.log(e);
+      console.error("Lỗi tải lịch khám", e);
     }
   };
 
-  const handleDateChange = (event, doctorID) => {
-    const selected = event.target.value;
-    setSelectedDate(selected);
+  // Khi người dùng chọn ngày, cập nhật danh sách giờ khám
+  const handleDateChange = (event) => {
+    const selectedDate = event.target.value;
+    setSelectedDates(selectedDate);
 
-    const doctorSchedule = doctorSchedules[doctorID] || [];
-    const timesForSelectedDate = doctorSchedule.filter(
-      (s) => s.date === selected
+    // Lọc danh sách giờ khám dựa trên ngày đã chọn
+    const filteredTimes = doctorSchedules.filter(
+      (s) => s.date === selectedDate
     );
-
-    setAvailableTimes((prev) => ({
-      ...prev,
-      [doctorID]: timesForSelectedDate,
-    }));
+    setAvailableTimes(filteredTimes);
   };
 
-  const getUniqueDates = (doctorID) => {
-    const doctorSchedule = doctorSchedules[doctorID] || [];
-    const uniqueDates = [...new Set(doctorSchedule.map((s) => s.date))];
-    return uniqueDates;
+  // Đặt lịch khi chọn giờ khám
+  const handleTimeSelect = (schedule, doctor) => {
+    console.log("Selected Schedule ID:", schedule);
+    if (isLoggedIn) {
+      setSelectedTime(schedule); // Truyền toàn bộ đối tượng lịch
+      navigate("/booking", {
+        state: {
+          doctor: doctor,
+          user: {
+            userID: user.userID,
+            fullname: user.fullname,
+            email: user.email,
+            phone: user.phone,
+            address: user.address,
+            birthYear: user.birthYear,
+          },
+          selectedDate: selectedDates,
+          selectedTime: schedule, // Truyền toàn bộ đối tượng lịch
+          scheduleID: schedule.id, // Truyền ID của lịch
+        },
+      });
+      console.log(selectedTime);
+    } else {
+      alert(
+        "Vui lòng đăng nhập để tiếp tục đặt lịch. Việc đăng nhập giúp chúng tôi lấy thông tin cá nhân của bạn, giúp quá trình đặt lịch nhanh chóng và thuận tiện hơn!"
+      );
+      navigate("/login");
+    }
   };
 
+  // Lấy danh sách ngày khám duy nhất
+  const getUniqueDates = () => {
+    return [...new Set(doctorSchedules.map((s) => s.date))];
+  };
+
+  // Định dạng ngày từ YYYY-MM-DD -> DD/MM/YYYY
   const formatDate = (dateString) => {
     const [year, month, day] = dateString.split("-");
     return `${day}/${month}/${year}`;
   };
 
+  // Kiểm tra đăng nhập từ sessionStorage
   useEffect(() => {
-    fetchDoctorByid();
-  }, [id]);
-
-  useEffect(() => {
-    if (doctor) {
-      fetchDoctorSchedule(doctor.id);
+    const token = sessionStorage.getItem("userToken");
+    if (token) {
+      setIsLoggedIn(true);
+      setUser({
+        userID: sessionStorage.getItem("userID"),
+        fullname: sessionStorage.getItem("userName"),
+        email: sessionStorage.getItem("userEmail"),
+        phone: sessionStorage.getItem("userPhone"),
+        address: sessionStorage.getItem("userAddress"),
+        birthYear: sessionStorage.getItem("userbirthYear"),
+      });
     }
-  }, [doctor]);
-
-  if (error) {
-    return <p className="error">{error}</p>;
-  }
+  }, []);
 
   if (!doctor) {
     return <p>Đang tải thông tin bác sĩ...</p>;
@@ -101,7 +130,7 @@ const DetailDoctor = () => {
 
   return (
     <React.Fragment>
-      <Homeheader />{" "}
+      <Homeheader />
       <div className="specialty-page">
         <div className="breadcrumb">
           <a
@@ -114,32 +143,29 @@ const DetailDoctor = () => {
             Trang chủ
           </a>
           <span>/</span>
-          <span>
-            <a
-              href={`/doctor/${detailSpecialty ? detailSpecialty.id : ""}`}
-              onClick={(e) => {
-                e.preventDefault();
-                navigate(
-                  `/doctor/${detailSpecialty ? detailSpecialty.id : ""}`
-                );
-              }}
-            >
-              {detailSpecialty ? detailSpecialty.name : "Chuyên khoa"}
-            </a>
-          </span>
+          <a
+            href={`/doctor/${detailSpecialty?.id}`}
+            onClick={(e) => {
+              e.preventDefault();
+              navigate(`/doctor/${detailSpecialty?.id}`);
+            }}
+          >
+            {detailSpecialty?.name || "Chuyên khoa"}
+          </a>
           <span>/</span>
           <span>{doctor.User?.fullname}</span>
         </div>
-        <div className="container  mt-4">
+
+        <div className="container mt-4">
           <div className="card shadow p-4">
             <div className="card-body">
               <div className="row">
                 {/* Ảnh bác sĩ */}
-                <div className="col-lg-4 col-md-5 col-sm-6 text-center">
+                <div className="col-lg-4 text-center" key={doctor.id}>
                   <img
                     src={`${process.env.REACT_APP_BACKEND_URL}/img/doctor/${doctor.specialtyID}/${doctor.img}`}
                     className="img-fluid rounded-circle"
-                    alt={doctor.User.fullname}
+                    alt={doctor.User?.fullname}
                     style={{
                       width: "200px",
                       height: "200px",
@@ -149,10 +175,9 @@ const DetailDoctor = () => {
                 </div>
 
                 {/* Thông tin bác sĩ */}
-                <div className="col-lg-8 col-md-7 col-sm-6">
-                  <h3 className="doctor-name">
-                    {doctor.User?.fullname || "Chưa có tên bác sĩ"}
-                  </h3>
+                <div className="col-lg-8">
+                  <h3>{doctor.User?.fullname}</h3>
+
                   <p>
                     <strong>Kinh nghiệm:</strong> {doctor.experience_years} năm
                   </p>
@@ -163,9 +188,9 @@ const DetailDoctor = () => {
                     <strong>Phòng khám:</strong> {doctor.workroom}
                   </p>
                   <p>
-                    <strong>Giá khám bệnh:</strong>{" "}
+                    <strong>Giá khám:</strong>{" "}
                     {detailSpecialty?.price?.price
-                      ? detailSpecialty.price.price + " VNĐ"
+                      ? `${detailSpecialty.price.price} VNĐ`
                       : "Liên hệ"}
                   </p>
 
@@ -176,56 +201,37 @@ const DetailDoctor = () => {
                     </label>
                     <select
                       className="form-select"
-                      onChange={(e) => handleDateChange(e, doctor.id)}
+                      onChange={handleDateChange}
+                      value={selectedDates}
                     >
                       <option value="">Chọn ngày khám</option>
-                      {getUniqueDates(doctor.id).length > 0 ? (
-                        getUniqueDates(doctor.id).map((date, index) => (
-                          <option
-                            key={index}
-                            value={date}
-                            className="option-date"
-                          >
-                            {formatDate(date)}
-                          </option>
-                        ))
-                      ) : (
-                        <option disabled>Không có lịch khám</option>
-                      )}
+                      {getUniqueDates().map((date, index) => (
+                        <option key={index} value={date}>
+                          {formatDate(date)}
+                        </option>
+                      ))}
                     </select>
 
-                    <small className="text-muted">
-                      Chọn ngày để hiển thị giờ khám
-                    </small>
+                    {/* Chọn giờ khám */}
+                    {selectedDates && availableTimes.length > 0 ? (
+                      <div className="mt-3">
+                        <h5>Giờ khám:</h5>
+                        <div className="times-buttons">
+                          {availableTimes.map((s, index) => (
+                            <button
+                              key={index}
+                              className="time-button"
+                              onClick={() => handleTimeSelect(s, doctor)}
+                            >
+                              {s.Time.starttime} - {s.Time.endtime}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    ) : (
+                      <p>Chọn ngày để hiển thị giờ khám</p>
+                    )}
                   </div>
-
-                  {/* Hiển thị giờ khám */}
-                  {selectedDate && availableTimes[doctor.id]?.length > 0 ? (
-                    <div className="mt-3">
-                      <p>
-                        <strong>Giờ khám:</strong>
-                      </p>
-                      {availableTimes[doctor.id].map((s, index) => (
-                        <button
-                          key={index}
-                          className="time-button"
-                          onClick={() => {
-                            // Hành động khi người dùng nhấn chọn giờ
-                            console.log(
-                              `Chọn giờ: ${s.Time.starttime} - ${s.Time.endtime}`
-                            );
-                          }}
-                        >
-                          {s.Time.starttime} - {s.Time.endtime}
-                        </button>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="mt-3">Chưa có giờ khám cho ngày đã chọn</p>
-                  )}
-
-                  {/* Nút đặt lịch */}
-                  {/* <button className="btn btn-primary mt-3">Chọn & Đặt</button> */}
                 </div>
               </div>
             </div>

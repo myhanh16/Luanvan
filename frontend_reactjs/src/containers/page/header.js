@@ -15,6 +15,7 @@ import {
 } from "react-icons/fa";
 import "./homeheader.css";
 import { useNavigate, useLocation, Link } from "react-router-dom";
+import UserService from "../../services/UserService";
 
 const Homeheader = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -31,6 +32,11 @@ const Homeheader = () => {
       setUserName(name);
     }
   }, []);
+
+  const handlefetchProfile = async () => {
+    const userID = sessionStorage.getItem("userID");
+    navigate(`/profile/${userID}`);
+  };
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
@@ -194,7 +200,7 @@ const Homeheader = () => {
           )}
           {isLoggedIn && (
             <>
-              <div className="menu-item">
+              <div className="menu-item" onClick={handlefetchProfile}>
                 <FaUserCircle className="fa-icon-menu" /> {userName}
               </div>
               <div className="menu-item" onClick={handleLogout}>

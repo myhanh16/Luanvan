@@ -16,6 +16,7 @@ module.exports = (sequelize, DataTypes) => {
       diagnosis: DataTypes.STRING,
       treatment: DataTypes.STRING,
       create_at: DataTypes.DATE,
+      bookingID: DataTypes.INTEGER,
     },
     {
       sequelize,
@@ -23,5 +24,12 @@ module.exports = (sequelize, DataTypes) => {
       tableName: "medicalrecords",
     }
   );
+
+  medicalrecords.associate = function (models) {
+    medicalrecords.belongsTo(models.booking, {
+      foreignKey: "bookingID",
+      as: "booking",
+    });
+  };
   return medicalrecords;
 };

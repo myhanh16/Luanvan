@@ -128,6 +128,7 @@ const DoctorForm = () => {
           description: "",
           specialty: "",
           img: null,
+          onlineConsultation: "",
         });
 
         setImagePreview(null);
@@ -317,6 +318,22 @@ const DoctorForm = () => {
               />
             </div>
           )}
+
+          <div className="mb-3">
+            <label htmlFor="inputonlineConsultation">Tư vấn trực tuyến</label>
+            <select
+              id="inputonlineConsultation"
+              className="form-control"
+              name="onlineConsultation"
+              value={formData.gender}
+              onChange={handleChange}
+            >
+              <option value="0" defaultValue>
+                Tư vấn tại sơ sở
+              </option>
+              <option value="1">Tư vấn trực tuyến</option>
+            </select>
+          </div>
 
           {/* Submit Button */}
           <button type="submit" className="btn btn-primary">

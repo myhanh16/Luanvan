@@ -163,6 +163,7 @@ const createdoctor = (data) => {
         workroom: data.workroom,
         description: data.description,
         img, // Lưu đường dẫn ảnh
+        onlineConsultation: data.onlineConsultation,
         userID: parseInt(newUser.id),
         specialtyID: parseInt(data.specialty),
       });
@@ -184,7 +185,7 @@ const getDoctorsBySpecialtyID = (specialtyID) => {
   return new Promise(async (resolve, reject) => {
     try {
       const doctors = await db.doctor.findAll({
-        where: { specialtyID: specialtyID },
+        where: { specialtyID: specialtyID, onlineConsultation: 0 },
         include: [
           {
             model: db.User, // Kiểm tra lại tên và cách sử dụng model
@@ -218,6 +219,9 @@ const getTopExperiencedDoctor = () => {
   return new Promise(async (resolve, reject) => {
     try {
       const doctor = await db.doctor.findAll({
+        where: {
+          onlineConsultation: 0,
+        },
         include: [
           {
             model: db.User,
@@ -240,11 +244,46 @@ const getTopExperiencedDoctor = () => {
 };
 
 //Lay thoi gian lam viec cua bac si
+// const getSchedule = (doctorID) => {
+//   return new Promise(async (resolve, reject) => {
+//     try {
+//       const schedules = await db.schedules.findAll({
+//         where: { doctorID: doctorID },
+//         attributes: ["id", "doctorID", "timeID", "date"],
+//         include: [
+//           {
+//             model: db.time,
+//             as: "Time",
+//             attributes: ["starttime", "endtime"],
+//           },
+//         ],
+//         order: [["date", "ASC"]],
+//       });
+//       resolve(schedules);
+//     } catch (e) {
+//       reject(e);
+//     }
+//   });
+// };
 const getSchedule = (doctorID) => {
   return new Promise(async (resolve, reject) => {
     try {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // Đưa về đầu ngày
+
+      const startDate = new Date(today);
+      startDate.setDate(today.getDate() + 1); // Bắt đầu từ ngày mai
+
+      const endDate = new Date(startDate);
+      endDate.setDate(startDate.getDate() + 7); // Chỉ lấy trong 7 ngày tới
+
       const schedules = await db.schedules.findAll({
-        where: { doctorID: doctorID },
+        where: {
+          doctorID: doctorID,
+          date: {
+            [db.Sequelize.Op.between]: [startDate, endDate], // Lọc theo khoảng thời gian
+          },
+        },
         attributes: ["id", "doctorID", "timeID", "date"],
         include: [
           {
@@ -253,8 +292,9 @@ const getSchedule = (doctorID) => {
             attributes: ["starttime", "endtime"],
           },
         ],
-        order: [["date", "ASC"]],
+        order: [["date", "ASC"]], // Sắp xếp theo ngày tăng dần
       });
+
       resolve(schedules);
     } catch (e) {
       reject(e);
@@ -274,6 +314,23 @@ const getDoctorByid = (doctorID) => {
             as: "User", // Kiểm tra xem alias có đúng không
             attributes: ["fullname", "email", "phone", "address", "gender"],
           },
+          {
+            model: db.specialty, // Thêm bảng chuyên khoa
+            as: "specialty", // Đảm bảo alias đúng với model
+            include: [
+              {
+                model: db.price, // Lấy giá từ chuyên khoa
+                as: "price",
+                attributes: ["price"],
+              },
+            ],
+            attributes: ["name"], // Lấy tên chuyên khoa
+          },
+          // {
+          //   model: db.schedules, // Include lịch khám bệnh
+          //   as: "schedules",
+          //   attributes: ["date"], // Lấy ngày khám bệnh
+          // },
         ],
       });
 

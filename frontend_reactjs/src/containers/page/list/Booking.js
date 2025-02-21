@@ -31,7 +31,7 @@ const Booking = () => {
       } else {
         console.log("ErrCode:", response.data.errCode); // Kiểm tra errCode
         console.log("ErrMessage:", response.data.errMessage); // Kiểm tra errMessage
-        alert(response.errMessage || "Có lỗi xảy ra"); // Hiển thị lỗi nếu có
+        alert(response.data.errMessage || "Có lỗi xảy ra"); // Hiển thị lỗi nếu có
       }
     } catch (error) {
       console.error("Lỗi khi đặt lịch:", error);
@@ -63,10 +63,35 @@ const Booking = () => {
             Trang chủ
           </a>
           <span>/</span>
-          <span>Thông tin đặt lịch khám</span>
+
+          <a
+            href={`/specialty/${doctor.specialtyID}`}
+            onClick={(e) => {
+              e.preventDefault();
+              navigate(`/specialty/${doctor.specialtyID}`);
+            }}
+          >
+            {doctor.specialty ? doctor.specialty.name : "Chuyên khoa"}
+          </a>
+          <span>/</span>
+
+          <a
+            href={`/detail/${doctor.id}`}
+            onClick={(e) => {
+              e.preventDefault();
+              navigate(`/detail/${doctor.id}`);
+            }}
+          >
+            {doctor.User.fullname}
+          </a>
+          <span>/</span>
+
+          <span>Thông tin lịch khám</span>
         </div>
+
         <div className="booking-container">
           <h1 className="booking-title">Thông tin đặt lịch khám</h1>
+          <h3 className="section-title">Thông tin bác sĩ:</h3>
           <div className="booking-info">
             <img
               className="img-doctor"
@@ -81,7 +106,7 @@ const Booking = () => {
               <strong>Bác sĩ:</strong> {doctor.User.fullname}
             </p>
             <p>
-              <strong>Chuyên khoa:</strong> {doctor.specialty.name}
+              <strong>Chuyên khoa:</strong> {doctor?.specialty.name}
             </p>
             <p>
               <strong>Giới thiệu:</strong> {doctor.description}

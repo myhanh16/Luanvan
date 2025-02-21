@@ -35,21 +35,26 @@ const Login = () => {
   // Hàm xử lý đăng nhập
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Email:", email);
-    console.log("Password:", password);
+    // console.log("Email:", email);
+    // console.log("Password:", password);
 
     try {
       const response = await UserService.Login(email, password);
-      console.log("Đăng nhập thành công:", response.data);
+      // console.log("Đăng nhập thành công:", response.data);
       setError("");
       sessionStorage.setItem("userToken", response.data.token);
       sessionStorage.setItem("userName", response.data.user.fullname);
       sessionStorage.setItem("userRole", response.data.user.role);
       console.log(response.data.user.fullname);
       console.log(response.data.user.role);
+
       if (response.data.user.role == 1) {
         console.log(response.data.user.role);
         navigate("/homeadmin"); // Điều hướng tới trang chủ sau khi đăng nhập thành công
+      } else if (response.data.user.role == 2) {
+        sessionStorage.setItem("doctorID", response.data.user.doctor.id);
+        console.log(response.data.user.doctor.id);
+        navigate("/homedoctor");
       } else {
         setError("Bạn không có quyền truy cập vào trang này");
       }

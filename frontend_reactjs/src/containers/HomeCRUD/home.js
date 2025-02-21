@@ -150,7 +150,8 @@ const Home = () => {
                   <th>Giới tính</th>
                   <th>Chuyên khoa</th>
                   <th>Năm kinh nghiệm</th>
-                  <th>Chức Năng</th>
+                  <th>Tư vấn trực tuyến</th>
+                  <th>Cập nhật hồ sơ</th>
                 </tr>
               </thead>
               <tbody>
@@ -165,6 +166,11 @@ const Home = () => {
 
                       <td>{doctor.specialty.name}</td>
                       <td>{doctor.experience_years}</td>
+                      <td>
+                        {Number(doctor.onlineConsultation) === 0
+                          ? "Không"
+                          : "Có"}
+                      </td>
                       <td>
                         <button
                           className="btn btn-primary btn-sm"

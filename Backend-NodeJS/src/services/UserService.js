@@ -9,6 +9,8 @@ const { resolve } = require("path");
 const { getAllUser } = require("./CRUD");
 const { rejects } = require("assert");
 const { atob } = require("buffer");
+const nodemailer = require("nodemailer");
+const { log } = require("console");
 
 const handelUserLogin = (email, password) => {
   return new Promise(async (resolve, reject) => {
@@ -29,11 +31,17 @@ const handelUserLogin = (email, password) => {
             "birthYear",
             "role",
           ],
+          include: [
+            {
+              model: db.doctor,
+              as: "doctor",
+              attributes: ["id"], // Lấy doctorID nếu có
+            },
+          ],
 
           where: {
             email: email,
           },
-          raw: true,
         });
 
         if (user) {
@@ -48,7 +56,11 @@ const handelUserLogin = (email, password) => {
             userData.errCode = 0;
             userData.errMessage = "Đăng nhập thành công";
             delete user.password;
-            userData.user = user;
+            // userData.user = user;
+            userData.user = {
+              ...user.toJSON(),
+              doctorID: user.doctor ? user.doctor.id : null, // Gán doctorID nếu có
+            };
           } else {
             userData.errCode = 3;
             userData.errMessage = "Sai mật khẩu";
@@ -189,6 +201,7 @@ const EditUser = (data) => {
         user.fullname = data.fullname;
         user.phone = data.phone;
         user.address = data.address;
+        user.birthYear = data.birthYear;
 
         await user.save();
         resolve({
@@ -301,6 +314,7 @@ const Booking = (data) => {
         where: { id: data.userID },
         transaction,
       });
+
       if (!user) {
         await transaction.rollback();
         return resolve({
@@ -313,9 +327,33 @@ const Booking = (data) => {
         where: { id: data.scheduleID },
         include: [
           {
+            model: db.time,
+            as: "Time",
+            attributes: ["starttime", "endtime"],
+          },
+          {
             model: db.doctor,
             as: "Doctor",
-            required: true,
+            include: [
+              {
+                model: db.User,
+                as: "User",
+                attributes: ["id", "fullname"],
+              },
+              {
+                model: db.specialty,
+                as: "specialty",
+                include: [
+                  {
+                    model: db.price,
+                    as: "price",
+                    attributes: ["price"],
+                  },
+                ],
+                attributes: ["id", "name"],
+              },
+            ],
+            attributes: ["id", "specialtyID", "img"],
           },
         ],
         attributes: ["id", "doctorID", "timeID", "date"],
@@ -330,6 +368,153 @@ const Booking = (data) => {
         });
       }
 
+      const Booking = (data) => {
+        return new Promise(async (resolve, reject) => {
+          if (!data.userID || !data.scheduleID) {
+            return resolve({
+              errCode: 3,
+              errMessage: "Thiếu thông tin bắt buộc (userID, scheduleID)",
+            });
+          }
+
+          const transaction = await db.sequelize.transaction();
+
+          try {
+            const user = await db.User.findOne({
+              where: { id: data.userID },
+              transaction,
+            });
+
+            if (!user) {
+              await transaction.rollback();
+              return resolve({
+                errCode: 2,
+                errMessage: "Không tìm thấy người dùng",
+              });
+            }
+
+            const schedule = await db.schedules.findOne({
+              where: { id: data.scheduleID },
+              include: [
+                {
+                  model: db.time,
+                  as: "Time",
+                  attributes: ["starttime", "endtime"],
+                },
+                {
+                  model: db.doctor,
+                  as: "Doctor",
+                  include: [
+                    {
+                      model: db.User,
+                      as: "User",
+                      attributes: ["id", "fullname"],
+                    },
+                    {
+                      model: db.specialty,
+                      as: "specialty",
+                      include: [
+                        {
+                          model: db.price,
+                          as: "price",
+                          attributes: ["price"],
+                        },
+                      ],
+                      attributes: ["id", "name"],
+                    },
+                  ],
+                  attributes: ["id", "specialtyID", "img"],
+                },
+              ],
+              attributes: ["id", "doctorID", "timeID", "date"],
+              transaction,
+            });
+
+            if (!schedule) {
+              await transaction.rollback();
+              return resolve({
+                errCode: 4,
+                errMessage: "Không tìm thấy lịch trình phù hợp",
+              });
+            }
+
+            // Kiểm tra số lượng đặt lịch cho khung giờ này
+            const countBookings = await db.booking.count({
+              where: { scheduleID: data.scheduleID },
+              transaction,
+            });
+
+            if (countBookings >= 10) {
+              await transaction.rollback();
+              return resolve({
+                errCode: 6,
+                errMessage:
+                  "Khung giờ này đã đầy, vui lòng chọn khung giờ khác!",
+              });
+            }
+
+            // Tạo booking
+            await db.booking.create(
+              {
+                userID: data.userID,
+                booking_date: new Date(),
+                scheduleID: data.scheduleID,
+                statusID: 1,
+              },
+              { transaction }
+            );
+
+            // Gửi email xác nhận (chỉ gửi khi booking được tạo mới)
+            await sendBookingConfirmationEmail(
+              user.email,
+              user.fullname,
+              schedule.Doctor.User.fullname,
+              schedule.date,
+              `${schedule.Time.starttime} - ${schedule.Time.endtime}`
+            );
+
+            // Commit transaction
+            await transaction.commit();
+
+            // Return thành công (chỉ gọi 1 lần)
+            return resolve({ errCode: 0, errMessage: "Đặt lịch thành công" });
+          } catch (e) {
+            await transaction.rollback();
+            return reject(e); // Đảm bảo chỉ trả về lỗi 1 lần
+          }
+        });
+      };
+
+      const existingBooking = await db.booking.findOne({
+        where: {
+          userID: data.userID,
+          scheduleID: data.scheduleID,
+        },
+        transaction,
+      });
+
+      if (existingBooking) {
+        await transaction.rollback();
+        return resolve({
+          errCode: 5,
+          errMessage: "Bạn đã đặt lịch cho khung giờ này rồi!",
+        });
+      }
+
+      // Kiểm tra số lượng đặt lịch cho khung giờ này
+      const countBookings = await db.booking.count({
+        where: { scheduleID: data.scheduleID },
+        transaction,
+      });
+
+      if (countBookings >= 10) {
+        await transaction.rollback();
+        return resolve({
+          errCode: 6,
+          errMessage: "Khung giờ này đã đầy, vui lòng chọn khung giờ khác!",
+        });
+      }
+
       // Tạo booking
       await db.booking.create(
         {
@@ -341,12 +526,23 @@ const Booking = (data) => {
         { transaction }
       );
 
+      // Gửi email xác nhận (chỉ gửi khi booking được tạo mới)
+      await sendBookingConfirmationEmail(
+        user.email,
+        user.fullname,
+        schedule.Doctor.User.fullname,
+        schedule.date,
+        `${schedule.Time.starttime} - ${schedule.Time.endtime}`
+      );
+
       // Commit transaction
       await transaction.commit();
-      resolve({ errCode: 0, errMessage: "Đặt lịch thành công" });
+
+      // Return thành công (chỉ gọi 1 lần)
+      return resolve({ errCode: 0, errMessage: "Đặt lịch thành công" });
     } catch (e) {
       await transaction.rollback();
-      reject(e);
+      return reject(e); // Đảm bảo chỉ trả về lỗi 1 lần
     }
   });
 };
@@ -503,6 +699,87 @@ const AbortAppointment = (bookingID) => {
   });
 };
 
+//Format ngay kham
+const formatDate = (dateString) => {
+  const [year, month, day] = dateString.split("-");
+  return `${day}/${month}/${year}`;
+};
+
+//Gui mail khi nguoi dung dang ki thanh cong
+const sendBookingConfirmationEmail = async (
+  userEmail,
+  userName,
+  doctorName,
+  appointmentDate,
+  appointmentTime
+) => {
+  try {
+    // Cấu hình tài khoản gửi email
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASSWORD,
+      },
+    });
+
+    const bookingLink = `http://localhost:3000`;
+    const formattedDate = formatDate(appointmentDate);
+    // Nội dung email
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: userEmail,
+      subject: "🔔 Xác Nhận Lịch Hẹn Khám Bệnh - MyDoctor",
+      html: `
+        <h2>Xin chào ${userName},</h2>
+        <p>Chúng tôi xin trân trọng thông báo rằng lịch hẹn khám bệnh của quý khách đã được xác nhận thành công.</p>
+        <p><strong>Thông tin chi tiết:</strong></p>
+        <ul>
+          <li><strong>Bác sĩ phụ trách:</strong> ${doctorName}</li>
+          <li><strong>Ngày khám:</strong> ${formattedDate}</li>
+          <li><strong>Giờ khám:</strong> ${appointmentTime}</li>
+        </ul>
+        <p>Quý khách vui lòng đến đúng giờ để đảm bảo trải nghiệm dịch vụ tốt nhất. Nếu có bất kỳ thắc mắc hoặc cần hỗ trợ, vui lòng liên hệ với chúng tôi.</p>
+        <p>Để xem chi tiết lịch hẹn hoặc thay đổi thông tin, quý khách có thể truy cập vào đường trang web:</p>
+        <p><a href="${bookingLink}" style="color: #007bff; font-weight: bold;">Xem Lịch Hẹn</a></p>
+        <p>Trân trọng,<br><strong>Phòng khám MyDoctor</strong></p>
+      `,
+    };
+
+    // Gửi email
+    await transporter.sendMail(mailOptions);
+    console.log("Email xác nhận đã được gửi!");
+  } catch (error) {
+    console.error("Lỗi khi gửi email:", error);
+  }
+};
+
+/*----------------------------Thông tin người dùng------------------------- */
+const getUserInfo = (id) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      user = await db.User.findOne({
+        where: { id: id },
+        attributes: [
+          "email",
+          "fullname",
+          "phone",
+          "address",
+          "gender",
+          "birthYear",
+        ],
+        attributes: {
+          exclude: ["password"],
+        },
+      });
+
+      resolve(user);
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
 module.exports = {
   handelUserLogin,
   getAllUsers,
@@ -512,4 +789,6 @@ module.exports = {
   Booking,
   GetAppointment,
   AbortAppointment,
+  sendBookingConfirmationEmail,
+  getUserInfo,
 };

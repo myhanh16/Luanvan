@@ -11,6 +11,7 @@ const {
   Booking,
   GetAppointment,
   AbortAppointment,
+  getUserInfo,
 } = require("../services/UserService");
 
 const handleLogin = async (req, res) => {
@@ -182,6 +183,23 @@ const handleAbortAppointment = async (req, res) => {
   }
 };
 
+const handleGetUserInfo = async (req, res) => {
+  try {
+    const user = await getUserInfo(req.query.id);
+    return res.status(200).json({
+      errCode: 0,
+      errMessage: "Lay du lieu thanh cong",
+      user,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      error: 1,
+      errMessage: "Có lỗi xảy ra, vui lòng thử lại",
+    });
+  }
+};
+
 module.exports = {
   handleLogin,
   handleGetAll,
@@ -191,4 +209,5 @@ module.exports = {
   handleBooking,
   handleGetAppointment,
   handleAbortAppointment,
+  handleGetUserInfo,
 };
