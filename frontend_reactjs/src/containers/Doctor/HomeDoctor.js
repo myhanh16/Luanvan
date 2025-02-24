@@ -135,7 +135,12 @@ const HomeDoctor = () => {
                   <th>Thời gian khám</th>
                   <th>Ngày đặt lịch</th>
                   <th>Trạng thái</th>
-                  <th>Lập hồ sơ khám</th>
+                  <th>Lập hồ sơ bệnh án</th>
+                  {appointments.length > 0 &&
+                    appointments.some(
+                      (appt) =>
+                        Number(appt.schedules?.Doctor?.onlineConsultation) === 1
+                    ) && <th>Link cuộc hẹn</th>}
                 </tr>
               </thead>
               <tbody>
@@ -173,6 +178,24 @@ const HomeDoctor = () => {
                             </button>
                           )}
                       </td>
+
+                      {Number(
+                        appointment.schedules.Doctor.onlineConsultation
+                      ) === 1 && (
+                        <td>
+                          {appointment.meetlink ? (
+                            <a
+                              href={appointment.meetlink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              Tham gia
+                            </a>
+                          ) : (
+                            "Chưa tạo"
+                          )}
+                        </td>
+                      )}
                     </tr>
                   ))
                 ) : (

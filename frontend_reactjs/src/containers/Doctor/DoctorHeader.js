@@ -56,12 +56,12 @@ const DoctorHeader = () => {
           >
             <FaCalendarAlt className="admin-icon" /> Tạo Lịch Làm Việc
           </div>
-          <div
+          {/* <div
             className={`admin-menu-item ${isActive("")}`} // Thêm class active nếu đang ở trang này
             // onClick={() => navigate("/create-doctor")}
           >
             <FaFileMedical className="admin-icon" /> Hồ sơ bệnh án
-          </div>
+          </div> */}
         </div>
         <div className="admin-right">
           <div className="admin-user">

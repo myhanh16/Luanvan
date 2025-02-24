@@ -1,4 +1,5 @@
 require("dotenv").config();
+const { google } = require("googleapis");
 const express = require("express");
 const app = express();
 const path = require("path");
@@ -10,6 +11,7 @@ const webRouter = require("./src/routes/web");
 const connect = require("./src/config/connectDB");
 const fileupload = require("express-fileupload");
 const cors = require("cors");
+const scheduleMeetingCheck = require("./src/services/meetingScheduler");
 
 const hostname = process.env.HOSTNAME;
 const port = process.env.PORT || 3000;
@@ -77,3 +79,5 @@ connect();
 app.listen(port, hostname, () => {
   console.log(`Server running at http://${hostname}:${port}/`);
 });
+
+scheduleMeetingCheck();

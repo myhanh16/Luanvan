@@ -11,6 +11,7 @@ const { rejects } = require("assert");
 const { atob } = require("buffer");
 const nodemailer = require("nodemailer");
 const { log } = require("console");
+const { Op } = require("sequelize");
 
 const handelUserLogin = (email, password) => {
   return new Promise(async (resolve, reject) => {
@@ -423,7 +424,12 @@ const Booking = (data) => {
                       attributes: ["id", "name"],
                     },
                   ],
-                  attributes: ["id", "specialtyID", "img"],
+                  attributes: [
+                    "id",
+                    "specialtyID",
+                    "img",
+                    "onlineConsultation",
+                  ],
                 },
               ],
               attributes: ["id", "doctorID", "timeID", "date"],
@@ -438,18 +444,23 @@ const Booking = (data) => {
               });
             }
 
+            const isOnlineConsultation =
+              schedule.Doctor.onlineConsultation === 1;
+            const maxBookings = isOnlineConsultation ? 1 : 10;
+
             // Kiểm tra số lượng đặt lịch cho khung giờ này
             const countBookings = await db.booking.count({
               where: { scheduleID: data.scheduleID },
               transaction,
             });
 
-            if (countBookings >= 10) {
+            if (countBookings >= maxBookings) {
               await transaction.rollback();
               return resolve({
                 errCode: 6,
-                errMessage:
-                  "Khung giờ này đã đầy, vui lòng chọn khung giờ khác!",
+                errMessage: isOnlineConsultation
+                  ? "Lịch hẹn online đã có người đặt, vui lòng chọn khung giờ khác!"
+                  : "Khung giờ này đã đầy, vui lòng chọn khung giờ khác!",
               });
             }
 
@@ -460,6 +471,7 @@ const Booking = (data) => {
                 booking_date: new Date(),
                 scheduleID: data.scheduleID,
                 statusID: 1,
+                meetinglink: schedule.Doctor.onlineConsultation ? null : "",
               },
               { transaction }
             );
@@ -593,7 +605,7 @@ const GetAppointment = (userID) => {
                     attributes: ["id", "name"],
                   },
                 ],
-                attributes: ["id", "specialtyID", "img"],
+                attributes: ["id", "specialtyID", "img", "onlineConsultation"],
               },
             ],
             attributes: ["id", "timeID", "date"],
@@ -754,6 +766,24 @@ const sendBookingConfirmationEmail = async (
   }
 };
 
+//Tìm kiếm chuyên khoa theo tên
+const searchSpecialty = async (SpecialtyName) => {
+  return new Promise(async (resolve, rejects) => {
+    try {
+      const specialty = await db.specialty.findAll({
+        where: {
+          name: {
+            [Op.like]: `%${SpecialtyName}%`,
+          },
+        },
+      });
+      resolve(specialty);
+    } catch (e) {
+      rejects(e);
+    }
+  });
+};
+
 /*----------------------------Thông tin người dùng------------------------- */
 const getUserInfo = (id) => {
   return new Promise(async (resolve, reject) => {
@@ -791,4 +821,5 @@ module.exports = {
   AbortAppointment,
   sendBookingConfirmationEmail,
   getUserInfo,
+  searchSpecialty,
 };

@@ -18,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
       // doctorID: DataTypes.INTEGER,
       userID: DataTypes.INTEGER,
       statusID: DataTypes.INTEGER,
+      meetlink: DataTypes.STRING(255),
     },
     {
       sequelize,

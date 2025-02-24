@@ -21,6 +21,7 @@ const {
   handleGetAppointment,
   handleAbortAppointment,
   handleGetUserInfo,
+  handleSearchSpecialty,
 } = require("../controllers/Usercontroller");
 
 const {
@@ -78,6 +79,8 @@ router.get("/api/get-appointment", handleGetAppointment);
 router.post("/api/abort-appointment", handleAbortAppointment);
 
 router.get("/api/get-Userinfo", handleGetUserInfo);
+
+router.get("/api/search-specialty", handleSearchSpecialty);
 /*-----------------ADMIN---------------------- */
 router.post("/api/login-admin", LoginAdmin);
 

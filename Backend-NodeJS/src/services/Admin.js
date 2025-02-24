@@ -220,7 +220,7 @@ const getTopExperiencedDoctor = () => {
     try {
       const doctor = await db.doctor.findAll({
         where: {
-          onlineConsultation: 0,
+          onlineConsultation: 1,
         },
         include: [
           {
@@ -292,7 +292,10 @@ const getSchedule = (doctorID) => {
             attributes: ["starttime", "endtime"],
           },
         ],
-        order: [["date", "ASC"]], // Sắp xếp theo ngày tăng dần
+        order: [
+          ["date", "ASC"],
+          [{ model: db.time, as: "Time" }, "starttime", "ASC"],
+        ], // Sắp xếp theo ngày tăng dần
       });
 
       resolve(schedules);

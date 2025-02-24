@@ -14,7 +14,7 @@ import Homeheader from "./header";
 import Specialty from "./section/specialty";
 import "./hompage.css";
 import Doctor from "./section/doctor";
-import Handbook from "./section/handbook";
+// import OnlineDoctor from "./section/onlineDoctor";
 import About from "./section/about";
 import HomeFooter from "./homefooter";
 
@@ -24,7 +24,7 @@ const Homepage = () => {
       <Homeheader />
       <Specialty />
       <Doctor />
-      <Handbook />
+      {/* <OnlineDoctor /> */}
       <About />
       <HomeFooter />
     </div>

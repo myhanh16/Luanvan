@@ -50,7 +50,8 @@ const CreateSchedules = () => {
         alert("Lịch làm việc đã được lưu!");
         setSelectedTimes([]);
       } else {
-        alert("Lỗi khi lưu lịch làm việc!");
+        // alert("Lỗi khi lưu lịch làm việc!");
+        alert("⚠ " + response.data.errMessage);
       }
     } catch (e) {
       console.error("Lỗi server:", e);

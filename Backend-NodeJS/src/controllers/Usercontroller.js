@@ -12,6 +12,7 @@ const {
   GetAppointment,
   AbortAppointment,
   getUserInfo,
+  searchSpecialty,
 } = require("../services/UserService");
 
 const handleLogin = async (req, res) => {
@@ -200,6 +201,28 @@ const handleGetUserInfo = async (req, res) => {
   }
 };
 
+const handleSearchSpecialty = async (req, res) => {
+  try {
+    const data = await searchSpecialty(req.query.name);
+    if (data.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "Không tìm thấy chuyên khoa nào" });
+    } else {
+      return res.status(200).json({
+        errCode: 0,
+        errMessage: "Truy van thanh cong",
+        data,
+      });
+    }
+  } catch (e) {
+    console.log(e);
+    return res.status(500).json({
+      errCode: 1,
+      errMessage: "Loi",
+    });
+  }
+};
 module.exports = {
   handleLogin,
   handleGetAll,
@@ -210,4 +233,5 @@ module.exports = {
   handleGetAppointment,
   handleAbortAppointment,
   handleGetUserInfo,
+  handleSearchSpecialty,
 };

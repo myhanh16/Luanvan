@@ -61,6 +61,11 @@ const AbortAppointment = (bookingID) => {
 const UserProfile = (id) => {
   return axios.get(`/api/get-Userinfo?id=${id}`);
 };
+
+const handleSearchSpecialty = (specialtyName) => {
+  return axios.get(`/api/search-specialty?name=${specialtyName}`);
+};
+
 export default {
   Login,
   GetAllUser,
@@ -77,4 +82,5 @@ export default {
   Appointment,
   AbortAppointment,
   UserProfile,
+  handleSearchSpecialty,
 };

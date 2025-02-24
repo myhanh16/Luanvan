@@ -23,7 +23,8 @@ const Homeheader = () => {
   const navigate = useNavigate();
   const location = useLocation(); // Get current location
   const [userName, setUserName] = useState("");
-
+  const [serachTerm, setSearchTerm] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
   useEffect(() => {
     const token = sessionStorage.getItem("userToken");
     const name = sessionStorage.getItem("userName");
@@ -32,6 +33,25 @@ const Homeheader = () => {
       setUserName(name);
     }
   }, []);
+
+  const handeleSearch = async () => {
+    if (!serachTerm.trim()) {
+      alert("Vui lòng nhập từ khóa tìm kiếm!");
+      return;
+    }
+    try {
+      const response = await UserService.handleSearchSpecialty(serachTerm);
+      if (response.data.errCode === 0 && response.data.data.length > 0) {
+        // setSearchResults(response.data);
+        const specialtyID = response.data.data[0].id;
+        navigate(`/doctor/${specialtyID}`);
+      } else {
+        alert("Không tìm thấy chuyên khoa phù hợp!");
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   const handlefetchProfile = async () => {
     const userID = sessionStorage.getItem("userID");
@@ -119,13 +139,13 @@ const Homeheader = () => {
                   className="item"
                   onClick={(e) => {
                     e.preventDefault();
-                    navigate("/topdoctor");
+                    navigate("/Online-Consulting");
                   }}
                 >
                   Bác Sĩ
                 </b>
               </div>
-              <div className="subs-tilte">Chọn bác sĩ giỏi</div>
+              <div className="subs-tilte">Chọn bác sĩ tư vấn trực tuyến</div>
             </div>
 
             {/* Chỉ hiển thị phần này khi người dùng đã đăng nhập */}
@@ -154,10 +174,16 @@ const Homeheader = () => {
             <div className="title2">AN TÂM SỨC KHỎE MỖI NGÀY</div>
             <div className="search">
               <FaSearch className="search-icon" />
-              <input type="text" placeholder="Tìm chuyên khoa khám bệnh" />
+              <input
+                type="text"
+                placeholder="Tìm chuyên khoa khám bệnh"
+                value={serachTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                onKeyPress={(e) => e.key === "Enter" && handeleSearch()}
+              />
             </div>
           </div>
-          <div className="content-down">
+          {/* <div className="content-down">
             <div className="options">
               <div className="option-child">
                 <div className="icon-child">
@@ -184,7 +210,7 @@ const Homeheader = () => {
                 <div className="text-child">Xét nghiệm y học</div>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       )}
 

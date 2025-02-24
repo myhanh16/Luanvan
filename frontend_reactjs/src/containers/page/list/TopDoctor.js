@@ -60,7 +60,7 @@ const TopDoctor = () => {
             Trang chủ
           </a>
           <span>/</span>
-          <span>Bác sĩ nổi bật</span>
+          <span>Tư Vấn Trực Tuyến</span>
         </div>
 
         {doctor.length > 0 ? (

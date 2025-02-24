@@ -325,7 +325,7 @@ const DoctorForm = () => {
               id="inputonlineConsultation"
               className="form-control"
               name="onlineConsultation"
-              value={formData.gender}
+              value={formData.onlineConsultation}
               onChange={handleChange}
             >
               <option value="0" defaultValue>

@@ -64,12 +64,12 @@ const Doctor = () => {
     <div className="section-doctor">
       <div className="doctor-container">
         <div className="doctor-header">
-          <span className="title-section">Bác sĩ nổi bật</span>
+          <span className="title-section">Tư Vấn Trực Tuyến</span>
           <button
             className="btn-section"
             onClick={(e) => {
               e.preventDefault();
-              navigate("/topdoctor");
+              navigate("/Online-Consulting");
             }}
           >
             Xem thêm

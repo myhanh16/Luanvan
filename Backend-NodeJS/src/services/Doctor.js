@@ -117,7 +117,7 @@ const GetAppointmentByDoctorID = (doctorID) => {
               {
                 model: db.doctor,
                 as: "Doctor",
-                attributes: ["id"],
+                attributes: ["id", "onlineConsultation"],
               },
             ],
             attributes: ["id", "timeID", "date"],
@@ -134,7 +134,7 @@ const GetAppointmentByDoctorID = (doctorID) => {
             order: [["create_at", "DESC"]], // Lấy hồ sơ gần nhất
           },
         ],
-        attributes: ["id", "booking_date", "statusID"],
+        attributes: ["id", "booking_date", "statusID", "meetlink"],
         order: [
           ["booking_date", "DESC"], // Sắp xếp theo ngày đặt lịch
           [{ model: db.schedules, as: "schedules" }, "date", "DESC"], // Sắp xếp theo ngày khám
@@ -411,6 +411,22 @@ const GetAllTimeSlot = async () => {
 const CreateSchedules = (data) => {
   return new Promise(async (resolve, rejects) => {
     try {
+      // Lấy danh sách các lịch trình đã tồn tại
+      const existingSchedules = await db.schedules.findAll({
+        where: {
+          doctorID: data.doctorID,
+          date: data.date,
+          timeID: data.timeID, // Kiểm tra từng khung giờ
+        },
+      });
+
+      if (existingSchedules.length > 0) {
+        return resolve({
+          errCode: 1,
+          errMessage: "Khung giờ đã được đặt, vui lòng chọn khung giờ khác.",
+        });
+      }
+
       const schedules = data.timeID.map((timeID) => ({
         doctorID: data.doctorID,
         date: data.date,

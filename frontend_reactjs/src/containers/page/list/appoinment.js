@@ -165,6 +165,17 @@ const AppointmentGrid = () => {
                     <p className="appointment-doctor">
                       <strong>Bác sĩ:</strong>{" "}
                       {doctor?.User?.fullname || "Chưa có thông tin"}
+                      {Number(doctor?.onlineConsultation) === 1 && (
+                        <span
+                          style={{
+                            color: "green",
+                            fontWeight: "bold",
+                            marginLeft: "8px",
+                          }}
+                        >
+                          (Tư vấn trực tuyến)
+                        </span>
+                      )}
                     </p>
                     <p className="appointment-specialty">
                       <strong>Chuyên khoa:</strong>{" "}
