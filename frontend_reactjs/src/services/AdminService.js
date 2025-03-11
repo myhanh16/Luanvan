@@ -23,4 +23,15 @@ const EditDoctor = (data) => {
   return axios.post("/api/edit-doctor", data);
 };
 
-export default { Login, GetAllUser, CreateDoctor, EditDoctor, GetAllDoctors };
+const disableDoctorAccount = (userID) => {
+  return axios.post(`/api/disableDoctorAccount?id=${userID}`);
+};
+
+export default {
+  Login,
+  GetAllUser,
+  CreateDoctor,
+  EditDoctor,
+  GetAllDoctors,
+  disableDoctorAccount,
+};

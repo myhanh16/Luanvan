@@ -7,6 +7,8 @@ const { getUserbyID } = require("../controllers/CRUDController");
 const { where } = require("sequelize");
 const { resolve } = require("path");
 const { rejects } = require("assert");
+const { Op } = require("sequelize");
+const { ppid } = require("process");
 
 const handelLogin = (email, password) => {
   return new Promise(async (resolve, reject) => {
@@ -16,7 +18,7 @@ const handelLogin = (email, password) => {
       if (isExit) {
         // Người dùng đã tồn tại
         const user = await db.User.findOne({
-          attributes: ["email", "fullname", "password", "role"],
+          attributes: ["email", "fullname", "password", "role", "isActive"],
 
           where: {
             email: email,
@@ -25,21 +27,26 @@ const handelLogin = (email, password) => {
         });
 
         if (user) {
-          // Hash mật khẩu người dùng nhập vào
-          const hashedPassword = crypto
-            .createHash("sha1")
-            .update(password)
-            .digest("hex");
-
-          // So sánh mật khẩu đã băm với mật khẩu trong DB
-          if (hashedPassword === user.password) {
-            userData.errCode = 0;
-            userData.errMessage = "Đăng nhập thành công";
-            delete user.password;
-            userData.user = user;
+          if (!user.isActive) {
+            userData.errCode = 4;
+            userData.errMessage = "Tài khoản của bạn đã bị vô hiệu hóa";
           } else {
-            userData.errCode = 3;
-            userData.errMessage = "Sai mật khẩu";
+            // Hash mật khẩu người dùng nhập vào
+            const hashedPassword = crypto
+              .createHash("sha1")
+              .update(password)
+              .digest("hex");
+
+            // So sánh mật khẩu đã băm với mật khẩu trong DB
+            if (hashedPassword === user.password) {
+              userData.errCode = 0;
+              userData.errMessage = "Đăng nhập thành công";
+              delete user.password;
+              userData.user = user;
+            } else {
+              userData.errCode = 3;
+              userData.errMessage = "Sai mật khẩu";
+            }
           }
         } else {
           userData.errCode = 2;
@@ -191,6 +198,7 @@ const getDoctorsBySpecialtyID = (specialtyID) => {
             model: db.User, // Kiểm tra lại tên và cách sử dụng model
             as: "User", // Kiểm tra xem alias có đúng không
             attributes: ["fullname", "email", "phone", "address", "gender"],
+            where: { isActive: true },
           },
           {
             model: db.specialty, // Lấy chuyên khoa
@@ -227,6 +235,7 @@ const getTopExperiencedDoctor = () => {
             model: db.User,
             as: "User",
             attributes: ["fullname", "email", "phone", "address", "gender"],
+            where: { isActive: true },
           },
           {
             model: db.specialty, // Thêm bảng chuyên khoa
@@ -316,6 +325,7 @@ const getDoctorByid = (doctorID) => {
             model: db.User, // Kiểm tra lại tên và cách sử dụng model
             as: "User", // Kiểm tra xem alias có đúng không
             attributes: ["fullname", "email", "phone", "address", "gender"],
+            where: { isActive: true },
           },
           {
             model: db.specialty, // Thêm bảng chuyên khoa
@@ -360,6 +370,7 @@ const getAlltDoctors = () => {
               "phone",
               "address",
               "gender",
+              "isActive",
             ],
           },
           {
@@ -374,6 +385,7 @@ const getAlltDoctors = () => {
             ],
           },
         ],
+        attributes: ["id", "experience_years", "onlineConsultation"],
       });
 
       resolve(doctors);
@@ -433,6 +445,7 @@ const EditDoctor = (data) => {
       // Cập nhật thông tin bác sĩ (nếu có)
       doctor.experience_years =
         data.experience_years || doctor.experience_years;
+      doctor.onlineConsultation = Number(data.onlineConsultation); // Chuyển thành số
       await doctor.save({ transaction });
 
       await transaction.commit(); // Lưu tất cả thay đổi nếu không có lỗi
@@ -442,6 +455,120 @@ const EditDoctor = (data) => {
       });
     } catch (e) {
       await transaction.rollback(); // Quay lại trạng thái ban đầu nếu có lỗi
+      reject(e);
+    }
+  });
+};
+
+//Vô hiệu hóa tài khoản
+const disableDoctorAccount = (userID) => {
+  return new Promise(async (resolve, reject) => {
+    if (!userID) {
+      return resolve({
+        errCode: 3,
+        errMessage: "UserID bat buoc",
+      });
+    }
+    try {
+      const user = await db.User.findOne({
+        where: { id: userID },
+      });
+      if (!user) {
+        return resolve({
+          errCode: 1,
+          errMessage: "Khong tim thay tai khoan bac si",
+        });
+      }
+
+      // user.isActive = false;
+      // await user.save();
+      user.isActive = !user.isActive; // Đảo trạng thái từ true -> false hoặc ngược lại
+      await user.save();
+
+      resolve({
+        errCode: 0,
+        errMessage: `Cập nhật thành công! Trạng thái mới: ${
+          user.isActive ? "Đang hoạt động" : "Vô hiệu hóa"
+        }`,
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
+//Tinh so ngay lam viec cua bac si theo thang
+const getWorkingDaysByDoctor = (month) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const startDate = new Date(new Date().getFullYear(), month - 1, 1); //Ngay dau thang
+      const endDate = new Date(new Date().getFullYear(), month, 0); //Ngay cuoi thang
+
+      const schedules = await db.schedules.findAll({
+        where: {
+          date: {
+            [db.Sequelize.Op.between]: [startDate, endDate],
+          },
+        },
+        attributes: ["id", "doctorID", "timeID", "date"],
+        include: [
+          {
+            model: db.doctor,
+            as: "Doctor",
+            attributes: ["id", "experience_years", "onlineConsultation"],
+            include: [
+              {
+                model: db.User,
+                as: "User",
+                attributes: ["fullname"],
+              },
+              {
+                model: db.specialty, // Lấy chuyên khoa
+                as: "specialty",
+                attributes: ["name"],
+              },
+            ],
+          },
+          {
+            model: db.time,
+            as: "Time",
+            attributes: ["starttime", "endtime"],
+          },
+        ],
+      });
+
+      //Tinh tong gio lam viec
+      const doctorStats = {};
+      schedules.forEach((schedule) => {
+        const doctorID = schedule.Doctor.id;
+        const doctorName = schedule.Doctor.User.fullname;
+        const startTime = schedule.Time.starttime;
+        const endTime = schedule.Time.endtime;
+
+        // Chuyển đổi thời gian sang số giờ
+        const start = new Date(`2000-01-01T${startTime}`);
+        const end = new Date(`2000-01-01T${endTime}`);
+        const hoursWorked = (end - start) / (1000 * 60 * 60);
+
+        if (!doctorStats[doctorID]) {
+          doctorStats[doctorID] = {
+            name: doctorName,
+            totalHours: 0,
+            workingDays: 0,
+          };
+        }
+        doctorStats[doctorID].totalHours += hoursWorked;
+      });
+
+      // Chuyển tổng số giờ thành số ngày công
+      Object.keys(doctorStats).forEach((doctorID) => {
+        doctorStats[doctorID].workingDays = (
+          doctorStats[doctorID].totalHours / 8
+        ).toFixed(2);
+      });
+
+      resolve(doctorStats);
+    } catch (e) {
       reject(e);
     }
   });
@@ -458,4 +585,6 @@ module.exports = {
   getDoctorByid,
   EditDoctor,
   getAlltDoctors,
+  disableDoctorAccount,
+  getWorkingDaysByDoctor,
 };

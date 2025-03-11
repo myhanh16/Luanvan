@@ -411,6 +411,13 @@ const GetAllTimeSlot = async () => {
 const CreateSchedules = (data) => {
   return new Promise(async (resolve, rejects) => {
     try {
+      if (!data.timeID || data.timeID.length < 8) {
+        return resolve({
+          errCode: 2,
+          errMessage: "Bạn phải chọn ít nhất 8 khung giờ để tạo lịch làm việc.",
+        });
+      }
+
       // Lấy danh sách các lịch trình đã tồn tại
       const existingSchedules = await db.schedules.findAll({
         where: {
@@ -446,6 +453,34 @@ const CreateSchedules = (data) => {
     }
   });
 };
+
+const getSchedule = (doctorID) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const schedules = await db.schedules.findAll({
+        where: {
+          doctorID: doctorID,
+        },
+        attributes: ["id", "doctorID", "timeID", "date"],
+        include: [
+          {
+            model: db.time,
+            as: "Time",
+            attributes: ["starttime", "endtime"],
+          },
+        ],
+        order: [
+          ["date", "ASC"],
+          [{ model: db.time, as: "Time" }, "starttime", "ASC"],
+        ], // Sắp xếp theo ngày tăng dần
+      });
+
+      resolve(schedules);
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
 module.exports = {
   GetAppointmentByDoctorID,
   CreateMedicalRecord,
@@ -453,4 +488,5 @@ module.exports = {
   GetMedicalRecordsByUserID,
   GetAllTimeSlot,
   CreateSchedules,
+  getSchedule,
 };

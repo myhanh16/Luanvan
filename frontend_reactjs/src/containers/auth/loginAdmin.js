@@ -48,7 +48,11 @@ const Login = () => {
       console.log(response.data.user.fullname);
       console.log(response.data.user.role);
 
-      if (response.data.user.role == 1) {
+      if (response.data.errCode === 4) {
+        setError(
+          "Tài khoản của bạn đã bị vô hiệu hóa. Vui lòng liên hệ quản trị viên."
+        );
+      } else if (response.data.user.role == 1) {
         console.log(response.data.user.role);
         navigate("/homeadmin"); // Điều hướng tới trang chủ sau khi đăng nhập thành công
       } else if (response.data.user.role == 2) {
@@ -60,7 +64,11 @@ const Login = () => {
       }
     } catch (err) {
       console.error("Lỗi đăng nhập:", err);
-      setError("Đăng nhập thất bại, vui lòng kiểm tra lại thông tin.");
+      if (err.response && err.response.data) {
+        setError(err.response.data.message); // Lấy thông báo lỗi từ API
+      } else {
+        setError("Đăng nhập thất bại, vui lòng thử lại sau.");
+      }
     }
   };
 

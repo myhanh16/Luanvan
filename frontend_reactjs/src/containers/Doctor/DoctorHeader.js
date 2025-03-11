@@ -54,14 +54,14 @@ const DoctorHeader = () => {
             className={`admin-menu-item ${isActive("/create-shedule")}`} // Thêm class active nếu đang ở trang này
             onClick={() => navigate("/create-shedule")}
           >
-            <FaCalendarAlt className="admin-icon" /> Tạo Lịch Làm Việc
+            <FaFileMedical className="admin-icon" /> Tạo Lịch Làm Việc
           </div>
-          {/* <div
-            className={`admin-menu-item ${isActive("")}`} // Thêm class active nếu đang ở trang này
-            // onClick={() => navigate("/create-doctor")}
+          <div
+            className={`admin-menu-item ${isActive("/schedule")}`} // Thêm class active nếu đang ở trang này
+            onClick={() => navigate("/schedule")}
           >
-            <FaFileMedical className="admin-icon" /> Hồ sơ bệnh án
-          </div> */}
+            <FaCalendarAlt className="admin-icon" /> Lịch Làm Việc
+          </div>
         </div>
         <div className="admin-right">
           <div className="admin-user">

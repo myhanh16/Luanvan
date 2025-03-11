@@ -67,7 +67,21 @@ const CreateSchedules = () => {
       <DoctorHeader />
       <div className="container-schedule">
         <h2>Tạo lịch làm việc cá nhân</h2>
-
+        <p
+          style={{
+            fontWeight: "bold",
+            color: "#d9534f",
+            fontSize: "16px",
+            backgroundColor: "#f8d7da",
+            padding: "10px",
+            borderRadius: "5px",
+            border: "1px solid #f5c6cb",
+            marginBottom: "20px",
+          }}
+        >
+          LƯU Ý: Yêu cầu các bác sĩ tạo ít nhất 8 khung giờ làm việc cho một
+          ngày.
+        </p>
         <label>Chọn ngày:</label>
         <input
           type="date"

@@ -1,6 +1,6 @@
 const session = require("express-session");
 const { format } = require("date-fns");
-const { vi, el, ca } = require("date-fns/locale");
+const { vi, el, ca, da } = require("date-fns/locale");
 const crypto = require("crypto");
 const db = require("../models");
 const { getUserbyID } = require("../controllers/CRUDController");
@@ -10,8 +10,11 @@ const { getAllUser } = require("./CRUD");
 const { rejects } = require("assert");
 const { atob } = require("buffer");
 const nodemailer = require("nodemailer");
-const { log } = require("console");
+const { log, error } = require("console");
 const { Op } = require("sequelize");
+const moment = require("moment");
+const axios = require("axios");
+const CryptoJS = require("crypto-js");
 
 const handelUserLogin = (email, password) => {
   return new Promise(async (resolve, reject) => {
@@ -31,6 +34,7 @@ const handelUserLogin = (email, password) => {
             "gender",
             "birthYear",
             "role",
+            "isActive",
           ],
           include: [
             {
@@ -46,25 +50,30 @@ const handelUserLogin = (email, password) => {
         });
 
         if (user) {
-          // Hash mật khẩu người dùng nhập vào
-          const hashedPassword = crypto
-            .createHash("sha1")
-            .update(password)
-            .digest("hex");
-
-          // So sánh mật khẩu đã băm với mật khẩu trong DB
-          if (hashedPassword === user.password) {
-            userData.errCode = 0;
-            userData.errMessage = "Đăng nhập thành công";
-            delete user.password;
-            // userData.user = user;
-            userData.user = {
-              ...user.toJSON(),
-              doctorID: user.doctor ? user.doctor.id : null, // Gán doctorID nếu có
-            };
+          if (!user.isActive) {
+            userData.errCode = 4;
+            userData.errMessage = "Tài khoản của bạn đã bị vô hiệu hóa";
           } else {
-            userData.errCode = 3;
-            userData.errMessage = "Sai mật khẩu";
+            // Hash mật khẩu người dùng nhập vào
+            const hashedPassword = crypto
+              .createHash("sha1")
+              .update(password)
+              .digest("hex");
+
+            // So sánh mật khẩu đã băm với mật khẩu trong DB
+            if (hashedPassword === user.password) {
+              userData.errCode = 0;
+              userData.errMessage = "Đăng nhập thành công";
+              delete user.password;
+              // userData.user = user;
+              userData.user = {
+                ...user.toJSON(),
+                doctorID: user.doctor ? user.doctor.id : null, // Gán doctorID nếu có
+              };
+            } else {
+              userData.errCode = 3;
+              userData.errMessage = "Sai mật khẩu";
+            }
           }
         } else {
           userData.errCode = 2;
@@ -576,7 +585,6 @@ const GetAppointment = (userID) => {
           {
             model: db.schedules,
             as: "schedules",
-
             include: [
               {
                 model: db.time,
@@ -615,6 +623,11 @@ const GetAppointment = (userID) => {
             as: "status",
             attributes: ["id", "name"],
           },
+          // {
+          //   model: db.payment, // 🔥 Thêm bảng `payment` vào truy vấn
+          //   as: "payment",
+          //   attributes: ["status", "amount", "transactionID"], // Lấy trạng thái & số tiền thanh toán
+          // },
         ],
         attributes: ["id", "booking_date", "statusID"],
         order: [
@@ -631,7 +644,7 @@ const GetAppointment = (userID) => {
 
       resolve(booking);
     } catch (e) {
-      console.error("Lỗi trong GetBooking:", e);
+      console.error("Lỗi trong GetAppointment:", e);
       reject({
         errCode: 500,
         errMessage: "Lỗi truy vấn dữ liệu",
@@ -810,6 +823,234 @@ const getUserInfo = (id) => {
   });
 };
 
+/*-----------------------PAYMENT----------------------- */
+const config = {
+  app_id: "2554",
+  key1: "sdngKKJmqEMzvh5QQcdD2A9XBSKUNaYn",
+  key2: "trMrHtvjo6myautxDUiAcYsVtaeQ8nhf",
+  endpoint: "https://sb-openapi.zalopay.vn/v2/create",
+};
+
+//API thanh toan ZaloPay
+const createPayment = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const booking = await db.booking.findOne({
+        where: { id: data.bookingID },
+      });
+      if (!booking) {
+        return reject({ message: "Không tồn tại lịch hẹn" });
+      }
+      const userID = booking.userID;
+
+      // Tạo transactionID
+      const transID = Math.floor(Math.random() * 1000000);
+      const app_trans_id = `${moment().format("YYMMDD")}_${transID}`;
+
+      // Tạo đơn hàng
+      const order = {
+        app_id: config.app_id,
+        app_trans_id,
+        app_user: `user_${userID}`,
+        app_time: Date.now(),
+        amount: Number(data.amount),
+        embed_data: JSON.stringify({
+          bookingID: String(data.bookingID),
+          merchantinfo: "booking_payment",
+        }),
+        item: JSON.stringify([]),
+        description: `Thanh toán cho lịch hẹn #${data.bookingID}`,
+        // bank_code: "CC",
+        callback_url:
+          "https://5bf6-2402-800-63ab-f2a4-8147-1319-cf7b-3971.ngrok-free.app/api/callback",
+      };
+      console.log("url:", order.callback_url);
+
+      console.log(
+        "📢 Dữ liệu gửi lên ZaloPay:",
+        JSON.stringify(order, null, 2)
+      );
+
+      // Tạo chữ ký bảo mật
+      const dataString =
+        `${config.app_id}|${order.app_trans_id}|${order.app_user}|` +
+        `${order.amount}|${order.app_time}|${order.embed_data}|${order.item}`;
+      console.log("📝 Chuỗi `dataString` trong createPayment:", dataString);
+
+      // const hmac = crypto.createHmac("sha256", config.key1);
+      // order.mac = hmac.update(dataString).digest("hex");
+      order.mac = CryptoJS.HmacSHA256(dataString, config.key1).toString();
+
+      console.log("🔑 HMAC:", order.mac);
+
+      // Gửi yêu cầu đến ZaloPay
+      const response = await axios.post(config.endpoint, null, {
+        params: order,
+      });
+
+      console.log("📢 Phản hồi từ ZaloPay API:", response.data);
+
+      if (!response.data || response.data.return_code !== 1) {
+        return reject({
+          message: `Lỗi từ ZaloPay: ${response.data.return_message}`,
+        });
+      }
+
+      // Lưu thông tin thanh toán vào database
+      await db.payment.create({
+        bookingID: data.bookingID,
+        amount: data.amount,
+        status: "PENDING",
+        transactionID: app_trans_id,
+      });
+
+      if (!response.data || response.data.return_code !== 1) {
+        return reject({
+          message: `Lỗi từ ZaloPay: ${response.data.return_message}`,
+        });
+      }
+
+      resolve({ result: response.data.order_url });
+    } catch (e) {
+      console.log("Lỗi khi gọi API ZaloPay:", e.response?.data || e.message);
+      reject(e);
+    }
+  });
+};
+
+const processZaloPayCallback = async (data, mac) => {
+  try {
+    console.log("📢 Callback từ ZaloPay:", data);
+    console.log("📢 Chữ ký MAC từ ZaloPay:", mac);
+
+    if (!data || typeof data !== "string") {
+      console.error("❌ Lỗi: Dữ liệu `data` không hợp lệ!");
+      return { returncode: -4, returnmessage: "Invalid data format" };
+    }
+
+    // 🔥 Giữ nguyên `data` để tính chữ ký MAC
+    const computedMac = CryptoJS.HmacSHA256(data, config.key2).toString(
+      CryptoJS.enc.Hex
+    );
+    console.log("🔑 Chữ ký MAC tính toán:", computedMac);
+
+    if (mac !== computedMac) {
+      console.error("❌ Chữ ký MAC không hợp lệ!");
+      return { returncode: -1, returnmessage: "Invalid HMAC" };
+    }
+
+    // ✅ Sau khi xác thực chữ ký, parse JSON
+    const parsedData = JSON.parse(data);
+    console.log("✅ Dữ liệu sau khi parse:", parsedData);
+
+    // Lấy bookingID từ `embed_data`
+    let embedData;
+    try {
+      embedData = JSON.parse(parsedData.embed_data);
+    } catch (error) {
+      console.error("❌ Lỗi khi parse `embed_data`:", error);
+      return { returncode: -3, returnmessage: "Invalid embed_data format" };
+    }
+
+    const bookingID = embedData.bookingID || null;
+    if (!bookingID) {
+      console.log("❌ Không tìm thấy bookingID!");
+      return { returncode: -2, returnmessage: "BookingID not found" };
+    }
+
+    // ✅ Cập nhật trạng thái thanh toán trong database
+    const isSuccess = parsedData.zp_trans_id ? "SUCCESS" : "FAILED";
+    const status = isSuccess;
+    console.log("Zp_trans_id: ", parsedData.zp_trans_id);
+
+    const result = await db.payment.update(
+      { status, transactionID: data.app_trans_id },
+      { where: { bookingID } }
+    );
+
+    if (result[0] === 0) {
+      console.log("⚠️ Không tìm thấy bookingID trong database!");
+      return { returncode: -2, returnmessage: "BookingID not found" };
+    }
+
+    return { returncode: 1, returnmessage: "Success" };
+  } catch (error) {
+    console.error("❌ Lỗi xử lý callback:", error);
+    return { returncode: 0, returnmessage: "Server error" };
+  }
+};
+
+const PaymentStatus = (bookingID) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const appointment = await db.booking.findOne({
+        where: { id: bookingID },
+        include: [
+          {
+            model: db.schedules,
+            as: "schedules",
+            include: [
+              {
+                model: db.doctor,
+                as: "Doctor",
+                attributes: ["onlineConsultation"],
+              },
+            ],
+          },
+        ],
+      });
+
+      if (!appointment) {
+        return resolve({
+          errCode: 2,
+          errMessage: "Lịch hẹn không tồn tại",
+          result: null,
+        });
+      }
+
+      // Kiểm tra nếu schedules không tồn tại
+      if (!appointment.schedules) {
+        return resolve({
+          errCode: 3,
+          errMessage: "Lịch hẹn này không có thông tin lịch trình",
+          result: null,
+        });
+      }
+
+      // Kiểm tra nếu lịch trình là online
+      const isOnlineConsultation = Array.isArray(appointment.schedules)
+        ? appointment.schedules.some(
+            (schedule) => Number(schedule.Doctor?.onlineConsultation) === 1
+          )
+        : Number(appointment.schedules.Doctor?.onlineConsultation) === 1;
+
+      if (!isOnlineConsultation) {
+        return resolve({
+          errCode: 3,
+          errMessage: "Lịch hẹn này là offline, không có thanh toán online",
+          result: null,
+        });
+      }
+
+      // Lấy thông tin thanh toán
+      const payments = await db.payment.findAll({
+        where: { bookingID },
+        attributes: ["status", "amount", "transactionID"],
+      });
+
+      resolve({
+        payments,
+      });
+    } catch (e) {
+      reject({
+        errCode: 500,
+        errMessage: "Lỗi server",
+        error: e.message,
+      });
+    }
+  });
+};
+
 module.exports = {
   handelUserLogin,
   getAllUsers,
@@ -822,4 +1063,7 @@ module.exports = {
   sendBookingConfirmationEmail,
   getUserInfo,
   searchSpecialty,
+  createPayment,
+  processZaloPayCallback,
+  PaymentStatus,
 };

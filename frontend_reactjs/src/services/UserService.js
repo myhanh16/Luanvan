@@ -66,6 +66,17 @@ const handleSearchSpecialty = (specialtyName) => {
   return axios.get(`/api/search-specialty?name=${specialtyName}`);
 };
 
+const handelPayMent = (data) => {
+  return axios.post("/api/zalopay", data);
+};
+
+const handleCallback = (data) => {
+  return axios.post("/api/callback", data);
+};
+
+const handelPaymentStatus = (bookingID) => {
+  return axios.get(`/api/get-payment?bookingID=${bookingID}`);
+};
 export default {
   Login,
   GetAllUser,
@@ -83,4 +94,7 @@ export default {
   AbortAppointment,
   UserProfile,
   handleSearchSpecialty,
+  handelPayMent,
+  handleCallback,
+  handelPaymentStatus,
 };

@@ -12,6 +12,8 @@ const {
   getDoctorByid,
   EditDoctor,
   getAlltDoctors,
+  disableDoctorAccount,
+  getWorkingDaysByDoctor,
 } = require("../services/Admin");
 
 const LoginAdmin = async (req, res) => {
@@ -208,6 +210,44 @@ const handlegetAllDoctors = async (req, res) => {
   }
 };
 
+//Vô hiệu hóa tài khoản
+const handledisableDoctorAccount = async (req, res) => {
+  try {
+    const userID = req.query.id;
+    const data = await disableDoctorAccount(userID);
+    return res.status(200).json({
+      errCode: data.errCode,
+      errMessage: data.errMessage,
+      data,
+    });
+  } catch (e) {
+    return res.status(500).json({
+      errCode: 1,
+      errMessage: "Internal Server Error",
+    });
+  }
+};
+
+//Tinh so ngay lam viec vua bac si tren thanh
+const handlegetWorkingDaysByDoctor = async (req, res) => {
+  try {
+    const { month } = req.query;
+    if (!month) {
+      return res.status(400).json({ message: "Vui lòng cung cấp tháng." });
+    }
+
+    const doctorStats = await getWorkingDaysByDoctor(parseInt(month));
+    return res.status(200).json(doctorStats);
+  } catch (e) {
+    console.error("Lỗi khi lấy số ngày làm việc của bác sĩ:", e);
+    return res
+      .status(500)
+      .json({
+        errMessage: "Lỗi khi lấy số ngày làm việc của bác sĩ",
+        error: e.message,
+      });
+  }
+};
 module.exports = {
   LoginAdmin,
   handlegetSpecialty,
@@ -219,4 +259,6 @@ module.exports = {
   handlegetDoctorByid,
   handleEditDoctor,
   handlegetAllDoctors,
+  handledisableDoctorAccount,
+  handlegetWorkingDaysByDoctor,
 };

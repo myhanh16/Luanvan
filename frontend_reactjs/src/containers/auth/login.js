@@ -63,7 +63,7 @@ const Login = () => {
         console.log(response.data.user.role);
         navigate("/"); // Điều hướng tới trang chủ sau khi đăng nhập thành công
       } else {
-        setError("Bạn không có quyền truy cập vào trang này");
+        setError(response.data.errMessage);
       }
     } catch (err) {
       console.error("Lỗi đăng nhập:", err);

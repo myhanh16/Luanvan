@@ -22,6 +22,9 @@ const {
   handleAbortAppointment,
   handleGetUserInfo,
   handleSearchSpecialty,
+  handlecreatePayment,
+  handleZaloPayCallback,
+  handelPayment,
 } = require("../controllers/Usercontroller");
 
 const {
@@ -35,6 +38,8 @@ const {
   handlegetDoctorByid,
   handleEditDoctor,
   handlegetAllDoctors,
+  handledisableDoctorAccount,
+  handlegetWorkingDaysByDoctor,
 } = require("../controllers/Admin");
 
 const {
@@ -43,6 +48,7 @@ const {
   handleGetMedicalRecordsByUserID,
   handleGetAllTimeSlot,
   handleCreateSchedules,
+  handlegetScheduleBydoctorID,
 } = require("../controllers/Doctor");
 
 router.get("/", gethome);
@@ -81,6 +87,12 @@ router.post("/api/abort-appointment", handleAbortAppointment);
 router.get("/api/get-Userinfo", handleGetUserInfo);
 
 router.get("/api/search-specialty", handleSearchSpecialty);
+
+router.post("/api/zalopay", handlecreatePayment);
+
+router.post("/api/callback", handleZaloPayCallback);
+
+router.get("/api/get-payment", handelPayment);
 /*-----------------ADMIN---------------------- */
 router.post("/api/login-admin", LoginAdmin);
 
@@ -102,6 +114,8 @@ router.get("/api/get-alldoctor", handlegetAllDoctors);
 
 router.post("/api/edit-doctor", handleEditDoctor);
 
+router.post("/api/disableDoctorAccount", handledisableDoctorAccount),
+  router.get("/api/getWokingByDoctor", handlegetWorkingDaysByDoctor);
 /*-----------------DOCTOR---------------------- */
 router.get("/api/get-appointentByDoctorID", handleGetAppointmentByDoctorID);
 
@@ -115,4 +129,7 @@ router.get(
 router.get("/api/get-AllTimeSlots", handleGetAllTimeSlot);
 
 router.post("/api/create-schedules", handleCreateSchedules);
+
+router.get("/api/get-scheduleByDoctorID", handlegetScheduleBydoctorID);
+
 module.exports = router;

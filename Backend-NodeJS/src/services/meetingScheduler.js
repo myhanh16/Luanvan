@@ -14,7 +14,7 @@ function isMeetLinkExpired(booking) {
   const scheduleTime = new Date(
     `${booking.schedules.date}T${booking.schedules.Time.starttime}`
   );
-  return Date.now() - scheduleTime.getTime() > 5 * 60000; // Quá 1 giờ → hết hạn
+  return Date.now() - scheduleTime.getTime() > 60 * 60000; // Quá 1 giờ → hết hạn
 }
 
 const formatDate = (dateString) => {
@@ -89,16 +89,17 @@ async function scheduleMeetingCheck() {
       }
 
       // Nhắc nhở khi cuộc hẹn bắt đầu
-      if (timeDiff <= 0 && booking.meetlink) {
-        await sendEmail(
-          patientEmail,
-          "Cuộc hẹn bắt đầu ngay bây giờ!",
-          booking.meetlink,
-          booking.schedules.Doctor?.name || "Không xác định",
-          booking.schedules.date || "0000-00-00",
-          booking.schedules.Time?.starttime || "00:00"
-        );
-      }
+      // if (timeDiff <= 0 && booking.meetlink) {
+      //   await sendEmail(
+      //     patientEmail,
+      //     "Cuộc hẹn bắt đầu ngay bây giờ!",
+      //     booking.meetlink,
+      //     booking.schedules.Doctor?.name || "Không xác định",
+      //     booking.schedules.date || "0000-00-00",
+      //     booking.schedules.Time?.starttime - booking.schedules.Time?.endtime ||
+      //       "00:00"
+      //   );
+      // }
     }
   } catch (error) {
     console.error("❌ Lỗi kiểm tra cuộc hẹn:", error);

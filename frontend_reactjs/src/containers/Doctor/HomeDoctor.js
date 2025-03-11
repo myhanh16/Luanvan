@@ -167,16 +167,16 @@ const HomeDoctor = () => {
                       <td>{formatDate(appointment.booking_date)}</td>
                       <td>{appointment.status.name}</td>
                       <td>
-                        {appointment.statusID !== 2 &&
-                          new Date(appointment.schedules.date) >=
-                            new Date() && (
-                            <button
-                              className="btn btn-primary btn-sm"
-                              onClick={() => handleShowModal(appointment)}
-                            >
-                              <FaNotesMedical />
-                            </button>
-                          )}
+                        {appointment.statusID !== 2 && (
+                          // new Date(appointment.schedules.date) >=
+                          //   new Date() &&
+                          <button
+                            className="btn btn-primary btn-sm"
+                            onClick={() => handleShowModal(appointment)}
+                          >
+                            <FaNotesMedical />
+                          </button>
+                        )}
                       </td>
 
                       {Number(
@@ -184,13 +184,14 @@ const HomeDoctor = () => {
                       ) === 1 && (
                         <td>
                           {appointment.meetlink ? (
-                            <a
-                              href={appointment.meetlink}
-                              target="_blank"
-                              rel="noopener noreferrer"
+                            <button
+                              className="btn btn-success btn-sm"
+                              onClick={() =>
+                                setSelectedAppointment(appointment)
+                              }
                             >
-                              Tham gia
-                            </a>
+                              Xem Cuộc Họp
+                            </button>
                           ) : (
                             "Chưa tạo"
                           )}
@@ -207,6 +208,22 @@ const HomeDoctor = () => {
                 )}
               </tbody>
             </table>
+            {selectedAppointment && selectedAppointment.meetlink && (
+              <div className="meeting-container text-center mt-4">
+                <h4>Cuộc họp trực tuyến</h4>
+                <iframe
+                  src={selectedAppointment.meetlink}
+                  allow="camera; microphone; fullscreen"
+                  className="meeting-frame"
+                ></iframe>
+                <button
+                  className="close-button"
+                  onClick={() => setSelectedAppointment(null)}
+                >
+                  Đóng
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>

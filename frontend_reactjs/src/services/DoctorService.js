@@ -17,10 +17,20 @@ const handleGetAllTimeSlot = () => {
 const handleCreateSchedules = (data) => {
   return axios.post("/api/create-schedules", data);
 };
+
+const handlegetScheduleBydoctorID = (doctorID) => {
+  return axios.get(`/api/get-scheduleByDoctorID?doctorID=${doctorID}`);
+};
+
+const handlegetjitsi = (data) => {
+  return axios.post("/api/jitsi-token", data);
+};
 export default {
   handleGetAppointmentByDoctorID,
   handleCreateMedicalRecord,
   handleGetMedicalRecordsByUserID,
   handleGetAllTimeSlot,
   handleCreateSchedules,
+  handlegetScheduleBydoctorID,
+  handlegetjitsi,
 };

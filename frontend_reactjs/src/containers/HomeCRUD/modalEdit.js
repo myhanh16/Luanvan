@@ -10,6 +10,7 @@ const UpdateUserModal = ({ isOpen, toggle, currentUser, onConfirm }) => {
     address: "",
     userID: "",
     experience_years: "",
+    onlineConsultation: "",
   });
 
   useEffect(() => {
@@ -21,7 +22,12 @@ const UpdateUserModal = ({ isOpen, toggle, currentUser, onConfirm }) => {
         phone: currentUser.phone || "",
         address: currentUser.address || "",
         userID: currentUser.id || "",
-        experience_years: currentUser.experience_years || "",
+        // experience_years: currentUser.experience_years || "",
+        experience_years: currentUser.experience_years
+          ? Number(currentUser.experience_years)
+          : 0,
+
+        onlineConsultation: Number(currentUser.onlineConsultation) || 0, // Đảm bảo là kiểu số
       });
     }
   }, [currentUser]);
@@ -30,7 +36,9 @@ const UpdateUserModal = ({ isOpen, toggle, currentUser, onConfirm }) => {
     const { name, value } = e.target;
     setFormData((prevState) => ({
       ...prevState,
-      [name]: value,
+      // [name]: value,
+      [name]: name === "onlineConsultation" ? Number(value) : value, // Ép kiểu thành số,
+      // [name]: name === "experience_years" ? Number(value) : value, // Ép kiểu số
     }));
   };
 
@@ -109,6 +117,21 @@ const UpdateUserModal = ({ isOpen, toggle, currentUser, onConfirm }) => {
               value={formData.experience_years}
               onChange={handleChange}
             />
+          </div>
+          <div className="mb-3">
+            <label htmlFor="inputonlineConsultation">Tư vấn trực tuyến</label>
+            <select
+              id="inputonlineConsultation"
+              className="form-control"
+              name="onlineConsultation"
+              value={formData.onlineConsultation}
+              onChange={handleChange}
+            >
+              <option value="0" defaultValue>
+                Tư vấn tại sơ sở
+              </option>
+              <option value="1">Tư vấn trực tuyến</option>
+            </select>
           </div>
         </form>
       </ModalBody>

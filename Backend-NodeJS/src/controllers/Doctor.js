@@ -8,6 +8,7 @@ const {
   GetMedicalRecordsByUserID,
   GetAllTimeSlot,
   CreateSchedules,
+  getSchedule,
 } = require("../services/Doctor");
 
 const handleGetAppointmentByDoctorID = async (req, res) => {
@@ -56,10 +57,16 @@ const handleGetMedicalRecordsByUserID = async (req, res) => {
     if (!medicalRecords || medicalRecords.length === 0) {
       return res.status(200).json({
         errCode: 0,
-        erMessag: "Bệnh nhân chưa có hồ sơ bệnh án.",
+        errMessage: "Bệnh nhân chưa có hồ sơ bệnh án.",
         data: [],
       });
     }
+
+    // Sắp xếp từ cũ đến mới theo `createdAt`
+    medicalRecords.sort(
+      (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
+    );
+
     return res.status(200).json({
       errCode: 0,
       errMessage: "Lấy hồ sơ bệnh án thành công.",
@@ -67,7 +74,6 @@ const handleGetMedicalRecordsByUserID = async (req, res) => {
     });
   } catch (e) {
     console.log(e);
-
     return res.status(500).json({
       errCode: 1,
       errMessage: "Lỗi server, vui lòng thử lại sau.",
@@ -108,10 +114,28 @@ const handleCreateSchedules = async (req, res) => {
     });
   }
 };
+
+const handlegetScheduleBydoctorID = async (req, res) => {
+  try {
+    const doctorID = req.query.doctorID;
+    const schedule = await getSchedule(doctorID);
+    res.status(200).json({
+      errCode: 0,
+      errMessage: "OK",
+      schedule,
+    });
+  } catch (error) {
+    res.status(500).json({
+      errCode: 1,
+      errMessage: error,
+    });
+  }
+};
 module.exports = {
   handleGetAppointmentByDoctorID,
   handleCreateMedicalRecord,
   handleGetMedicalRecordsByUserID,
   handleGetAllTimeSlot,
   handleCreateSchedules,
+  handlegetScheduleBydoctorID,
 };

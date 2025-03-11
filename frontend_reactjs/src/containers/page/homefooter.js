@@ -6,7 +6,7 @@ const HomeFooter = () => {
   return (
     <div className="section-footer">
       <p>
-        <FaCopyright /> 2025 Nguyễn Thị Mỹ Hạnh.
+        <FaCopyright /> 2025 My Doctor.
       </p>
       <p>
         Liên hệ: <a href="#"> hanhnguyen6118@gmail.com</a>

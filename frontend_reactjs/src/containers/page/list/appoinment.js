@@ -14,22 +14,46 @@ const AppointmentGrid = () => {
   const [error, setError] = useState("");
   const [user, setUser] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [paymentStatus, setPaymentStatus] = useState({});
 
   const fetchAppointment = async (userID) => {
-    if (!userID) return;
+    if (!userID) {
+      console.warn("⚠️ Không có userID, không gọi API.");
+      return;
+    }
+
     try {
       const response = await UserService.Appointment(userID);
-      if (response.data.errCode === 0) {
-        setAppointments(response.data.result);
-        setFilteredAppointments(response.data.result); // Đặt dữ liệu mặc định khi không có lọc
-        console.log(response.data.result);
+      console.log("📢 API Appointment Response:", response.data); // Kiểm tra API trả về gì
+
+      if (response.data && response.data.errCode === 0) {
+        const results = response.data.result;
+        if (Array.isArray(results) && results.length > 0) {
+          setAppointments(results);
+          setFilteredAppointments(results);
+
+          // 🔥 Kiểm tra trạng thái thanh toán ngay sau khi lấy danh sách lịch hẹn
+          results.forEach((appointments) => {
+            if (
+              appointments.status?.id === 2 &&
+              Number(appointments.schedules?.Doctor?.onlineConsultation) === 1
+            ) {
+              checkPaymentStatus(appointments.id);
+            }
+          });
+        } else {
+          console.warn("⚠️ Không có lịch hẹn nào.");
+          setAppointments([]);
+          setFilteredAppointments([]);
+        }
       } else {
-        console.error("Lỗi lấy lịch hẹn:", response.errMessage);
+        console.error("❌ Lỗi lấy lịch hẹn:", response.data.errMessage);
         setAppointments([]);
         setFilteredAppointments([]);
       }
     } catch (error) {
-      setError("Lỗi tải thông tin lich hen");
+      console.error("❌ Lỗi tải thông tin lịch hẹn:", error);
+      setError("Lỗi tải thông tin lịch hẹn");
     }
   };
 
@@ -84,6 +108,75 @@ const AppointmentGrid = () => {
       alert("Lỗi khi hủy lịch hẹn, vui lòng thử lại!");
     }
   };
+
+  const handelPayMent = async (bookingID, amount) => {
+    try {
+      const response = await UserService.handelPayMent(
+        { bookingID, amount },
+        { headers: { "Content-Type": "application/json" } }
+      );
+      console.log("📢 Phản hồi từ API thanh toán:", response.data);
+      if (response.data.result) {
+        window.open(response.data.result, "_blank");
+        // window.location.href = response.data.result;
+        setTimeout(() => checkPaymentStatus(bookingID), 2000);
+      } else {
+        alert("Lỗi khi tạo giao dịch thanh toán!");
+      }
+    } catch (error) {
+      console.error("Lỗi thanh toán:", error);
+      alert("Không thể thực hiện thanh toán, vui lòng thử lại!");
+    }
+  };
+
+  const checkPaymentStatus = async (bookingID) => {
+    if (!bookingID) {
+      console.error("❌ bookingID bị null hoặc undefined!");
+      return;
+    }
+
+    try {
+      const response = await UserService.handelPaymentStatus(bookingID);
+      console.log("📢 Trạng thái thanh toán API:", response.data);
+
+      if (response.data.payment && response.data.payment.payments?.length > 0) {
+        const isPaid = response.data.payment.payments.some(
+          (p) => p.status === "SUCCESS"
+        );
+
+        console.log("🔍 bookingID:", bookingID);
+        console.log("✅ Đã thanh toán:", isPaid);
+
+        setPaymentStatus((prev) => {
+          const updatedStatus = {
+            ...prev,
+            [bookingID]: isPaid ? "SUCCESS" : "PENDING",
+          };
+          console.log("🔄 Cập nhật paymentStatus:", updatedStatus);
+          return updatedStatus;
+        });
+      }
+    } catch (error) {
+      console.error("Lỗi kiểm tra thanh toán:", error);
+    }
+  };
+
+  useEffect(() => {
+    console.log("🔥 paymentStatus mới nhất:", paymentStatus);
+  }, [paymentStatus]);
+
+  useEffect(() => {
+    if (appointments.length > 0) {
+      appointments.forEach((appointment) => {
+        if (
+          appointment.status?.id === 2 &&
+          Number(appointment.schedules?.Doctor?.onlineConsultation) === 1
+        ) {
+          checkPaymentStatus(appointment.id);
+        }
+      });
+    }
+  }, [appointments]);
 
   useEffect(() => {
     const token = sessionStorage.getItem("userToken");
@@ -213,6 +306,31 @@ const AppointmentGrid = () => {
                         Hủy lịch hẹn
                       </button>
                     )}
+
+                    {appointment.status?.id === 2 &&
+                      Number(doctor?.onlineConsultation) === 1 &&
+                      (console.log(
+                        "💡 Trạng thái thanh toán của lịch hẹn",
+                        appointment.id,
+                        paymentStatus[appointment.id]
+                      ),
+                      paymentStatus[appointment.id] === "SUCCESS" ? (
+                        <span className="ribbon">Đã thanh toán</span>
+                      ) : (
+                        <button
+                          className="payment"
+                          onClick={() =>
+                            handelPayMent(
+                              appointment.id,
+                              doctor?.specialty?.price?.price
+                            )
+                          }
+                        >
+                          {paymentStatus[appointment.id] === "PENDING"
+                            ? "Đang xử lý..."
+                            : "Thanh Toán"}
+                        </button>
+                      ))}
                   </div>
                 );
               })

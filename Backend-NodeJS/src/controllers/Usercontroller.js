@@ -13,6 +13,9 @@ const {
   AbortAppointment,
   getUserInfo,
   searchSpecialty,
+  createPayment,
+  processZaloPayCallback,
+  PaymentStatus,
 } = require("../services/UserService");
 
 const handleLogin = async (req, res) => {
@@ -223,6 +226,74 @@ const handleSearchSpecialty = async (req, res) => {
     });
   }
 };
+
+//PAYMENT
+const handlecreatePayment = async (req, res) => {
+  try {
+    console.log("Du lieu nhan tu Frontend:", req.body);
+
+    const result = await createPayment(req.body);
+    // console.log(result);
+    console.log("🟢 Kết quả trả về cho Frontend:", result);
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+};
+
+const handleZaloPayCallback = async (req, res) => {
+  console.log("📢 Headers từ ZaloPay:", req.headers);
+  console.log("📢 Nhận callback từ ZaloPay:", req.body);
+
+  if (!req.body || typeof req.body !== "object") {
+    return res
+      .status(400)
+      .json({ returncode: -1, returnmessage: "Invalid request format" });
+  }
+
+  let { data, mac } = req.body;
+
+  if (!data || !mac) {
+    return res
+      .status(400)
+      .json({ returncode: -1, returnmessage: "Invalid callback data" });
+  }
+
+  try {
+    const result = await processZaloPayCallback(data, mac);
+    res.json(result);
+  } catch (error) {
+    console.error("❌ Lỗi xử lý callback:", error);
+    res.status(500).json({ returncode: 0, returnmessage: "Server error" });
+  }
+};
+
+const handelPayment = async (req, res) => {
+  try {
+    const bookingID = req.query.bookingID;
+    console.log("📌 Nhận request get-payment với bookingID:", bookingID);
+
+    if (!bookingID) {
+      return res.status(400).json({
+        errCode: 1,
+        errMessage: "Thiếu bookingID",
+      });
+    }
+
+    const payment = await PaymentStatus(bookingID);
+    console.log("✅ Kết quả PaymentStatus:", payment);
+
+    return res.status(200).json({
+      errCode: 0,
+      errMessage: "OK",
+      payment,
+    });
+  } catch (e) {
+    console.error("❌ Lỗi trong handelPayment:", e);
+    return res.status(500).json(e);
+  }
+};
+
 module.exports = {
   handleLogin,
   handleGetAll,
@@ -234,4 +305,7 @@ module.exports = {
   handleAbortAppointment,
   handleGetUserInfo,
   handleSearchSpecialty,
+  handlecreatePayment,
+  handleZaloPayCallback,
+  handelPayment,
 };

@@ -12,6 +12,7 @@ import {
   FaMobileAlt,
   FaStethoscope,
   FaMicroscope,
+  FaUser,
 } from "react-icons/fa";
 import "./homeheader.css";
 import { useNavigate, useLocation, Link } from "react-router-dom";
@@ -115,7 +116,6 @@ const Homeheader = () => {
       <div className="home-header-container">
         <div className="home-header-content">
           <div className="left-content">
-            <FaBars className="fa-bars" onClick={toggleMenu} />
             <div className="header-logo" onClick={handleGoToHome}></div>
           </div>
           <div className="center-content">
@@ -158,9 +158,12 @@ const Homeheader = () => {
             </div>
           </div>
           <div className="right-content">
-            <div className="support">
-              <FaQuestionCircle className="fa-question" />
-              Hỗ Trợ
+            <div className="child-content">
+              <FaUser className="fa-bars" onClick={toggleMenu} />
+
+              <div className="subs-tilte">Thông tin tài khoản</div>
+              {/* <FaQuestionCircle className="fa-question" />
+              Hỗ Trợ */}
             </div>
           </div>
         </div>

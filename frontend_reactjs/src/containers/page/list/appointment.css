@@ -36,6 +36,7 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease;
   border-left: 5px solid transparent;
+  position: relative;
 }
 
 .appointment-item:hover {
@@ -82,4 +83,49 @@
 
 .appointment-item.status-3 {
   border-left-color: #e74c3c; /* Màu đỏ cho lịch đã hủy */
+}
+
+.payment {
+  padding: 5px;
+  /* border: 2px; */
+  background-color: rgba(46, 240, 88, 0.836);
+}
+.payment:hover {
+  background-color: green;
+}
+
+.ribbon {
+  position: absolute;
+  bottom: 10px; /* Đưa xuống dưới */
+  left: 10px; /* Canh về trái */
+  width: 150px;
+  background: #00a878;
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+  padding: 5px 0;
+  /* transform: rotate(-30deg); Đổi góc nghiêng */
+  transform: none;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: block;
+  border-radius: 3px;
+}
+
+.ribbon::before,
+.ribbon::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  border-style: solid;
+  border-width: 10px;
+  border-color: #008d6c transparent transparent transparent;
+}
+
+.ribbon::before {
+  left: 0;
+}
+
+.ribbon::after {
+  right: 0;
 }

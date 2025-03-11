@@ -72,6 +72,10 @@ const MedicalRecordModal = ({ isOpen, toggle, onConfirm, appointment }) => {
     return `${day}/${month}/${year}`;
   };
 
+  // const sortedMedicalHistory = [...medicalHistory].sort(
+  //   (a, b) => new Date(a.date) - new Date(b.date)
+  // );
+
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg" centered>
       <ModalHeader toggle={toggle}>

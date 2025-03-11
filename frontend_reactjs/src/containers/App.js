@@ -31,6 +31,7 @@ import Appointment from "./page/list/appoinment";
 import UserProfile from "./page/UserProfile";
 import HomeDoctor from "./Doctor/HomeDoctor";
 import CreateSchedules from "./Doctor/CreateSchedule";
+import Schedule from "./Doctor/Schedule";
 function App() {
   return (
     <Router>
@@ -56,6 +57,7 @@ function App() {
         {/* -----------------------Router cho Doctor------------------ */}
         <Route path="/homedoctor" element={<HomeDoctor />} />
         <Route path="/create-shedule" element={<CreateSchedules />} />
+        <Route path="/schedule" element={<Schedule />} />
       </Routes>
     </Router>
   );

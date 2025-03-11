@@ -3,7 +3,13 @@ import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./home.css";
 import AdminService from "../../services/AdminService";
-import { FaEdit, FaTrashAlt, FaPlus } from "react-icons/fa";
+import {
+  FaEdit,
+  FaTrashAlt,
+  FaPlus,
+  FaUserCheck,
+  FaUserTimes,
+} from "react-icons/fa";
 import EditUserModal from "../auth/modalUser";
 import emitter from "../../utils/emitter";
 import UpdateUserModal from "./modalEdit";
@@ -40,6 +46,7 @@ const Home = () => {
       const response = await AdminService.GetAllDoctors();
 
       setDoctors(response.data.doctors);
+      console.log(response.data.doctors);
     } catch (err) {
       console.error("Lỗi khi tải danh sách người dùng:", err);
       setError("Không thể tải danh sách người dùng.");
@@ -97,8 +104,27 @@ const Home = () => {
 
   // Cập nhật tài khoản
   const handleUpdate = (doctor) => {
-    setSelectedUser(doctor);
-    setIsEditModalOpen(true); // Mở modal chỉnh sửa
+    if (!doctor || !doctor.User) {
+      console.error("Lỗi: Dữ liệu bác sĩ không hợp lệ", doctor);
+      return;
+    }
+
+    const selectedDoctor = {
+      id: doctor.User.id,
+      email: doctor.User.email || "",
+      fullname: doctor.User.fullname || "",
+      phone: doctor.User.phone || "",
+      address: doctor.User.address || "",
+      gender: doctor.User.gender || 0,
+      isActive: doctor.User.isActive || false,
+      specialty: doctor.specialty?.name || "",
+      experience_years: doctor.experience_years || 0,
+      onlineConsultation: doctor.onlineConsultation || 0,
+    };
+
+    console.log("Dữ liệu cập nhật:", selectedDoctor);
+    setSelectedUser(selectedDoctor);
+    setIsEditModalOpen(true);
   };
 
   const toggleEditModal = () => {
@@ -123,6 +149,28 @@ const Home = () => {
     }
   };
 
+  const handleToggleStatus = async (doctor) => {
+    const confirmMessage = doctor.User.isActive
+      ? `Bạn có chắc chắn muốn vô hiệu hóa tài khoản của ${doctor.User.fullname}?`
+      : `Bạn có chắc chắn muốn kích hoạt lại tài khoản của ${doctor.User.fullname}?`;
+
+    const confirmAction = window.confirm(confirmMessage);
+    if (!confirmAction) return;
+
+    try {
+      const response = await AdminService.disableDoctorAccount(doctor.User.id);
+      if (response && response.data && response.data.errCode === 0) {
+        alert(response.data.errMessage);
+        fetchUsers(); // Load lại danh sách bác sĩ
+      } else {
+        alert("Cập nhật trạng thái thất bại.");
+      }
+    } catch (error) {
+      console.error("Lỗi khi cập nhật trạng thái:", error);
+      alert("Có lỗi xảy ra khi cập nhật trạng thái.");
+    }
+  };
+
   return (
     <React.Fragment>
       <AdminHeader />
@@ -131,7 +179,7 @@ const Home = () => {
           <UpdateUserModal
             isOpen={isEditModalOpen}
             toggle={toggleEditModal}
-            currentUser={selectedUser}
+            currentUser={selectedUser} // Đảm bảo truyền đúng dữ liệu
             onConfirm={handleConfirmUpdate}
           />
           <div className="title text-center" style={{ fontSize: "20px" }}>
@@ -151,6 +199,7 @@ const Home = () => {
                   <th>Chuyên khoa</th>
                   <th>Năm kinh nghiệm</th>
                   <th>Tư vấn trực tuyến</th>
+                  <th>Trạng Thái</th>
                   <th>Cập nhật hồ sơ</th>
                 </tr>
               </thead>
@@ -171,10 +220,36 @@ const Home = () => {
                           ? "Không"
                           : "Có"}
                       </td>
+
+                      <td>
+                        <button
+                          className="btn btn-sm"
+                          onClick={() => handleToggleStatus(doctor)}
+                          style={{
+                            backgroundColor: doctor.User.isActive
+                              ? "green"
+                              : "red",
+                            color: "white",
+                          }}
+                        >
+                          {doctor.User.isActive ? (
+                            <>
+                              <FaUserCheck style={{ marginRight: "5px" }} />{" "}
+                              Đang hoạt động
+                            </>
+                          ) : (
+                            <>
+                              <FaUserTimes style={{ marginRight: "5px" }} /> Vô
+                              hiệu hóa
+                            </>
+                          )}
+                        </button>
+                      </td>
+
                       <td>
                         <button
                           className="btn btn-primary btn-sm"
-                          onClick={() => handleUpdate(doctor.User)}
+                          onClick={() => handleUpdate(doctor)}
                         >
                           <FaEdit />
                         </button>

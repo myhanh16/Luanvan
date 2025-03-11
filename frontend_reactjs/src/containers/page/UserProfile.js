@@ -78,7 +78,7 @@ const UserProfile = () => {
           </a>
           <span>/</span>
 
-          <span>Thông tin lịch khám</span>
+          <span>Thông tin cá nhân</span>
         </div>
 
         <div className="booking-container">
