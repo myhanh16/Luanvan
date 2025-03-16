@@ -212,7 +212,7 @@ const DoctorList = () => {
               />
               <div className="doctor-details">
                 <h3
-                  className="text-content"
+                  className=""
                   onClick={() => handelgetDoctorByid(doctor.id)}
                   style={{
                     cursor: "pointer",

@@ -20,7 +20,7 @@ import HomeFooter from "./homefooter";
 
 const Homepage = () => {
   return (
-    <div>
+    <div className="Home-Page">
       <Homeheader />
       <Specialty />
       <Doctor />

@@ -47,3 +47,29 @@
   font-size: 18px;
   color: #888;
 }
+
+@media screen and (max-width: 376px) {
+  .specialty-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    justify-content: center;
+  }
+
+  .specialty-item img {
+    width: 80px; /* Thu nhỏ hình ảnh để phù hợp */
+    height: 80px;
+  }
+
+  .specialty-item p {
+    font-size: 16px; /* Giảm kích thước chữ */
+  }
+
+  .title {
+    font-size: 20px;
+  }
+
+  .specialty-item {
+    padding: 10px;
+  }
+}

@@ -15,11 +15,6 @@
   flex-direction: column;
 }
 
-.specail-header {
-  height: 60px;
-  border: 1px solid orangered;
-}
-
 .specailty-body {
   /* border: 1px solid red; */
   margin-top: 20px;
@@ -70,9 +65,13 @@
 }
 
 .doctor-header {
-  height: 40px;
+  height: 50px; /* Điều chỉnh chiều cao */
   /* border: 1px solid green; */
-  padding-top: 10px;
+  padding: 10px 20px;
+  /* margin-bottom: 10px; */
+  display: flex;
+  justify-content: space-between; /* Đưa tiêu đề sang trái, nút sang phải */
+  align-items: center;
 }
 
 .title-section {
@@ -98,3 +97,75 @@
 }
 
 /* -------------------Slider----------------------- */
+@media screen and (max-width: 768px) {
+  .section-doctor {
+    height: auto;
+    margin-top: 20px;
+  }
+
+  .doctor-container {
+    margin: 0 30px;
+  }
+
+  .doctor-header {
+    height: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .title-section {
+    font-size: 18px;
+  }
+
+  .doctor-customize {
+    flex-wrap: wrap; /* Nếu có nhiều bác sĩ, chúng sẽ tự động xuống dòng */
+    justify-content: center;
+  }
+
+  .doctor-img {
+    height: 150px;
+    width: 150px;
+  }
+
+  .text-specialty {
+    font-size: 12px !important;
+  }
+}
+
+@media screen and (max-width: 376px) {
+  .section-doctor {
+    height: auto; /* Thay vì cố định 360px, cho phép tự mở rộng */
+    margin-top: 20px;
+  }
+
+  .doctor-container {
+    margin: 0 20px;
+  }
+  .doctor-header {
+    height: auto;
+    display: flex;
+    justify-content: space-between;
+    text-align: center;
+  }
+
+  .title-section {
+    font-size: 16px;
+    margin-bottom: 5px;
+  }
+
+  .doctor-img {
+    height: 80px;
+    width: 80px;
+  }
+
+  .doctor-customize {
+    flex-direction: column;
+    height: auto;
+    padding: 5px 10px;
+  }
+
+  body .text-specialty {
+    font-size: 10px !important;
+  }
+}

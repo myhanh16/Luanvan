@@ -98,7 +98,7 @@ const Specialty = () => {
             Xem thêm
           </button>
         </div>
-        <div className="specailty-body">
+        <div className="specialty-body">
           <Slider {...settings}>
             {specailty.length > 0 ? (
               specailty.map((specialties, index) => (

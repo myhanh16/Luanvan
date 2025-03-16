@@ -115,22 +115,47 @@ button:focus {
 }
 
 /* Responsive: Đảm bảo form đẹp trên di động */
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   .login-container {
-    padding: 20px;
-    margin: 50px auto;
+    width: 100%;
+    max-width: 500px; /* Đảm bảo form rộng hơn một chút */
+    margin: 100px auto; /* Cải thiện khoảng cách trên */
+    padding: 30px 30px; /* Thêm padding bên trong để form rộng rãi */
+    border: 1px solid #ddd;
+    border-radius: 10px; /* Bo góc mềm mại */
+    background-color: #ffffff;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1); /* Bóng mờ tạo cảm giác chiều sâu */
   }
 
   h2 {
-    font-size: 24px;
+    font-size: 22px; /* Giảm font size để phù hợp với màn hình nhỏ */
+    margin-bottom: 30px;
   }
 
-  input {
-    padding: 12px;
+  label {
+    font-size: 14px; /* Chữ label nhỏ lại */
+  }
+
+  .login-input {
+    padding: 20px !important; /* Giảm padding input */
+    font-size: 14px !important;
+    border-radius: 6px !important;
   }
 
   button {
-    padding: 12px;
+    padding: 10px;
+    font-size: 16px;
+    margin-top: 15px;
+  }
+
+  .eye-icon {
+    right: 10px; /* Dịch icon mắt về gần input */
+    font-size: 16px;
+    margin-top: 5px;
+  }
+
+  .error-message {
+    font-size: 12px;
   }
 }
 
@@ -148,4 +173,48 @@ button:focus {
   border: 1px solid #ced4da !important;
   border-radius: 0.25rem !important;
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out !important;
+}
+
+@media (max-width: 376px) {
+  .login-container {
+    width: 100%;
+    max-width: 350px; /* Đảm bảo form rộng hơn một chút */
+    margin: 100px auto; /* Cải thiện khoảng cách trên */
+    padding: 5px 20px; /* Thêm padding bên trong để form rộng rãi */
+    border: 1px solid #ddd;
+    border-radius: 10px; /* Bo góc mềm mại */
+    background-color: #ffffff;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1); /* Bóng mờ tạo cảm giác chiều sâu */
+  }
+
+  h2 {
+    font-size: 22px; /* Giảm font size để phù hợp với màn hình nhỏ */
+    margin-bottom: 30px;
+  }
+
+  label {
+    font-size: 14px; /* Chữ label nhỏ lại */
+  }
+
+  .login-input {
+    padding: 18px !important; /* Giảm padding input */
+    font-size: 14px !important;
+    border-radius: 6px !important;
+  }
+
+  button {
+    padding: 10px;
+    font-size: 16px;
+    margin-top: 15px;
+  }
+
+  .eye-icon {
+    right: 10px; /* Dịch icon mắt về gần input */
+    font-size: 16px;
+    margin-top: 5px;
+  }
+
+  .error-message {
+    font-size: 12px;
+  }
 }

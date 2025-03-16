@@ -82,7 +82,9 @@ const TopDoctor = () => {
                 >
                   {doctor.User.fullname}
                 </div>
-                <div className="text">Chuyên khoa: {doctor.specialty.name}</div>
+                <div className="text-specialty">
+                  Chuyên khoa: {doctor.specialty.name}
+                </div>
               </div>
             </div>
           ))

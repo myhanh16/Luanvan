@@ -3,7 +3,7 @@
 .section-about {
   /* border: 1px solid red; */
   position: relative;
-  height: 400px;
+  min-height: 400px;
   /* background: #f5f5f5;
   border: 1px solid red; */
   margin-top: 30px;
@@ -22,6 +22,7 @@
 .about-content {
   display: flex;
   justify-content: space-between;
+  flex-wrap: wrap; /*Cho phép xuống dòng khi k đủ không gian*/
 }
 .title-section {
   font-size: 22px;
@@ -46,4 +47,33 @@
   border-radius: 5px;
   width: 50%;
   /* border: 1px solid green; */
+}
+/* -----------------RESPONSIVE cho giao diện di động-------------------------- */
+@media screen and (max-width: 768px) {
+  .title-section {
+    font-size: 18px;
+  }
+
+  .about-header {
+    height: auto;
+    padding-top: 5px;
+  }
+}
+
+@media screen and (max-width: 376px) {
+  .about-container {
+    margin: 0 10px;
+  }
+
+  .title-section {
+    font-size: 16px;
+  }
+
+  .content-left iframe {
+    height: 180px; /* Điều chỉnh chiều cao video */
+  }
+
+  .content-right {
+    font-size: 14px; /* Giảm kích thước chữ */
+  }
 }

@@ -16,6 +16,7 @@ body {
   font-size: 14px;
   color: #666;
   margin-bottom: 10px;
+  /* margin-top: 50px; */
 }
 
 .breadcrumb a {
@@ -159,4 +160,62 @@ h1 {
 
 .breadcrumb span {
   margin-left: 10px;
+}
+
+@media screen and (max-width: 376px) {
+  .specialty-page {
+    padding: 10px; /* Giảm padding để phù hợp với màn hình nhỏ */
+  }
+
+  .doctor-card img {
+    width: 80px; /* Thu nhỏ ảnh bác sĩ */
+    height: 80px;
+  }
+
+  .doctor-details h3 {
+    font-size: 16px; /* Giảm kích thước tiêu đề */
+  }
+
+  .doctor-card {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .doctor-details {
+    width: 100%; /* Đảm bảo phần nội dung chiếm toàn bộ chiều rộng */
+    text-align: left; /* Căn trái nội dung */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Đảm bảo các dòng chữ thẳng hàng */
+    padding: 0 10px; /* Thêm padding để tránh bị sát mép màn hình */
+  }
+  .doctor-details p {
+    margin: 5px 0;
+    width: 100%; /* Đảm bảo dòng chữ không bị bóp méo */
+  }
+
+  .schedule {
+    width: 100%;
+    text-align: left; /* Căn lịch khám về bên trái */
+    padding: 0 5px;
+  }
+
+  .times-buttons {
+    display: flex;
+    flex-wrap: wrap; /* Đảm bảo nút xuống dòng khi không đủ chỗ */
+    justify-content: flex-start; /* Căn trái thay vì căn giữa */
+    gap: 5px; /* Tạo khoảng cách giữa các nút */
+    /* width: 100%; */
+  }
+
+  .time-button {
+    flex: 1 1 calc(33.33% - 10px); /* Chia đều 3 cột, trừ đi khoảng cách */
+    min-width: 50px; /* Đảm bảo nút không quá nhỏ */
+    text-align: center;
+  }
+
+  .book-btn {
+    font-size: 14px;
+  }
 }

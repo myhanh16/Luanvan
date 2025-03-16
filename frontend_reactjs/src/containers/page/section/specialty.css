@@ -6,6 +6,7 @@
   /* background: #f5f5f5;
   border: 1px solid red; */
   margin-top: 30px;
+  background: rgb(247, 245, 245);
 }
 
 .specialty-container {
@@ -14,12 +15,7 @@
   flex-direction: column;
 }
 
-.specail-header {
-  height: 60px;
-  border: 1px solid orangered;
-}
-
-.specailty-body {
+.specialty-body {
   /* border: 1px solid red; */
   margin-top: 20px;
 }
@@ -58,9 +54,13 @@ img {
 }
 
 .specialty-header {
-  height: 40px;
+  height: 50px; /* Điều chỉnh chiều cao */
   /* border: 1px solid green; */
-  padding-top: 10px;
+  padding: 10px 20px;
+  /* margin-bottom: 10px; */
+  display: flex;
+  justify-content: space-between; /* Đưa tiêu đề sang trái, nút sang phải */
+  align-items: center;
 }
 
 .title-section {
@@ -86,3 +86,115 @@ img {
 }
 
 /* -------------------Slider----------------------- */
+
+@media screen and (max-width: 768px) {
+  .section-specialty {
+    height: auto; /* Cho phép mở rộng theo nội dung */
+    margin-top: 20px;
+  }
+
+  .specialty-container {
+    margin: 0 30px; /* Giảm margin để hiển thị tốt hơn */
+  }
+
+  .specialty-header {
+    height: auto;
+    display: flex;
+    justify-content: space-between;
+    text-align: center;
+    height: auto;
+    display: flex;
+    justify-content: space-between;
+    text-align: center;
+  }
+
+  .title-section {
+    font-size: 20px; /* Điều chỉnh kích thước tiêu đề */
+  }
+
+  .btn-section {
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+
+  .specialty-customize {
+    padding: 8px 12px;
+    margin-bottom: 15px;
+  }
+
+  img {
+    width: 100%;
+    height: auto; /* Đảm bảo ảnh không bị méo */
+    object-fit: cover;
+    padding: 5px;
+  }
+
+  .text-content {
+    font-size: 14px !important; /* Giảm kích thước chữ */
+  }
+}
+
+@media screen and (max-width: 376px) {
+  .section-specialty {
+    height: auto; /* Thay vì cố định 360px, cho phép tự mở rộng */
+    margin-top: 20px;
+  }
+
+  .specialty-container {
+    margin: 0 20px; /* Giảm margin để có nhiều không gian hiển thị hơn */
+  }
+
+  .specailty-body {
+    /* border: 1px solid red; */
+    margin-top: 20px;
+  }
+
+  .specialty-header {
+    height: auto;
+    display: flex;
+    justify-content: space-between;
+    text-align: center;
+    height: auto;
+    display: flex;
+    justify-content: space-between;
+    text-align: center; /* Căn giữa tiêu đề */
+  }
+
+  body .btn-section {
+    float: right;
+    padding: 3px 5px;
+    /* border: none; */
+    outline: none;
+    display: block;
+    cursor: pointer;
+    text-transform: uppercase;
+    border: 5px;
+  }
+
+  .btn-section:hover {
+    background: #007bff;
+    color: white;
+    border-radius: 5px;
+  }
+
+  .title-section {
+    font-size: 18px; /* Giảm kích thước font để không bị tràn */
+  }
+
+  .specialty-customize {
+    padding: 5px 10px;
+    border-radius: 5px;
+    margin-bottom: 10px; /* Thêm khoảng cách giữa các item */
+  }
+
+  body .text-content {
+    font-size: 10px !important;
+  }
+
+  img {
+    width: 100%;
+    height: auto; /* Đảm bảo ảnh giữ đúng tỷ lệ */
+    object-fit: cover;
+    padding: 5px;
+  }
+}

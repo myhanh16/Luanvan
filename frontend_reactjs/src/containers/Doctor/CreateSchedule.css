@@ -128,3 +128,103 @@ input[type="date"] {
 .close-button:hover {
   background-color: darkred;
 }
+
+@media screen and (max-width: 768px) {
+  .container-schedule {
+    max-width: 90%; /* Giảm max-width để phù hợp màn hình nhỏ */
+    padding: 15px;
+    margin: 30px auto;
+  }
+
+  h2 {
+    font-size: 20px; /* Giảm kích thước chữ */
+  }
+
+  .label-input-container {
+    flex-direction: column; /* Chuyển label + input thành dạng cột */
+    gap: 5px;
+  }
+
+  label {
+    font-size: 14px;
+  }
+
+  input[type="date"] {
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  .time-buttons {
+    gap: 5px; /* Giảm khoảng cách giữa các nút thời gian */
+  }
+
+  .time-btn {
+    font-size: 14px;
+    padding: 8px 12px;
+  }
+
+  .submit {
+    font-size: 14px;
+    padding: 12px;
+  }
+
+  .meeting-container {
+    max-width: 100%;
+  }
+
+  .meeting-frame {
+    height: 350px; /* Giảm chiều cao của iframe */
+  }
+
+  .close-button {
+    top: -5px;
+    right: -5px;
+    font-size: 14px;
+    padding: 4px 8px;
+  }
+}
+
+@media screen and (max-width: 376px) {
+  .container-schedule {
+    max-width: 95%; /* Tăng khả năng hiển thị trên màn hình nhỏ */
+    padding: 10px;
+    margin: 20px auto;
+  }
+
+  h2 {
+    font-size: 18px; /* Thu nhỏ tiêu đề */
+  }
+
+  .label-input-container {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  label {
+    font-size: 12px;
+  }
+
+  input[type="date"] {
+    font-size: 12px;
+    padding: 8px;
+  }
+
+  .time-btn {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+
+  .submit {
+    font-size: 12px;
+    padding: 10px;
+  }
+
+  .meeting-frame {
+    height: 300px; /* Giảm chiều cao của iframe */
+  }
+
+  .close-button {
+    font-size: 12px;
+    padding: 3px 6px;
+  }
+}

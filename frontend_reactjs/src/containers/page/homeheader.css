@@ -4,13 +4,14 @@
   /* height: 60px;
   width: 100%; */
 
-  height: 60px;
+  height: 70px;
   width: 100%;
-  position: sticky; /* Đặt header ở chế độ sticky */
-  top: 0; /* Khoảng cách từ đầu trang */
+  position: fixed; /* Đặt header ở chế độ sticky */
+  top: 0;
   z-index: 1000; /* Đảm bảo header luôn ở trên các thành phần khác */
   background-color: white; /* Màu nền header (nếu cần) */
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Thêm chút bóng mờ để phân cách */
+  padding: 5px;
 }
 
 .home-header-content {
@@ -91,6 +92,7 @@
   padding: 15px 0;
   position: relative;
   padding-top: 50px;
+  margin-top: 70px;
   z-index: 0;
 }
 
@@ -224,7 +226,7 @@ input {
 
 .menu-dropdown {
   position: absolute;
-  top: 80px; /* Dời xuống dưới thanh header */
+  top: 70px; /* Dời xuống dưới thanh header */
   right: 0; /* Canh phải */
   background-color: white;
   border: 1px solid #ccc;
@@ -240,8 +242,253 @@ input {
   text-align: left;
   display: flex;
   align-items: center;
+  font-size: 20px;
 }
 
 .menu-item:hover {
   background-color: #f0f0f0;
+}
+
+@media screen and (max-width: 768px) {
+  .home-header-banner {
+    background: url("../../assets/image/banner2.jpg") center center no-repeat;
+    background-size: cover;
+    height: 40vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    color: #fff;
+    text-align: center;
+    padding: 20px;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+    padding: 15px 0;
+    position: relative;
+    padding-top: 50px;
+    margin-top: 70px;
+    z-index: 0;
+  }
+
+  .home-header-container {
+    width: 100%;
+    position: fixed; /* Giữ header cố định */
+    top: 0;
+    left: 0;
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px 10px; /* Giúp header không quá chật */
+    overflow: hidden;
+  }
+
+  .home-header-content {
+    flex-wrap: nowrap;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+
+  .header-logo {
+    width: 100px; /* Điều chỉnh lại kích thước hợp lý */
+    height: 50px;
+    background: url("../../assets/image/logo1.jpg") no-repeat center center;
+    background-size: contain;
+    cursor: pointer;
+    display: block;
+  }
+
+  .left-content {
+    flex-shrink: 0; /* Ngăn bị thu nhỏ quá mức */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20%;
+  }
+
+  .center-content {
+    width: 60%;
+    font-size: 15px; /* Giảm kích thước font */
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: center;
+    padding: 0 5px;
+  }
+
+  .right-content {
+    flex-shrink: 0; /* Ngăn bị thu nhỏ quá mức */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20%;
+  }
+
+  .child-content .subs-tilte {
+    font-weight: 400px;
+    font-size: 10px;
+    cursor: pointer;
+  }
+
+  .fa-bars {
+    font-size: 18px; /* Giảm kích thước icon menu */
+  }
+
+  .title1,
+  .title2 {
+    margin-bottom: 10px;
+    color: whitesmoke;
+    font-size: 20px;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.7);
+    z-index: 2;
+  }
+
+  .search {
+    border: 1px solid rgb(29, 29, 153);
+    align-items: center;
+    padding: 3px;
+    width: 350px;
+    border-radius: 25px;
+    background: #b4d4f5;
+  }
+  .search-icon {
+    margin: 0 5px;
+    color: black;
+    cursor: pointer;
+  }
+
+  .search-icon:hover {
+    color: grays;
+  }
+  input {
+    height: 30px;
+    width: 300px !important;
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+  }
+}
+
+@media screen and (max-width: 376px) {
+  .home-header-banner {
+    background: url("../../assets/image/banner2.jpg") center center no-repeat;
+    background-size: cover;
+    height: 50vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    color: #fff;
+    text-align: center;
+    padding: 20px;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+    padding: 15px 0;
+    position: relative;
+    padding-top: 50px;
+    margin-top: 70px;
+    z-index: 0;
+  }
+
+  .home-header-container {
+    width: 100%;
+    position: fixed; /* Giữ header cố định */
+    top: 0;
+    left: 0;
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px 10px; /* Giúp header không quá chật */
+    overflow: hidden;
+  }
+
+  .home-header-content {
+    flex-wrap: nowrap;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+
+  .header-logo {
+    width: 80px; /* Điều chỉnh lại kích thước hợp lý */
+    height: 40px;
+    background: url("../../assets/image/logo1.jpg") no-repeat center center;
+    background-size: contain;
+    cursor: pointer;
+    display: block;
+  }
+
+  .left-content {
+    flex-shrink: 0; /* Ngăn bị thu nhỏ quá mức */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20%;
+  }
+
+  .center-content {
+    width: 60%;
+    font-size: 10px; /* Giảm kích thước font */
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: center;
+    padding: 0 5px;
+  }
+
+  .right-content {
+    flex-shrink: 0; /* Ngăn bị thu nhỏ quá mức */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20%;
+  }
+
+  .child-content .subs-tilte {
+    font-weight: 400px;
+    font-size: 10px;
+    cursor: pointer;
+  }
+
+  .fa-bars {
+    font-size: 18px; /* Giảm kích thước icon menu */
+  }
+
+  .title1,
+  .title2 {
+    margin-bottom: 10px;
+    color: whitesmoke;
+    font-size: 20px;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.7);
+    z-index: 2;
+  }
+
+  .search {
+    border: 1px solid rgb(29, 29, 153);
+    align-items: center;
+    padding: 3px;
+    width: 350px;
+    border-radius: 25px;
+    background: #b4d4f5;
+  }
+  .search-icon {
+    margin: 0 5px;
+    color: black;
+    cursor: pointer;
+  }
+
+  .search-icon:hover {
+    color: grays;
+  }
+  input {
+    height: 30px;
+    width: 300px !important;
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+  }
 }

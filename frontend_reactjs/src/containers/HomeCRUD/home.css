@@ -38,3 +38,62 @@
   margin-bottom: 15px; /* Cách phần dưới một chút */
   text-transform: uppercase; /* In hoa chữ (tuỳ chọn) */
 }
+
+@media screen and (max-width: 768px) {
+  #customers {
+    width: 100%;
+    font-size: 14px; /* Giảm kích thước chữ */
+  }
+
+  #customers td,
+  #customers th {
+    padding: 6px; /* Giảm padding để bảng gọn hơn */
+  }
+
+  #customers th {
+    font-size: 16px; /* Giảm font tiêu đề */
+  }
+
+  .title {
+    font-size: 1.5rem; /* Giảm kích thước chữ tiêu đề */
+    text-align: center; /* Căn giữa tiêu đề */
+  }
+
+  .logout-button {
+    width: 100%; /* Để nút logout chiếm toàn bộ chiều rộng */
+    padding: 10px;
+    text-align: center;
+    font-size: 14px;
+  }
+}
+
+@media screen and (max-width: 376px) {
+  #customers {
+    font-size: 14px;
+  }
+
+  #customers td,
+  #customers th {
+    padding: 4px; /* Giảm padding hơn nữa */
+  }
+
+  #customers th {
+    font-size: 14px;
+  }
+
+  .title {
+    font-size: 1.2rem;
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+
+  .logout-button {
+    padding: 8px;
+    font-size: 14px;
+  }
+
+  .table-responsive {
+    overflow-x: auto;
+    display: block;
+  }
+}

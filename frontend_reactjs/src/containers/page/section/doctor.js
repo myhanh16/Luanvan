@@ -75,7 +75,7 @@ const Doctor = () => {
             Xem thêm
           </button>
         </div>
-        <div className="specailty-body">
+        <div className="specialty-body">
           <Slider {...settings}>
             {doctor.length > 0 ? (
               doctor.slice(0, 6).map((doctors, index) => (
