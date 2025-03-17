@@ -124,6 +124,10 @@ const Booking = () => {
                 ? doctor.specialty.price.price + " VNĐ"
                 : "Liên hệ"}
             </p>
+            <p>
+              <strong>Phòng khám:</strong>{" "}
+              {doctor.workroom ? doctor.workroom : "Chưa có thông tin"}
+            </p>
           </div>
 
           <h3 className="section-title">Thông tin cá nhân:</h3>

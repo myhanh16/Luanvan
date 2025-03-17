@@ -344,6 +344,7 @@ const Booking = (data) => {
           {
             model: db.doctor,
             as: "Doctor",
+            attributes: ["id", "specialtyID", "workroom", "img"],
             include: [
               {
                 model: db.User,
@@ -363,12 +364,13 @@ const Booking = (data) => {
                 attributes: ["id", "name"],
               },
             ],
-            attributes: ["id", "specialtyID", "img"],
           },
         ],
         attributes: ["id", "doctorID", "timeID", "date"],
         transaction,
       });
+
+      console.log("Dữ liệu schedule:", JSON.stringify(schedule, null, 2));
 
       if (!schedule) {
         await transaction.rollback();
@@ -414,6 +416,13 @@ const Booking = (data) => {
                 {
                   model: db.doctor,
                   as: "Doctor",
+                  attributes: [
+                    "id",
+                    "specialtyID",
+                    "workroom",
+                    "img",
+                    "onlineConsultation",
+                  ],
                   include: [
                     {
                       model: db.User,
@@ -432,12 +441,6 @@ const Booking = (data) => {
                       ],
                       attributes: ["id", "name"],
                     },
-                  ],
-                  attributes: [
-                    "id",
-                    "specialtyID",
-                    "img",
-                    "onlineConsultation",
                   ],
                 },
               ],
@@ -484,6 +487,7 @@ const Booking = (data) => {
               },
               { transaction }
             );
+            console.log("phòng khám:", schedule.Doctor.workroom);
 
             // Gửi email xác nhận (chỉ gửi khi booking được tạo mới)
             await sendBookingConfirmationEmail(
@@ -491,7 +495,8 @@ const Booking = (data) => {
               user.fullname,
               schedule.Doctor.User.fullname,
               schedule.date,
-              `${schedule.Time.starttime} - ${schedule.Time.endtime}`
+              `${schedule.Time.starttime} - ${schedule.Time.endtime}`,
+              schedule.Doctor.workroom
             );
 
             // Commit transaction
@@ -553,7 +558,8 @@ const Booking = (data) => {
         user.fullname,
         schedule.Doctor.User.fullname,
         schedule.date,
-        `${schedule.Time.starttime} - ${schedule.Time.endtime}`
+        `${schedule.Time.starttime} - ${schedule.Time.endtime}`,
+        schedule.Doctor.workroom
       );
 
       // Commit transaction
@@ -736,8 +742,17 @@ const sendBookingConfirmationEmail = async (
   userName,
   doctorName,
   appointmentDate,
-  appointmentTime
+  appointmentTime,
+  workroom
 ) => {
+  console.log("Dữ liệu nhận vào:", {
+    userEmail,
+    userName,
+    doctorName,
+    appointmentDate,
+    appointmentTime,
+    workroom,
+  });
   try {
     // Cấu hình tài khoản gửi email
     const transporter = nodemailer.createTransport({
@@ -763,6 +778,7 @@ const sendBookingConfirmationEmail = async (
           <li><strong>Bác sĩ phụ trách:</strong> ${doctorName}</li>
           <li><strong>Ngày khám:</strong> ${formattedDate}</li>
           <li><strong>Giờ khám:</strong> ${appointmentTime}</li>
+          <li><strong>Số phòng khám:</strong> ${workroom}</li>
         </ul>
         <p>Quý khách vui lòng đến đúng giờ để đảm bảo trải nghiệm dịch vụ tốt nhất. Nếu có bất kỳ thắc mắc hoặc cần hỗ trợ, vui lòng liên hệ với chúng tôi.</p>
         <p>Để xem chi tiết lịch hẹn hoặc thay đổi thông tin, quý khách có thể truy cập vào đường trang web:</p>
