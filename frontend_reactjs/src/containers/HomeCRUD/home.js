@@ -247,19 +247,21 @@ const Home = () => {
                       </td>
 
                       <td>
-                        <button
-                          className="btn btn-primary btn-sm"
-                          onClick={() => handleUpdate(doctor)}
-                        >
-                          <FaEdit />
-                        </button>
-                        {/* <button
+                        {doctor.User.isActive && (
+                          <button
+                            className="btn btn-primary btn-sm"
+                            onClick={() => handleUpdate(doctor)}
+                          >
+                            <FaEdit />
+                          </button>
+                        )}
+                      </td>
+                      {/* <button
                           className="btn btn-danger btn-sm mx-2"
                           onClick={() => handleDelete(doctor.User)}
                         >
                           <FaTrashAlt />
                         </button> */}
-                      </td>
                     </tr>
                   ))
                 ) : (

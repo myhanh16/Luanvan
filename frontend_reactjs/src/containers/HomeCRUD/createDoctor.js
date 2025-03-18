@@ -124,7 +124,7 @@ const DoctorForm = () => {
           address: "",
           gender: "",
           experience_years: "",
-          // workroom: "",
+          workroom: "",
           description: "",
           specialty: "",
           img: null,
@@ -283,8 +283,8 @@ const DoctorForm = () => {
           </div>
 
           {/* Workroom */}
-          {/* <div className="mb-3">
-            <label htmlFor="inputworkroom">Phòng Khám</label>
+          <div className="mb-3">
+            <label htmlFor="inputworkroom">Số phòng Khám</label>
             <input
               type="text"
               name="workroom"
@@ -294,7 +294,7 @@ const DoctorForm = () => {
               placeholder="Nhập phòng khám"
               required
             />
-          </div> */}
+          </div>
 
           {/* Image Upload */}
           <div className="mb-3">
