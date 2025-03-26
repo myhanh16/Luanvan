@@ -283,7 +283,7 @@ const DoctorForm = () => {
           </div>
 
           {/* Workroom */}
-          <div className="mb-3">
+          {/* <div className="mb-3">
             <label htmlFor="inputworkroom">Số phòng Khám</label>
             <input
               type="text"
@@ -294,6 +294,34 @@ const DoctorForm = () => {
               placeholder="Nhập phòng khám"
               required
             />
+          </div> */}
+          {/* Workroom - Chọn phòng khám */}
+          <div className="mb-3">
+            <label htmlFor="inputworkroom">Phòng Khám</label>
+            <select
+              id="inputworkroom"
+              name="workroom"
+              className="form-control"
+              value={formData.workroom}
+              onChange={handleChange}
+              required
+            >
+              <option value="" disabled>
+                Chọn phòng khám
+              </option>
+              <option value="Phòng 101">Phòng 101</option>
+              <option value="Phòng 102">Phòng 102</option>
+              <option value="Phòng 201">Phòng 201</option>
+              <option value="Phòng 202">Phòng 202</option>
+              <option value="Phòng 301">Phòng 301</option>
+              <option value="Phòng 201">Phòng 302</option>
+              <option value="Phòng 302">Phòng 401</option>
+              <option value="PPhòng 402">Phòng 402</option>
+              <option value="Phòng 501">Phòng 501</option>
+              <option value="Phòng 502">Phòng 502</option>
+              <option value="Phòng 601">Phòng 601</option>
+              <option value="Phòng 602">Phòng 602</option>
+            </select>
           </div>
 
           {/* Image Upload */}

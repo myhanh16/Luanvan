@@ -40,6 +40,7 @@ const {
   handlegetAllDoctors,
   handledisableDoctorAccount,
   handlegetWorkingDaysByDoctor,
+  handlegetWorkroom,
 } = require("../controllers/Admin");
 
 const {
@@ -49,6 +50,7 @@ const {
   handleGetAllTimeSlot,
   handleCreateSchedules,
   handlegetScheduleBydoctorID,
+  handleGetMedicalRecords,
 } = require("../controllers/Doctor");
 
 router.get("/", gethome);
@@ -114,8 +116,11 @@ router.get("/api/get-alldoctor", handlegetAllDoctors);
 
 router.post("/api/edit-doctor", handleEditDoctor);
 
-router.post("/api/disableDoctorAccount", handledisableDoctorAccount),
-  router.get("/api/getWokingByDoctor", handlegetWorkingDaysByDoctor);
+router.post("/api/disableDoctorAccount", handledisableDoctorAccount);
+
+router.get("/api/getWokingByDoctor", handlegetWorkingDaysByDoctor);
+
+router.get("/api/get-workroom", handlegetWorkroom);
 /*-----------------DOCTOR---------------------- */
 router.get("/api/get-appointentByDoctorID", handleGetAppointmentByDoctorID);
 
@@ -131,5 +136,7 @@ router.get("/api/get-AllTimeSlots", handleGetAllTimeSlot);
 router.post("/api/create-schedules", handleCreateSchedules);
 
 router.get("/api/get-scheduleByDoctorID", handlegetScheduleBydoctorID);
+
+router.get("/api/get-MedicalRecords", handleGetMedicalRecords);
 
 module.exports = router;

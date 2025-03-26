@@ -878,7 +878,7 @@ const createPayment = (data) => {
         description: `Thanh toán cho lịch hẹn #${data.bookingID}`,
         // bank_code: "CC",
         callback_url:
-          "https://5bf6-2402-800-63ab-f2a4-8147-1319-cf7b-3971.ngrok-free.app/api/callback",
+          "https://a425-2402-800-63fb-e736-cdd3-27a-2fb5-877f.ngrok-free.app/api/callback",
       };
       console.log("url:", order.callback_url);
 

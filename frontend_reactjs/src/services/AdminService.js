@@ -27,6 +27,9 @@ const disableDoctorAccount = (userID) => {
   return axios.post(`/api/disableDoctorAccount?id=${userID}`);
 };
 
+const handlegetWorkroom = () => {
+  return axios.get("/api/get-workroom");
+};
 export default {
   Login,
   GetAllUser,
@@ -34,4 +37,5 @@ export default {
   EditDoctor,
   GetAllDoctors,
   disableDoctorAccount,
+  handlegetWorkroom,
 };

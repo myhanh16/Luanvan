@@ -22,84 +22,79 @@ const formatDate = (dateString) => {
   return `${day}/${month}/${year}`;
 };
 
+const sentEmails = new Set(); // Lưu danh sách email đã gửi trong mỗi lần chạy
+
 async function scheduleMeetingCheck() {
   console.log("🔄 Kiểm tra cuộc hẹn sắp diễn ra...");
   const now = new Date();
   const today = now.toISOString().split("T")[0];
 
   try {
-    // Lấy tất cả các cuộc hẹn chưa hoàn thành
-    const upcomingBookings = await db.booking.findAll({
-      where: { statusID: 1 }, // Chỉ kiểm tra cuộc hẹn đang chờ
+    const upcomingSchedules = await db.schedules.findAll({
+      where: { date: today },
       include: [
+        { model: db.time, as: "Time" },
         {
-          model: db.schedules,
-          as: "schedules",
-          where: { date: today },
+          model: db.doctor,
+          as: "Doctor",
+          where: { onlineConsultation: 1 },
           include: [
-            { model: db.time, as: "Time" },
-            {
-              model: db.doctor,
-              as: "Doctor",
-              where: { onlineConsultation: 1 },
-              include: [
-                {
-                  model: db.User,
-                  as: "User",
-                  attributes: ["email", "fullname"],
-                }, // Thông tin bác sĩ
-              ],
-            },
+            { model: db.User, as: "User", attributes: ["email", "fullname"] },
           ],
         },
-        { model: db.User, as: "User", attributes: ["email", "fullname"] },
+        {
+          model: db.booking,
+          as: "Bookings",
+          where: { statusID: 1 }, // Lấy tất cả các cuộc hẹn đang chờ
+          include: [
+            { model: db.User, as: "User", attributes: ["email", "fullname"] },
+          ],
+        },
       ],
     });
 
-    for (const booking of upcomingBookings) {
-      if (!booking.schedules || !booking.schedules.Time) continue;
+    for (const schedule of upcomingSchedules) {
+      if (!schedule.Time || !schedule.Bookings.length) continue;
 
       const scheduleTime = new Date(
-        `${booking.schedules.date}T${booking.schedules.Time.starttime}`
+        `${schedule.date}T${schedule.Time.starttime}`
       );
       const timeDiff = scheduleTime - now;
-      let patientEmail = booking.User.email;
 
-      // Kiểm tra nếu link đã hết hạn
-      if (booking.meetlink && isMeetLinkExpired(booking)) {
-        console.log(`🚫 Link cuộc hẹn đã hết hạn: ${booking.meetlink}`);
-        continue; // Không gửi email nếu link đã hết hạn
-      }
-
-      // Nếu chưa có link, tạo link khi đến gần cuộc hẹn
-      if (timeDiff <= 10 * 60000 && !booking.meetlink) {
+      // 📌 Nếu gần đến giờ hẹn (<= 10 phút) mà chưa có meetlink, tạo mới
+      if (timeDiff <= 10 * 60000 && !schedule.meetlink) {
         let meetlink = createJitsiMeet();
-        await db.booking.update({ meetlink }, { where: { id: booking.id } });
+        await db.schedules.update({ meetlink }, { where: { id: schedule.id } });
 
-        console.log(`✅ Jitsi Meet link tạo: ${meetlink}`);
-
-        await sendEmail(
-          patientEmail,
-          "Nhắc nhở cuộc hẹn",
-          meetlink,
-          booking.schedules.Doctor?.User.fullname || "Không xác định",
-          booking.schedules.date || "0000-00-00", // Tránh undefined
-          booking.schedules.Time?.starttime || "00:00"
-        );
+        console.log(`✅ Tạo link Jitsi: ${meetlink}`);
+        schedule.meetlink = meetlink;
       }
 
-      // Nhắc nhở khi cuộc hẹn bắt đầu
-      // if (timeDiff <= 0 && booking.meetlink) {
-      //   await sendEmail(
-      //     patientEmail,
-      //     "Cuộc hẹn bắt đầu ngay bây giờ!",
-      //     booking.meetlink,
-      //     booking.schedules.Doctor?.name || "Không xác định",
-      //     booking.schedules.date || "0000-00-00",
-      //     booking.schedules.Time?.starttime - booking.schedules.Time?.endtime ||
-      //       "00:00"
-      //   );
-      // }
+      // 📩 Gửi email nhắc nhở cho từng bệnh nhân nếu chưa gửi
+      if (schedule.meetlink) {
+        for (const booking of schedule.Bookings) {
+          let patientEmail = booking.User.email;
+
+          if (!sentEmails.has(patientEmail)) {
+            // Kiểm tra email đã gửi chưa
+            try {
+              await sendEmail(
+                patientEmail,
+                "Nhắc nhở cuộc hẹn",
+                schedule.meetlink,
+                schedule.Doctor?.User.fullname || "Không xác định",
+                schedule.date || "0000-00-00",
+                schedule.Time?.starttime || "00:00"
+              );
+
+              console.log(`📩 Đã gửi email cho: ${patientEmail}`);
+              sentEmails.add(patientEmail); // Đánh dấu email đã gửi
+            } catch (error) {
+              console.error(`❌ Lỗi gửi email tới ${patientEmail}:`, error);
+            }
+          }
+        }
+      }
     }
   } catch (error) {
     console.error("❌ Lỗi kiểm tra cuộc hẹn:", error);

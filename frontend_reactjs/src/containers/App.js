@@ -32,6 +32,7 @@ import UserProfile from "./page/UserProfile";
 import HomeDoctor from "./Doctor/HomeDoctor";
 import CreateSchedules from "./Doctor/CreateSchedule";
 import Schedule from "./Doctor/Schedule";
+import MedicalRecords from "./Doctor/MedicalRecords";
 function App() {
   return (
     <Router>
@@ -58,6 +59,7 @@ function App() {
         <Route path="/homedoctor" element={<HomeDoctor />} />
         <Route path="/create-shedule" element={<CreateSchedules />} />
         <Route path="/schedule" element={<Schedule />} />
+        <Route path="/medicalrecords" element={<MedicalRecords />} />
       </Routes>
     </Router>
   );

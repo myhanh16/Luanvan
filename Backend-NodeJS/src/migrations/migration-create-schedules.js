@@ -45,6 +45,9 @@ module.exports = {
         onDelete: "CASCADE", // Xóa các bản ghi liên quan khi xóa thời gian
         onUpdate: "CASCADE", // Cập nhật các bản ghi liên quan khi ID thời gian thay đổi
       },
+      meetlink: {
+        type: Sequelize.STRING,
+      },
     });
   },
 

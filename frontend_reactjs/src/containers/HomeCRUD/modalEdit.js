@@ -11,6 +11,8 @@ const UpdateUserModal = ({ isOpen, toggle, currentUser, onConfirm }) => {
     userID: "",
     experience_years: "",
     onlineConsultation: "",
+    img: "",
+    newImg: null,
   });
 
   useEffect(() => {
@@ -28,9 +30,27 @@ const UpdateUserModal = ({ isOpen, toggle, currentUser, onConfirm }) => {
           : 0,
 
         onlineConsultation: Number(currentUser.onlineConsultation) || 0, // Đảm bảo là kiểu số
+        img: currentUser.img || "",
+
+        newImg: null,
       });
+      setImagePreview(currentUser.img ? currentUser.img : null);
     }
   }, [currentUser]);
+
+  const [imagePreview, setImagePreview] = useState(null); // State to store the image preview URL
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFormData({
+        ...formData,
+        img: file.name, // Lưu file chứ không chỉ lưu tên
+      });
+
+      setImagePreview(URL.createObjectURL(file)); // Xem trước ảnh
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -45,7 +65,13 @@ const UpdateUserModal = ({ isOpen, toggle, currentUser, onConfirm }) => {
   const handleConfirm = () => {
     console.log("Dữ liệu form được gửi:", formData);
     if (checkInput()) {
-      onConfirm(formData); // Truyền formData gồm cả id
+      // onConfirm(formData); // Truyền formData gồm cả id
+      const updatedData = { ...formData };
+      if (formData.newImg) {
+        updatedData.img = formData.newImg; // Chỉ cập nhật nếu có ảnh mới
+      }
+      delete updatedData.newImg; // Xóa trường tạm
+      onConfirm(updatedData);
     }
   };
 
@@ -132,6 +158,44 @@ const UpdateUserModal = ({ isOpen, toggle, currentUser, onConfirm }) => {
               </option>
               <option value="1">Tư vấn trực tuyến</option>
             </select>
+            {formData.img && !formData.newImg && (
+              <div className="mt-2">
+                <label>Ảnh hiện tại:</label>
+                {imagePreview ? (
+                  <img
+                    src={imagePreview}
+                    alt="Doctor Avatar"
+                    style={{
+                      width: "150px",
+                      height: "150px",
+                      objectFit: "cover",
+                    }}
+                  />
+                ) : formData.img ? (
+                  <img
+                    src={formData.img}
+                    alt="Doctor Avatar"
+                    style={{
+                      width: "150px",
+                      height: "150px",
+                      objectFit: "cover",
+                    }}
+                  />
+                ) : (
+                  <p>Chưa tải ảnh...</p>
+                )}
+              </div>
+            )}
+
+            <div className="mb-3">
+              <label htmlFor="inputimg">Hình Ảnh</label>
+              <input
+                type="file"
+                name="img"
+                className="form-control"
+                onChange={handleFileChange}
+              />
+            </div>
           </div>
         </form>
       </ModalBody>

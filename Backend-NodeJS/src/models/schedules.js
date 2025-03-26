@@ -16,6 +16,7 @@ module.exports = (sequelize, DataTypes) => {
       doctorID: DataTypes.INTEGER,
       timeID: DataTypes.INTEGER,
       date: DataTypes.DATE,
+      meetlink: DataTypes.STRING,
     },
     {
       sequelize,
@@ -31,6 +32,11 @@ module.exports = (sequelize, DataTypes) => {
     schedules.belongsTo(models.time, {
       foreignKey: "timeID",
       as: "Time",
+    });
+
+    schedules.hasMany(models.booking, {
+      foreignKey: "scheduleID",
+      as: "Bookings",
     });
   };
   return schedules;

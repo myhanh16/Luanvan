@@ -120,6 +120,9 @@ const Home = () => {
       specialty: doctor.specialty?.name || "",
       experience_years: doctor.experience_years || 0,
       onlineConsultation: doctor.onlineConsultation || 0,
+      img:
+        `${process.env.REACT_APP_BACKEND_URL}/img/doctor/${doctor.specialty.id}/${doctor.img}` ||
+        0,
     };
 
     console.log("Dữ liệu cập nhật:", selectedDoctor);
@@ -162,8 +165,10 @@ const Home = () => {
       if (response && response.data && response.data.errCode === 0) {
         alert(response.data.errMessage);
         fetchUsers(); // Load lại danh sách bác sĩ
+      } else if (response.data.errCode === 2) {
+        alert(response.data.errMessage);
       } else {
-        alert("Cập nhật trạng thái thất bại.");
+        alert("Cập nhật tài khoản thất bại.");
       }
     } catch (error) {
       console.error("Lỗi khi cập nhật trạng thái:", error);
@@ -197,6 +202,7 @@ const Home = () => {
                   <th>Địa chỉ</th>
                   <th>Giới tính</th>
                   <th>Chuyên khoa</th>
+                  <th>Phòng làm việc</th>
                   <th>Năm kinh nghiệm</th>
                   <th>Tư vấn trực tuyến</th>
                   <th>Trạng Thái</th>
@@ -214,6 +220,7 @@ const Home = () => {
                       <td>{Number(doctor.User.gender) === 0 ? "Nam" : "Nữ"}</td>
 
                       <td>{doctor.specialty.name}</td>
+                      <td>{doctor.workroom}</td>
                       <td>{doctor.experience_years}</td>
                       <td>
                         {Number(doctor.onlineConsultation) === 0

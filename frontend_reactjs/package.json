@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@jitsi/react-sdk": "^1.4.4",
     "axios": "^1.7.9",
     "bootstrap": "^4.6.2",
     "cra-template": "1.2.0",

@@ -86,6 +86,7 @@
 }
 
 .payment {
+  margin-left: 5px;
   padding: 5px;
   /* border: 2px; */
   background-color: rgba(46, 240, 88, 0.836);
@@ -95,7 +96,7 @@
 }
 
 .ribbon {
-  position: absolute;
+  /* position: absolute; */
   bottom: 10px; /* Đưa xuống dưới */
   left: 10px; /* Canh về trái */
   width: 150px;
@@ -115,8 +116,9 @@
 .ribbon::before,
 .ribbon::after {
   content: "";
-  position: absolute;
-  top: 100%;
+  position: relative;
+  /* top: 100%; */
+  bottom: -33px;
   border-style: solid;
   border-width: 10px;
   border-color: #008d6c transparent transparent transparent;

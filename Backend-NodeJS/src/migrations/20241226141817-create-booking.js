@@ -58,11 +58,6 @@ module.exports = {
         onDelete: "SET NULL",
       },
 
-      meetlink: {
-        type: Sequelize.STRING(255),
-        allowNull: true,
-      },
-
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

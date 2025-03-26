@@ -7,6 +7,7 @@ import {
   FaListAlt,
   FaFileMedical,
   FaCalendarAlt,
+  FaNotesMedical,
 } from "react-icons/fa";
 
 const DoctorHeader = () => {
@@ -61,6 +62,12 @@ const DoctorHeader = () => {
             onClick={() => navigate("/schedule")}
           >
             <FaCalendarAlt className="admin-icon" /> Lịch Làm Việc
+          </div>
+          <div
+            className={`admin-menu-item ${isActive("/medicalrecords")}`} // Thêm class active nếu đang ở trang này
+            onClick={() => navigate("/medicalrecords")}
+          >
+            <FaNotesMedical className="admin-icon" /> Hồ Sơ Bệnh Án
           </div>
         </div>
         <div className="admin-right">

@@ -293,7 +293,7 @@ const AppointmentGrid = () => {
                         "N/A"}{" "}
                       VNĐ
                     </p>
-                    <p className="appointment-status">
+                    <p className="appointment-time">
                       <strong>Ngày đặt lịch hẹn:</strong>{" "}
                       {formatDate(appointment.booking_date) || "N/A"}
                     </p>
@@ -307,7 +307,8 @@ const AppointmentGrid = () => {
                       </button>
                     )}
 
-                    {appointment.status?.id === 2 &&
+                    {(appointment.status?.id === 1 ||
+                      appointment.status?.id === 2) &&
                       Number(doctor?.onlineConsultation) === 1 &&
                       (console.log(
                         "💡 Trạng thái thanh toán của lịch hẹn",

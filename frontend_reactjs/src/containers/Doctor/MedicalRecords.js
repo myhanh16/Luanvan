@@ -7,7 +7,7 @@ import DoctorHeader from "./DoctorHeader";
 import DoctorService from "../../services/DoctorService";
 import MedicalRecordModal from "./MedicalRecordModal";
 
-const HomeDoctor = () => {
+const MedicalRecords = () => {
   const navigate = useNavigate();
   const [appointments, setAppointments] = useState([]);
   const [error, setError] = useState("");
@@ -23,9 +23,7 @@ const HomeDoctor = () => {
       return;
     }
     try {
-      const response = await DoctorService.handleGetAppointmentByDoctorID(
-        doctorID
-      );
+      const response = await DoctorService.handleGetMedicalRecords();
       if (response.data.errCode === 0) {
         setAppointments(response.data.data);
       }
@@ -108,7 +106,7 @@ const HomeDoctor = () => {
   // Lọc lịch hẹn theo ngày được chọn
   const filteredAppointments = selectedDate
     ? appointments.filter(
-        (appointment) => appointment.schedules.date === selectedDate
+        (appointment) => appointment.booking.schedules.date === selectedDate
       )
     : appointments;
 
@@ -117,15 +115,8 @@ const HomeDoctor = () => {
       <DoctorHeader />
       <div>
         <div className="users-container">
-          <MedicalRecordModal
-            isOpen={showModal}
-            toggle={toggleEditModal}
-            onConfirm={handleMedicalRecord}
-            appointment={selectedAppointment}
-          />
-
           <div className="title text-center" style={{ fontSize: "20px" }}>
-            Danh Sách Lịch Hẹn
+            Danh Sách Hồ Sơ Bệnh Án
           </div>
 
           {error && <div className="alert alert-danger">{error}</div>}
@@ -162,92 +153,47 @@ const HomeDoctor = () => {
                   <th>Ngày khám</th>
                   <th>Thời gian khám</th>
                   <th>Ngày đặt lịch</th>
-                  <th>Trạng thái</th>
-                  <th>Lập hồ sơ bệnh án</th>
-                  <th>Link cuộc hẹn</th>
+                  <th>Chuẩn đoán</th>
+                  <th>Phương pháp điều trị</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredAppointments.length > 0 ? (
                   filteredAppointments.map((appointment, index) => (
                     <tr key={index}>
-                      <td>{appointment.User?.email || "Không có dữ liệu"}</td>
+                      <td>{appointment.booking?.User?.email || "N/A"}</td>
+                      <td>{appointment.booking?.User?.fullname || "N/A"}</td>
+                      <td>{appointment.booking?.User?.phone || "N/A"}</td>
+                      <td>{appointment.booking?.User?.address || "N/A"}</td>
                       <td>
-                        {appointment.User?.fullname || "Không có dữ liệu"}
+                        {appointment.booking?.User?.gender === "male"
+                          ? "Nam"
+                          : "Nữ"}
                       </td>
-                      <td>{appointment.User?.phone || "Không có dữ liệu"}</td>
-                      <td>{appointment.User?.address || "Không có dữ liệu"}</td>
+                      <td>{appointment.booking?.User?.birthYear || "N/A"}</td>
                       <td>
-                        {Number(appointment.User?.gender) === 0 ? "Nam" : "Nữ"}
+                        {formatDate(appointment.booking?.schedules?.date)}
                       </td>
                       <td>
-                        {appointment.User?.birthYear || "Không có dữ liệu"}
-                      </td>
-                      <td>{formatDate(appointment.schedules.date)}</td>
-                      <td>
-                        {appointment.schedules.Time.starttime} -{" "}
-                        {appointment.schedules.Time.endtime}
-                      </td>
-                      <td>{formatDate(appointment.booking_date)}</td>
-                      <td>{appointment.status.name}</td>
-                      <td>
-                        {appointment.statusID !== 2 && (
-                          // new Date(appointment.schedules.date) >=
-                          //   new Date() &&
-                          <button
-                            className="btn btn-primary btn-sm"
-                            onClick={() => handleShowModal(appointment)}
-                          >
-                            <FaNotesMedical />
-                          </button>
-                        )}
+                        {appointment.booking?.schedules?.Time
+                          ? `${appointment.booking.schedules.Time.starttime} - ${appointment.booking.schedules.Time.endtime}`
+                          : "Chưa có thời gian"}
                       </td>
 
-                      {Number(
-                        appointment.schedules.Doctor.onlineConsultation
-                      ) === 1 &&
-                        appointment.statusID !== 2 && (
-                          <td>
-                            {appointment.schedules.meetlink ? (
-                              <button
-                                className="btn btn-success btn-sm"
-                                onClick={() => handleShowIframe(appointment)}
-                              >
-                                Xem Cuộc Họp
-                              </button>
-                            ) : (
-                              "Chưa tạo"
-                            )}
-                          </td>
-                        )}
+                      <td>{formatDate(appointment.booking?.booking_date)}</td>
+                      <td>{appointment.diagnosis || "Chưa có"}</td>
+                      <td>{appointment.treatment || "Chưa có"}</td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="12" className="text-center">
-                      Không có lịch hẹn cho ngày này.
+                    <td colSpan="11" className="text-center">
+                      Không có dữ liệu
                     </td>
                   </tr>
                 )}
               </tbody>
             </table>
-            {showIframe && selectedAppointment.schedules.meetlink && (
-              <div className="meeting-container text-center mt-4">
-                <h4>Cuộc họp trực tuyến</h4>
-                <iframe
-                  id="jitsiFrame"
-                  src={selectedAppointment.schedules.meetlink}
-                  allow="camera; microphone; fullscreen"
-                  className="meeting-frame"
-                ></iframe>
-                <button
-                  className="close-button"
-                  onClick={() => setShowIframe(false)}
-                >
-                  Đóng
-                </button>
-              </div>
-            )}
           </div>
         </div>
       </div>
@@ -255,4 +201,4 @@ const HomeDoctor = () => {
   );
 };
 
-export default HomeDoctor;
+export default MedicalRecords;

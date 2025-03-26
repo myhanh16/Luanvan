@@ -1,7 +1,7 @@
 const session = require("express-session");
 const { format } = require("date-fns");
 const { vi } = require("date-fns/locale");
-const {} = require("../services/Doctor");
+const { GetMedicalRecords } = require("../services/Doctor");
 const {
   GetAppointmentByDoctorID,
   CreateMedicalRecord,
@@ -131,6 +131,23 @@ const handlegetScheduleBydoctorID = async (req, res) => {
     });
   }
 };
+
+const handleGetMedicalRecords = async (req, res) => {
+  try {
+    const data = await GetMedicalRecords();
+    return res.status(200).json({
+      errCode: 0,
+      erMessage: "OK",
+      data,
+    });
+  } catch (e) {
+    return res.status(500).json({
+      errCode: 0,
+      erMessage: e,
+    });
+  }
+};
+
 module.exports = {
   handleGetAppointmentByDoctorID,
   handleCreateMedicalRecord,
@@ -138,4 +155,5 @@ module.exports = {
   handleGetAllTimeSlot,
   handleCreateSchedules,
   handlegetScheduleBydoctorID,
+  handleGetMedicalRecords,
 };

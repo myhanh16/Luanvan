@@ -14,6 +14,7 @@ const {
   getAlltDoctors,
   disableDoctorAccount,
   getWorkingDaysByDoctor,
+  getWorkroom,
 } = require("../services/Admin");
 
 const LoginAdmin = async (req, res) => {
@@ -240,12 +241,23 @@ const handlegetWorkingDaysByDoctor = async (req, res) => {
     return res.status(200).json(doctorStats);
   } catch (e) {
     console.error("Lỗi khi lấy số ngày làm việc của bác sĩ:", e);
-    return res
-      .status(500)
-      .json({
-        errMessage: "Lỗi khi lấy số ngày làm việc của bác sĩ",
-        error: e.message,
-      });
+    return res.status(500).json({
+      errMessage: "Lỗi khi lấy số ngày làm việc của bác sĩ",
+      error: e.message,
+    });
+  }
+};
+
+const handlegetWorkroom = async (req, res) => {
+  try {
+    const data = await getWorkroom();
+    return res.status(200).json({
+      errCode: 0,
+      errMessage: "OK",
+      data,
+    });
+  } catch (e) {
+    return res.status(500).json(e);
   }
 };
 module.exports = {
@@ -261,4 +273,5 @@ module.exports = {
   handlegetAllDoctors,
   handledisableDoctorAccount,
   handlegetWorkingDaysByDoctor,
+  handlegetWorkroom,
 };

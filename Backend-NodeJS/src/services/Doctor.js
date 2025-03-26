@@ -120,7 +120,7 @@ const GetAppointmentByDoctorID = (doctorID) => {
                 attributes: ["id", "onlineConsultation"],
               },
             ],
-            attributes: ["id", "timeID", "date"],
+            attributes: ["id", "timeID", "date", "meetlink"],
           },
           {
             model: db.status,
@@ -134,7 +134,7 @@ const GetAppointmentByDoctorID = (doctorID) => {
             order: [["create_at", "DESC"]], // Lấy hồ sơ gần nhất
           },
         ],
-        attributes: ["id", "booking_date", "statusID", "meetlink"],
+        attributes: ["id", "booking_date", "statusID"],
         order: [
           ["booking_date", "DESC"], // Sắp xếp theo ngày đặt lịch
           [{ model: db.schedules, as: "schedules" }, "date", "DESC"], // Sắp xếp theo ngày khám
@@ -481,6 +481,42 @@ const getSchedule = (doctorID) => {
     }
   });
 };
+
+const GetMedicalRecords = () => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const medicalrecord = await db.medicalrecords.findAll({
+        include: [
+          {
+            model: db.booking,
+            as: "booking",
+            include: [
+              {
+                model: db.User,
+                as: "User",
+              },
+
+              {
+                model: db.schedules,
+                as: "schedules",
+                include: [
+                  {
+                    model: db.time,
+                    as: "Time",
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      });
+
+      resolve(medicalrecord);
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
 module.exports = {
   GetAppointmentByDoctorID,
   CreateMedicalRecord,
@@ -489,4 +525,5 @@ module.exports = {
   GetAllTimeSlot,
   CreateSchedules,
   getSchedule,
+  GetMedicalRecords,
 };

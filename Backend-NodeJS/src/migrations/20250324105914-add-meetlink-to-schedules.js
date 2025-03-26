@@ -3,13 +3,13 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.addColumn("booking", "meetlink", {
+    await queryInterface.addColumn("schedules", "meetlink", {
       type: Sequelize.STRING,
-      allowNull: true, // Cho phép giá trị null
+      allowNull: true,
     });
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.removeColumn("booking", "meetlink");
+    await queryInterface.removeColumn("schedules", "meetlink");
   },
 };

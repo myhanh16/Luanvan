@@ -25,6 +25,10 @@ const handlegetScheduleBydoctorID = (doctorID) => {
 const handlegetjitsi = (data) => {
   return axios.post("/api/jitsi-token", data);
 };
+
+const handleGetMedicalRecords = () => {
+  return axios.get("/api/get-MedicalRecords");
+};
 export default {
   handleGetAppointmentByDoctorID,
   handleCreateMedicalRecord,
@@ -33,4 +37,5 @@ export default {
   handleCreateSchedules,
   handlegetScheduleBydoctorID,
   handlegetjitsi,
+  handleGetMedicalRecords,
 };

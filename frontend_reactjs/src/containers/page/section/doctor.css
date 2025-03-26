@@ -97,7 +97,7 @@
 }
 
 /* -------------------Slider----------------------- */
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 805px) {
   .section-doctor {
     height: auto;
     margin-top: 20px;
