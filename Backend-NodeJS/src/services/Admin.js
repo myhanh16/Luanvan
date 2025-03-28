@@ -769,6 +769,36 @@ const getWorkroom = () => {
     }
   });
 };
+
+const editSpecitalty = (data) => {
+  return new Promise(async (resolve, reject) => {
+    const transaction = await db.sequelize.transaction(); // Bắt đầu transaction
+
+    try {
+      // Tìm thông tin chuyen khoan
+      const specialty = await db.specialty.findOne({
+        where: { id: data.id },
+        transaction,
+      });
+
+      // Cập nhật thông tin chuyen khoa
+      specialty.name = data.name;
+      specialty.descript = data.description;
+      specialty.img = data.img;
+      await specialty.save({ transaction });
+
+      await transaction.commit(); // Lưu tất cả thay đổi nếu không có lỗi
+      resolve({
+        errCode: 0,
+        errMessage: "Cập nhật thành công",
+      });
+    } catch (e) {
+      await transaction.rollback(); // Quay lại trạng thái ban đầu nếu có lỗi
+      reject(e);
+    }
+  });
+};
+
 module.exports = {
   handelLogin,
   getAllSpecialty,
@@ -783,4 +813,5 @@ module.exports = {
   disableDoctorAccount,
   getWorkingDaysByDoctor,
   getWorkroom,
+  editSpecitalty,
 };

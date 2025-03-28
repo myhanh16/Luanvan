@@ -225,7 +225,7 @@ const DoctorList = () => {
                 <p>Giới thiệu: {doctor.description}</p>
                 <p>Phòng khám: {doctor.workroom}</p>
                 <p>
-                  <strong>Giá khám bệnh:</strong>{" "}
+                  Giá khám bệnh:{" "}
                   {doctor.specialty?.price?.price
                     ? doctor.specialty.price.price + " VNĐ"
                     : "Liên hệ"}

@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import emitter from "../../utils/emitter";
 import DoctorHeader from "./DoctorHeader";
-import UserService from "../../services/UserService";
 import DoctorService from "../../services/DoctorService";
 
 const Schedule = () => {
@@ -44,10 +43,19 @@ const Schedule = () => {
     return `${day}/${month}/${year}`;
   };
 
-  // Lọc lịch làm việc theo ngày được chọn
-  const filteredWorkSchedules = selectedDate
-    ? workSchedules.filter((schedule) => schedule.date === selectedDate)
-    : [];
+  // Tính toán 7 ngày tiếp theo từ ngày được chọn (hoặc từ ngày mai nếu chưa chọn)
+  const calculateNext7Days = () => {
+    const start = selectedDate ? new Date(selectedDate) : new Date();
+    if (!selectedDate) start.setDate(start.getDate()); // Nếu chưa chọn, bắt đầu từ ngày hom nay
+
+    return Array.from({ length: 7 }, (_, i) => {
+      const date = new Date(start);
+      date.setDate(start.getDate() + i);
+      return date.toISOString().split("T")[0]; // Format YYYY-MM-DD
+    });
+  };
+
+  const displayedDates = calculateNext7Days();
 
   return (
     <React.Fragment>
@@ -72,19 +80,43 @@ const Schedule = () => {
           </button>
         </div>
 
-        <div className="text-center">
-          {filteredWorkSchedules.length > 0 ? (
-            <div className="d-flex flex-wrap justify-content-center">
-              {filteredWorkSchedules.map((schedule, index) => (
-                <button key={index} className="btn btn-outline-primary m-2">
-                  {schedule.Time.starttime} - {schedule.Time.endtime}
-                </button>
-              ))}
-            </div>
-          ) : (
-            <p className="text-center">Không có lịch làm việc cho ngày này.</p>
-          )}
-        </div>
+        {/* Bảng lịch làm việc */}
+        <table className="table table-bordered text-center">
+          <thead>
+            <tr>
+              <th>Ngày</th>
+              <th>Khung Giờ</th>
+            </tr>
+          </thead>
+          <tbody>
+            {displayedDates.map((date) => {
+              const schedulesForDate = workSchedules.filter(
+                (schedule) => schedule.date === date
+              );
+              return (
+                <tr key={date}>
+                  <td>{formatDate(date)}</td>
+                  <td>
+                    {schedulesForDate.length > 0 ? (
+                      <ul className="list-unstyled mb-0">
+                        {schedulesForDate.map((schedule, index) => (
+                          <li
+                            key={index}
+                            className="btn btn-outline-primary m-1"
+                          >
+                            {schedule.Time.starttime} - {schedule.Time.endtime}
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <span className="text-muted">Không có lịch</span>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
       </div>
     </React.Fragment>
   );

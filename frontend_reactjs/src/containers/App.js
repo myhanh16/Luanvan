@@ -33,6 +33,7 @@ import HomeDoctor from "./Doctor/HomeDoctor";
 import CreateSchedules from "./Doctor/CreateSchedule";
 import Schedule from "./Doctor/Schedule";
 import MedicalRecords from "./Doctor/MedicalRecords";
+import Specialty from "./HomeCRUD/Specialty";
 function App() {
   return (
     <Router>
@@ -54,6 +55,7 @@ function App() {
         <Route path="/login-admin-doctor" element={<LoginAdmin />} />
         <Route path="/homeadmin" element={<HomeAdmin />} />
         <Route path="/create-doctor" element={<CreateDoctor />} />
+        <Route path="/specialty" element={<Specialty />} />
 
         {/* -----------------------Router cho Doctor------------------ */}
         <Route path="/homedoctor" element={<HomeDoctor />} />

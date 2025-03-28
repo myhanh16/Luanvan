@@ -15,6 +15,7 @@ const {
   disableDoctorAccount,
   getWorkingDaysByDoctor,
   getWorkroom,
+  editSpecitalty,
 } = require("../services/Admin");
 
 const LoginAdmin = async (req, res) => {
@@ -260,6 +261,21 @@ const handlegetWorkroom = async (req, res) => {
     return res.status(500).json(e);
   }
 };
+
+const handleEditSpecialty = async (req, res) => {
+  try {
+    const data = req.body;
+    const message = await editSpecitalty(data);
+    return res.status(200).json(message);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      errCode: 1,
+      errMessage: "Internal Server Error",
+    });
+  }
+};
+
 module.exports = {
   LoginAdmin,
   handlegetSpecialty,
@@ -274,4 +290,5 @@ module.exports = {
   handledisableDoctorAccount,
   handlegetWorkingDaysByDoctor,
   handlegetWorkroom,
+  handleEditSpecialty,
 };

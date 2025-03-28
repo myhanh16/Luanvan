@@ -41,6 +41,7 @@ const {
   handledisableDoctorAccount,
   handlegetWorkingDaysByDoctor,
   handlegetWorkroom,
+  handleEditSpecialty,
 } = require("../controllers/Admin");
 
 const {
@@ -121,6 +122,9 @@ router.post("/api/disableDoctorAccount", handledisableDoctorAccount);
 router.get("/api/getWokingByDoctor", handlegetWorkingDaysByDoctor);
 
 router.get("/api/get-workroom", handlegetWorkroom);
+
+router.post("/api/edit-specialty", handleEditSpecialty);
+
 /*-----------------DOCTOR---------------------- */
 router.get("/api/get-appointentByDoctorID", handleGetAppointmentByDoctorID);
 

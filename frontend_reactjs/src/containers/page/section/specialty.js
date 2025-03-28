@@ -107,7 +107,9 @@ const Specialty = () => {
                   key={index}
                   onClick={() => handleToDoctor(specialties.id)}
                 >
-                  <img src={imageMapping[specialties.name] || img1} />
+                  <img
+                    src={`${process.env.REACT_APP_BACKEND_URL}/img/doctor/${specialties.id}/${specialties.img}`}
+                  />
                   <div className="text-content">{specialties.name}</div>
                 </div>
               ))

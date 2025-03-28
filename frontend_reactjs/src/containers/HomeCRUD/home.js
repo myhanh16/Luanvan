@@ -205,7 +205,7 @@ const Home = () => {
                   <th>Phòng làm việc</th>
                   <th>Năm kinh nghiệm</th>
                   <th>Tư vấn trực tuyến</th>
-                  <th>Trạng Thái</th>
+                  {/* <th>Trạng Thái</th> */}
                   <th>Cập nhật hồ sơ</th>
                 </tr>
               </thead>
@@ -228,7 +228,7 @@ const Home = () => {
                           : "Có"}
                       </td>
 
-                      <td>
+                      {/* <td>
                         <button
                           className="btn btn-sm"
                           onClick={() => handleToggleStatus(doctor)}
@@ -251,7 +251,7 @@ const Home = () => {
                             </>
                           )}
                         </button>
-                      </td>
+                      </td> */}
 
                       <td>
                         {doctor.User.isActive && (

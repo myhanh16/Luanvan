@@ -69,6 +69,8 @@ const UpdateUserModal = ({ isOpen, toggle, currentUser, onConfirm }) => {
       const updatedData = { ...formData };
       if (formData.newImg) {
         updatedData.img = formData.newImg; // Chỉ cập nhật nếu có ảnh mới
+      } else {
+        updatedData.img = formData.img ? formData.img.split("/").pop() : ""; // Nếu không có ảnh mới, chỉ lấy tên file từ đường dẫn cũ
       }
       delete updatedData.newImg; // Xóa trường tạm
       onConfirm(updatedData);

@@ -51,12 +51,12 @@ const AdminHeader = () => {
           >
             <FaUserPlus className="admin-icon" /> Tạo Hồ Sơ Bác Sĩ
           </div>
-          {/* <div
-            className={`admin-menu-item ${isActive("/create-handbook")}`} // Thêm class active nếu đang ở trang này
-            onClick={() => navigate("/create-handbook")}
+          <div
+            className={`admin-menu-item ${isActive("/specialty")}`} // Thêm class active nếu đang ở trang này
+            onClick={() => navigate("/specialty")}
           >
-            <FaBook className="admin-icon" /> Thêm Cẩm Nang
-          </div> */}
+            <FaBook className="admin-icon" /> Chuyên Khoa
+          </div>
         </div>
         <div className="admin-right">
           <div className="admin-user">
