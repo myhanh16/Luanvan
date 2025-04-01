@@ -169,7 +169,7 @@ const AppointmentGrid = () => {
     if (appointments.length > 0) {
       appointments.forEach((appointment) => {
         if (
-          appointment.status?.id === 2 &&
+          (appointment.status?.id === 1 || appointment.status?.id === 2) &&
           Number(appointment.schedules?.Doctor?.onlineConsultation) === 1
         ) {
           checkPaymentStatus(appointment.id);
@@ -251,9 +251,7 @@ const AppointmentGrid = () => {
                       onClick={() =>
                         doctor?.id && handelgetDoctorByid(doctor.id)
                       }
-                      style={{
-                        cursor: doctor?.id ? "pointer" : "default",
-                      }}
+                      style={{ cursor: doctor?.id ? "pointer" : "default" }}
                     />
                     <p className="appointment-doctor">
                       <strong>Bác sĩ:</strong>{" "}
@@ -293,45 +291,52 @@ const AppointmentGrid = () => {
                         "N/A"}{" "}
                       VNĐ
                     </p>
-                    <p className="appointment-time">
+                    <p className="appointment-booking-date">
                       <strong>Ngày đặt lịch hẹn:</strong>{" "}
                       {formatDate(appointment.booking_date) || "N/A"}
                     </p>
 
-                    {appointment.status?.id === 1 && (
+                    {/* {appointment.status?.id === 1 && (
                       <button
                         className="abort"
                         onClick={() => handleAbortAppointment(appointment.id)}
                       >
                         Hủy lịch hẹn
                       </button>
-                    )}
-
-                    {(appointment.status?.id === 1 ||
-                      appointment.status?.id === 2) &&
-                      Number(doctor?.onlineConsultation) === 1 &&
-                      (console.log(
-                        "💡 Trạng thái thanh toán của lịch hẹn",
-                        appointment.id,
-                        paymentStatus[appointment.id]
-                      ),
-                      paymentStatus[appointment.id] === "SUCCESS" ? (
-                        <span className="ribbon">Đã thanh toán</span>
-                      ) : (
+                    )} */}
+                    <div className="appointment-actions">
+                      {appointment.status?.id === 1 && (
                         <button
-                          className="payment"
-                          onClick={() =>
-                            handelPayMent(
-                              appointment.id,
-                              doctor?.specialty?.price?.price
-                            )
-                          }
+                          className="abort"
+                          onClick={() => handleAbortAppointment(appointment.id)}
                         >
-                          {paymentStatus[appointment.id] === "PENDING"
-                            ? "Đang xử lý..."
-                            : "Thanh Toán"}
+                          Hủy lịch hẹn
                         </button>
-                      ))}
+                      )}
+                      {(appointment.status?.id === 1 ||
+                        appointment.status?.id === 2) &&
+                        Number(doctor?.onlineConsultation) === 1 && (
+                          <>
+                            {paymentStatus[appointment.id] === "SUCCESS" ? (
+                              <span className="ribbon">Đã thanh toán</span>
+                            ) : (
+                              <button
+                                className="payment"
+                                onClick={() =>
+                                  handelPayMent(
+                                    appointment.id,
+                                    doctor?.specialty?.price?.price
+                                  )
+                                }
+                              >
+                                {paymentStatus[appointment.id] === "PENDING"
+                                  ? "Đang xử lý..."
+                                  : "Thanh Toán"}
+                              </button>
+                            )}
+                          </>
+                        )}
+                    </div>
                   </div>
                 );
               })

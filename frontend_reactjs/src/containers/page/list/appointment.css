@@ -131,3 +131,26 @@
 .ribbon::after {
   right: 0;
 }
+
+.appointment-actions {
+  display: flex;
+  gap: 10px; /* Khoảng cách giữa các nút */
+  justify-content: flex-start; /* Căn về bên trái */
+  align-items: center;
+}
+
+.abort,
+.payment {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.payment-success {
+  padding: 8px 12px;
+  background-color: green;
+  color: white;
+  border-radius: 5px;
+  font-weight: bold;
+}

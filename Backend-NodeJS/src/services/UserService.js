@@ -877,7 +877,8 @@ const createPayment = (data) => {
         item: JSON.stringify([]),
         description: `Thanh toán cho lịch hẹn #${data.bookingID}`,
         // bank_code: "CC",
-        callback_url: "https://6c19-113-161-208-91.ngrok-free.app/api/callback",
+        callback_url:
+          "https://d140-2402-800-63fb-8a93-1530-2a60-c3ba-93f0.ngrok-free.app/api/callback",
       };
       console.log("url:", order.callback_url);
 
