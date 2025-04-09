@@ -91,7 +91,7 @@ const UpdateUserModal = ({ isOpen, toggle, currentUser, onConfirm }) => {
   return (
     <Modal isOpen={isOpen} toggle={toggle} size="lg" centered>
       <ModalHeader toggle={toggle}>
-        <span className="modal-title">Cập Nhật Tài Khoản</span>
+        <span className="modal-title">Cập Nhật Thông Tin</span>
         <FaTimes
           onClick={toggle}
           className="close-icon"

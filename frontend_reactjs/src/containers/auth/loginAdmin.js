@@ -58,6 +58,7 @@ const Login = () => {
       } else if (response.data.user.role == 2) {
         sessionStorage.setItem("doctorID", response.data.user.doctor.id);
         sessionStorage.setItem("name", response.data.user.fullname);
+        sessionStorage.setItem("email", response.data.user.email);
         console.log(response.data.user.doctor.id);
         console.log(response.data.user.fullname);
         navigate("/homedoctor");
