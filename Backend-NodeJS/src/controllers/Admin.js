@@ -16,6 +16,8 @@ const {
   getWorkingDaysByDoctor,
   getWorkroom,
   editSpecitalty,
+  CreateSpecialty,
+  SearchDoctor,
 } = require("../services/Admin");
 
 const LoginAdmin = async (req, res) => {
@@ -276,6 +278,41 @@ const handleEditSpecialty = async (req, res) => {
   }
 };
 
+const handleCreateSpecialty = async (req, res) => {
+  const data = req.body; // Dữ liệu từ client (bao gồm thông tin bác sĩ)
+  console.log("Received data:", data);
+  try {
+    const result = await CreateSpecialty(data, req); // Gọi hàm createdoctor và truyền dữ liệu
+    res.status(201).json(result); // Trả về kết quả thành công
+  } catch (error) {
+    console.error(error); // In lỗi ra console để kiểm tra
+    res.status(500).json({
+      message: "Tạo bác sĩ thất bại",
+      error: error.message || error, // Lấy thông tin lỗi chi tiết
+    });
+  }
+};
+
+const handleSearchDoctor = async (req, res) => {
+  try {
+    const data = await SearchDoctor(req.query.fullname);
+    if (data.length === 0) {
+      return res.status(404).json({ message: "Không tìm thấy bac si nào" });
+    } else {
+      return res.status(200).json({
+        errCode: 0,
+        errMessage: "Truy van thanh cong",
+        data,
+      });
+    }
+  } catch (e) {
+    console.log(e);
+    return res.status(500).json({
+      errCode: 1,
+      errMessage: "Loi",
+    });
+  }
+};
 module.exports = {
   LoginAdmin,
   handlegetSpecialty,
@@ -291,4 +328,6 @@ module.exports = {
   handlegetWorkingDaysByDoctor,
   handlegetWorkroom,
   handleEditSpecialty,
+  handleCreateSpecialty,
+  handleSearchDoctor,
 };

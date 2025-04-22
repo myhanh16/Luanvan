@@ -228,3 +228,58 @@ input[type="date"] {
     padding: 3px 6px;
   }
 }
+
+/* Cách các nút trong ô "Hành động" */
+td:last-child {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Khoảng cách giữa các nút */
+td:last-child button {
+  margin-right: 10px;
+}
+
+/* Nút không còn dính vào nhau */
+td:last-child button:last-child {
+  margin-right: 0;
+}
+
+td[colSpan="10"] {
+  display: table-cell !important;
+  text-align: center;
+  vertical-align: middle;
+}
+
+td[colSpan="9"] {
+  display: table-cell !important;
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* Cấu hình cho phần chú thích */
+.tooltip-text {
+  display: none; /* Ẩn mặc định */
+  position: absolute;
+  margin-top: 5px;
+  font-size: 12px;
+  color: #000;
+  background-color: #fff;
+  padding: 2px 5px;
+  border-radius: 3px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+button:hover .tooltip-text {
+  display: block; /* Hiển thị khi hover */
+  position: absolute;
+  bottom: -20px; /* Điều chỉnh để hiển thị phía dưới */
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+.table-no-data {
+  text-align: center !important;
+}

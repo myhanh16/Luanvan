@@ -25,6 +25,8 @@ const {
   handlecreatePayment,
   handleZaloPayCallback,
   handelPayment,
+  handleLogout,
+  changePassword,
 } = require("../controllers/Usercontroller");
 
 const {
@@ -42,6 +44,8 @@ const {
   handlegetWorkingDaysByDoctor,
   handlegetWorkroom,
   handleEditSpecialty,
+  handleCreateSpecialty,
+  handleSearchDoctor,
 } = require("../controllers/Admin");
 
 const {
@@ -52,6 +56,7 @@ const {
   handleCreateSchedules,
   handlegetScheduleBydoctorID,
   handleGetMedicalRecords,
+  handleMarkAbsent,
 } = require("../controllers/Doctor");
 
 router.get("/", gethome);
@@ -96,6 +101,10 @@ router.post("/api/zalopay", handlecreatePayment);
 router.post("/api/callback", handleZaloPayCallback);
 
 router.get("/api/get-payment", handelPayment);
+
+router.post("/api/logout", handleLogout);
+
+router.post("/api/changePass", changePassword);
 /*-----------------ADMIN---------------------- */
 router.post("/api/login-admin", LoginAdmin);
 
@@ -125,6 +134,10 @@ router.get("/api/get-workroom", handlegetWorkroom);
 
 router.post("/api/edit-specialty", handleEditSpecialty);
 
+router.post("/api/create-specialty", handleCreateSpecialty);
+
+router.get("/api/search-doctor", handleSearchDoctor);
+
 /*-----------------DOCTOR---------------------- */
 router.get("/api/get-appointentByDoctorID", handleGetAppointmentByDoctorID);
 
@@ -142,5 +155,7 @@ router.post("/api/create-schedules", handleCreateSchedules);
 router.get("/api/get-scheduleByDoctorID", handlegetScheduleBydoctorID);
 
 router.get("/api/get-MedicalRecords", handleGetMedicalRecords);
+
+router.post("/api/mark-absent", handleMarkAbsent);
 
 module.exports = router;

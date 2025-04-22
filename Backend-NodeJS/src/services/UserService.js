@@ -16,7 +16,7 @@ const moment = require("moment");
 const axios = require("axios");
 const CryptoJS = require("crypto-js");
 
-const handelUserLogin = (email, password) => {
+const handleUserLogin = (email, password) => {
   return new Promise(async (resolve, reject) => {
     try {
       const userData = {};
@@ -50,30 +50,30 @@ const handelUserLogin = (email, password) => {
         });
 
         if (user) {
-          if (!user.isActive) {
-            userData.errCode = 4;
-            userData.errMessage = "Tài khoản của bạn đã bị vô hiệu hóa";
-          } else {
-            // Hash mật khẩu người dùng nhập vào
-            const hashedPassword = crypto
-              .createHash("sha1")
-              .update(password)
-              .digest("hex");
+          const hashedPassword = crypto
+            .createHash("sha1")
+            .update(password)
+            .digest("hex");
 
-            // So sánh mật khẩu đã băm với mật khẩu trong DB
-            if (hashedPassword === user.password) {
-              userData.errCode = 0;
-              userData.errMessage = "Đăng nhập thành công";
-              delete user.password;
-              // userData.user = user;
-              userData.user = {
-                ...user.toJSON(),
-                doctorID: user.doctor ? user.doctor.id : null, // Gán doctorID nếu có
-              };
-            } else {
-              userData.errCode = 3;
-              userData.errMessage = "Sai mật khẩu";
-            }
+          // So sánh mật khẩu đã băm với mật khẩu trong DB
+          if (hashedPassword === user.password) {
+            // ✅ Cập nhật isActive = true sau khi đăng nhập
+            await db.User.update(
+              { isActive: true },
+              { where: { id: user.id } }
+            );
+
+            userData.errCode = 0;
+            userData.errMessage = "Đăng nhập thành công";
+            delete user.password;
+            // userData.user = user;
+            userData.user = {
+              ...user.toJSON(),
+              doctorID: user.doctor ? user.doctor.id : null, // Gán doctorID nếu có
+            };
+          } else {
+            userData.errCode = 3;
+            userData.errMessage = "Sai mật khẩu";
           }
         } else {
           userData.errCode = 2;
@@ -88,6 +88,22 @@ const handelUserLogin = (email, password) => {
       reject(e);
     }
   });
+};
+
+const Logout = async (userId) => {
+  try {
+    await db.User.update({ isActive: false }, { where: { id: userId } });
+
+    return {
+      errCode: 0,
+      errMessage: "Đăng xuất thành công",
+    };
+  } catch (error) {
+    return {
+      errCode: 1,
+      errMessage: "Đã xảy ra lỗi khi đăng xuất",
+    };
+  }
 };
 
 const checkUserEmail = (email) => {
@@ -217,6 +233,7 @@ const EditUser = (data) => {
         resolve({
           errCode: 0,
           errMessage: "Sua thanh cong",
+          updatedUser: user,
         });
       } else {
         resolve({
@@ -533,7 +550,7 @@ const Booking = (data) => {
         transaction,
       });
 
-      if (countBookings >= 10) {
+      if (countBookings >= 6) {
         await transaction.rollback();
         return resolve({
           errCode: 6,
@@ -839,6 +856,55 @@ const getUserInfo = (id) => {
   });
 };
 
+const changeUserPassword = (userID, oldPassword, newPassword) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const user = await db.User.findOne({
+        where: { id: userID },
+      });
+
+      if (!user) {
+        return resolve({
+          errCode: 1,
+          errMessage: "Tài khoản không tồn tại",
+        });
+      }
+
+      // Mã hóa mật khẩu cũ để so sánh
+      const hashedOldPassword = crypto
+        .createHash("sha1")
+        .update(oldPassword)
+        .digest("hex");
+
+      if (user.password !== hashedOldPassword) {
+        return resolve({
+          errCode: 2,
+          errMessage: "Mật khẩu cũ không đúng",
+        });
+      }
+
+      // Mã hóa mật khẩu mới
+      const hashedNewPassword = crypto
+        .createHash("sha1")
+        .update(newPassword)
+        .digest("hex");
+
+      // Cập nhật mật khẩu mới
+      await db.User.update(
+        { password: hashedNewPassword },
+        { where: { id: userID } }
+      );
+
+      resolve({
+        errCode: 0,
+        errMessage: "Đổi mật khẩu thành công",
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
 /*-----------------------PAYMENT----------------------- */
 const config = {
   app_id: "2554",
@@ -878,7 +944,7 @@ const createPayment = (data) => {
         description: `Thanh toán cho lịch hẹn #${data.bookingID}`,
         // bank_code: "CC",
         callback_url:
-          "https://b4ac-2001-ee0-e1f5-300-8145-7238-6622-c784.ngrok-free.app/api/callback",
+          "https://7369-2001-ee0-5305-9f50-4965-c942-d126-78a0.ngrok-free.app/api/callback",
       };
       console.log("url:", order.callback_url);
 
@@ -1068,7 +1134,7 @@ const PaymentStatus = (bookingID) => {
 };
 
 module.exports = {
-  handelUserLogin,
+  handleUserLogin,
   getAllUsers,
   CreateUser,
   DeleteUser,
@@ -1082,4 +1148,6 @@ module.exports = {
   createPayment,
   processZaloPayCallback,
   PaymentStatus,
+  Logout,
+  changeUserPassword,
 };

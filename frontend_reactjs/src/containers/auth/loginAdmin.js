@@ -56,11 +56,12 @@ const Login = () => {
         console.log(response.data.user.role);
         navigate("/homeadmin"); // Điều hướng tới trang chủ sau khi đăng nhập thành công
       } else if (response.data.user.role == 2) {
+        sessionStorage.setItem("userID", response.data.user.id);
         sessionStorage.setItem("doctorID", response.data.user.doctor.id);
         sessionStorage.setItem("name", response.data.user.fullname);
         sessionStorage.setItem("email", response.data.user.email);
         console.log(response.data.user.doctor.id);
-        console.log(response.data.user.fullname);
+        console.log(sessionStorage.getItem("name"));
         navigate("/homedoctor");
       } else {
         setError("Bạn không có quyền truy cập vào trang này");

@@ -3,287 +3,210 @@ import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./home.css";
 import AdminService from "../../services/AdminService";
-import {
-  FaEdit,
-  FaTrashAlt,
-  FaPlus,
-  FaUserCheck,
-  FaUserTimes,
-} from "react-icons/fa";
-import EditUserModal from "../auth/modalUser";
-import emitter from "../../utils/emitter";
+import { FaEdit } from "react-icons/fa";
 import UpdateUserModal from "./modalEdit";
 import AdminHeader from "./adminheader";
-import UserService from "../../services/UserService";
+import emitter from "../../utils/emitter";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+
+function SampleNextArrow(props) {
+  const { className, style, onClick } = props;
+  return (
+    <div
+      className={className}
+      style={{ ...style, display: "block" }}
+      onClick={onClick}
+    />
+  );
+}
+
+function SamplePrevArrow(props) {
+  const { className, style, onClick } = props;
+  return (
+    <div
+      className={className}
+      style={{ ...style, display: "block" }}
+      onClick={onClick}
+    />
+  );
+}
 
 const Home = () => {
   const navigate = useNavigate();
-  const [users, setUsers] = useState([]); // Lưu trữ người dùng
-  const [doctors, setDoctors] = useState([]); // Lưu trữ danh sách bác sĩ
+  const [doctors, setDoctors] = useState([]);
   const [error, setError] = useState("");
   const [selectedUser, setSelectedUser] = useState(null);
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [hoveredDoctorId, setHoveredDoctorId] = useState(null);
 
   useEffect(() => {
     const token = sessionStorage.getItem("userToken");
-    if (!token) {
-      navigate("/login-admin");
-    } else {
-      fetchUsers();
-    }
-    const listener = emitter.on("USER_ADDED", () => {
-      fetchUsers();
-    });
+    if (!token) navigate("/login-admin");
+    else fetchUsers();
 
-    return () => {
-      listener.removeAllListeners("USER_ADDED");
-    };
+    const listener = emitter.on("USER_ADDED", fetchUsers);
+    return () => listener.removeAllListeners("USER_ADDED");
   }, [navigate]);
 
   const fetchUsers = async () => {
     try {
-      const response = await AdminService.GetAllDoctors();
-
-      setDoctors(response.data.doctors);
-      console.log(response.data.doctors);
-    } catch (err) {
-      console.error("Lỗi khi tải danh sách người dùng:", err);
+      const res = await AdminService.GetAllDoctors();
+      setDoctors(res.data.doctors);
+    } catch {
       setError("Không thể tải danh sách người dùng.");
     }
   };
 
-  const handleLogout = () => {
-    sessionStorage.removeItem("userToken");
-    navigate("/login-admin");
+  const handleUpdate = (d) => {
+    if (!d || !d.User) return;
+    setSelectedUser({
+      id: d.User.id,
+      email: d.User.email || "",
+      fullname: d.User.fullname || "",
+      phone: d.User.phone || "",
+      address: d.User.address || "",
+      gender: d.User.gender || 0,
+      isActive: d.User.isActive || false,
+      specialty: d.specialty?.name || "",
+      experience_years: d.experience_years || 0,
+      onlineConsultation: d.onlineConsultation || 0,
+      img:
+        `${process.env.REACT_APP_BACKEND_URL}/img/doctor/${d.specialty.id}/${d.img}` ||
+        "",
+    });
+    setIsEditModalOpen(true);
   };
 
-  const handleAddUser = () => {
-    setIsCreateModalOpen(true);
-  };
+  const toggleEditModal = () => setIsEditModalOpen(!isEditModalOpen);
 
-  const toggleCreateModal = () => {
-    setIsCreateModalOpen(!isCreateModalOpen);
-  };
-
-  const handleConfirmCreate = async (formData) => {
+  const handleConfirmUpdate = async (formData) => {
     try {
-      const response = await AdminService.CreateUser(formData);
-      if (response && response.data && response.data.errCode !== 0) {
-        alert("Tạo tài khoản thất bại: " + response.data.message);
-      } else {
-        alert("Tạo tài khoản thành công.");
-        await fetchUsers();
+      const res = await AdminService.EditDoctor(formData);
+      if (res.data.errCode === 0) {
+        alert("Cập nhật thành công!");
+        fetchUsers();
         emitter.emit("USER_ADDED");
-        toggleCreateModal();
-      }
-    } catch (error) {
-      console.error("Lỗi khi tạo tài khoản:", error);
-      alert("Có lỗi xảy ra khi tạo tài khoản. Vui lòng thử lại.");
+        toggleEditModal();
+      } else alert("Cập nhật không thành công.");
+    } catch {
+      alert("Có lỗi xảy ra khi cập nhật.");
     }
   };
 
-  const handleDelete = async (user) => {
-    const confirmDelete = window.confirm(
-      "Bạn có chắc chắn muốn xóa người dùng này không?"
-    );
-    if (!confirmDelete) return;
-
+  const handleSearch = async (name) => {
     try {
-      const res = await UserService.DeleteUser(user.id);
-      if (res && res.data && res.data.errCode === 0) {
-        alert("Xóa người dùng thành công");
-        await fetchUsers();
+      const response = await AdminService.handleSearchDoctor(name);
+      if (response.data.errCode === 0) {
+        setDoctors(response.data.data);
       } else {
-        alert("Không thể xóa người dùng");
+        setDoctors([]);
       }
     } catch (e) {
       console.log(e);
     }
   };
 
-  // Cập nhật tài khoản
-  const handleUpdate = (doctor) => {
-    if (!doctor || !doctor.User) {
-      console.error("Lỗi: Dữ liệu bác sĩ không hợp lệ", doctor);
-      return;
-    }
-
-    const selectedDoctor = {
-      id: doctor.User.id,
-      email: doctor.User.email || "",
-      fullname: doctor.User.fullname || "",
-      phone: doctor.User.phone || "",
-      address: doctor.User.address || "",
-      gender: doctor.User.gender || 0,
-      isActive: doctor.User.isActive || false,
-      specialty: doctor.specialty?.name || "",
-      experience_years: doctor.experience_years || 0,
-      onlineConsultation: doctor.onlineConsultation || 0,
-      img:
-        `${process.env.REACT_APP_BACKEND_URL}/img/doctor/${doctor.specialty.id}/${doctor.img}` ||
-        0,
-    };
-
-    console.log("Dữ liệu cập nhật:", selectedDoctor);
-    setSelectedUser(selectedDoctor);
-    setIsEditModalOpen(true);
-  };
-
-  const toggleEditModal = () => {
-    setIsEditModalOpen(!isEditModalOpen);
-  };
-
-  const handleConfirmUpdate = async (formData) => {
-    try {
-      const response = await AdminService.EditDoctor(formData);
-
-      if (response && response.data && response.data.errCode === 0) {
-        alert("Cập nhật thành công!");
-        await fetchUsers();
-        emitter.emit("USER_ADDED");
-        toggleEditModal();
-      } else {
-        alert("Cập nhật không thành công.");
-      }
-    } catch (e) {
-      alert("Có lỗi xảy ra khi cập nhật.");
-      console.error(e);
-    }
-  };
-
-  const handleToggleStatus = async (doctor) => {
-    const confirmMessage = doctor.User.isActive
-      ? `Bạn có chắc chắn muốn vô hiệu hóa tài khoản của ${doctor.User.fullname}?`
-      : `Bạn có chắc chắn muốn kích hoạt lại tài khoản của ${doctor.User.fullname}?`;
-
-    const confirmAction = window.confirm(confirmMessage);
-    if (!confirmAction) return;
-
-    try {
-      const response = await AdminService.disableDoctorAccount(doctor.User.id);
-      if (response && response.data && response.data.errCode === 0) {
-        alert(response.data.errMessage);
-        fetchUsers(); // Load lại danh sách bác sĩ
-      } else if (response.data.errCode === 2) {
-        alert(response.data.errMessage);
-      } else {
-        alert("Cập nhật tài khoản thất bại.");
-      }
-    } catch (error) {
-      console.error("Lỗi khi cập nhật trạng thái:", error);
-      alert("Có lỗi xảy ra khi cập nhật trạng thái.");
-    }
+  const settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 3,
+    slidesToScroll: 3,
+    nextArrow: <SampleNextArrow />,
+    prevArrow: <SamplePrevArrow />,
   };
 
   return (
-    <React.Fragment>
+    <>
       <AdminHeader />
-      <div>
-        <div className="users-container">
-          <UpdateUserModal
-            isOpen={isEditModalOpen}
-            toggle={toggleEditModal}
-            currentUser={selectedUser} // Đảm bảo truyền đúng dữ liệu
-            onConfirm={handleConfirmUpdate}
-          />
-          <div className="title text-center" style={{ fontSize: "20px" }}>
-            Danh Sách Bác Sĩ
-          </div>
-          {error && <div className="alert alert-danger">{error}</div>}
+      <div className="container mt-4">
+        <h2 className="text-center">Danh Sách Bác Sĩ</h2>
 
-          <div className="user-table mt-4 mx-3">
-            <table id="customers">
-              <thead>
-                <tr>
-                  <th>Email</th>
-                  <th>Họ Tên</th>
-                  <th>Số Điện Thoại</th>
-                  <th>Địa chỉ</th>
-                  <th>Giới tính</th>
-                  <th>Chuyên khoa</th>
-                  <th>Phòng làm việc</th>
-                  <th>Năm kinh nghiệm</th>
-                  <th>Tư vấn trực tuyến</th>
-                  {/* <th>Trạng Thái</th> */}
-                  <th>Cập nhật hồ sơ</th>
-                </tr>
-              </thead>
-              <tbody>
-                {doctors.length > 0 ? (
-                  doctors.map((doctor) => (
-                    <tr key={doctor.User.id}>
-                      <td>{doctor.User.email}</td>
-                      <td>{doctor.User.fullname}</td>
-                      <td>{doctor.User.phone}</td>
-                      <td>{doctor.User.address}</td>
-                      <td>{Number(doctor.User.gender) === 0 ? "Nam" : "Nữ"}</td>
+        <UpdateUserModal
+          isOpen={isEditModalOpen}
+          toggle={toggleEditModal}
+          currentUser={selectedUser}
+          onConfirm={handleConfirmUpdate}
+        />
 
-                      <td>{doctor.specialty.name}</td>
-                      <td>{doctor.workroom}</td>
-                      <td>{doctor.experience_years}</td>
-                      <td>
-                        {Number(doctor.onlineConsultation) === 0
-                          ? "Không"
-                          : "Có"}
-                      </td>
+        {error && <div className="alert alert-danger">{error}</div>}
 
-                      {/* <td>
-                        <button
-                          className="btn btn-sm"
-                          onClick={() => handleToggleStatus(doctor)}
-                          style={{
-                            backgroundColor: doctor.User.isActive
-                              ? "green"
-                              : "red",
-                            color: "white",
-                          }}
+        <div className="grid-container">
+          <Slider {...settings}>
+            {doctors.length > 0 ? (
+              doctors.map((doc) => (
+                <div className="doctor-card-01" key={doc.User.id}>
+                  <div className="card-header">
+                    <img
+                      className="img-doctor"
+                      src={`${process.env.REACT_APP_BACKEND_URL}/img/doctor/${doc.specialty.id}/${doc.img}`}
+                      alt={doc.User.fullname}
+                      onMouseEnter={() => setHoveredDoctorId(doc.User.id)}
+                      onMouseLeave={() => setHoveredDoctorId(null)}
+                    />
+                    <h5
+                      className="doctor-name"
+                      onMouseEnter={() => setHoveredDoctorId(doc.User.id)}
+                      onMouseLeave={() => setHoveredDoctorId(null)}
+                    >
+                      {doc.User.fullname}
+                    </h5>
+                    <button
+                      className="btn btn-sm btn-primary edit-btn"
+                      onClick={() => handleUpdate(doc)}
+                    >
+                      <FaEdit /> Cập nhật
+                    </button>
+                  </div>
+
+                  {hoveredDoctorId === doc.User.id && (
+                    <div className="doctor-info-tooltip">
+                      <p>
+                        <strong>Điện thoại:</strong> {doc.User.phone}
+                      </p>
+                      <p>
+                        <strong>Địa chỉ:</strong> {doc.User.address}
+                      </p>
+                      <p>
+                        <strong>Chuyên khoa:</strong> {doc.specialty?.name}
+                      </p>
+                      <p>
+                        <strong>Kinh nghiệm:</strong> {doc.experience_years} năm
+                      </p>
+                      <p>
+                        <strong>Mô tả:</strong> {doc.description}
+                      </p>
+                      <p>
+                        <strong>Tư vấn online:</strong>{" "}
+                        {doc.onlineConsultation ? "Có" : "Không"}
+                      </p>
+                      <p>
+                        <strong>Trạng thái hoạt động:</strong>{" "}
+                        <span
+                          className={
+                            Number(doc.User.isActive) === 0
+                              ? "text-danger"
+                              : "text-success"
+                          }
                         >
-                          {doctor.User.isActive ? (
-                            <>
-                              <FaUserCheck style={{ marginRight: "5px" }} />{" "}
-                              Đang hoạt động
-                            </>
-                          ) : (
-                            <>
-                              <FaUserTimes style={{ marginRight: "5px" }} /> Vô
-                              hiệu hóa
-                            </>
-                          )}
-                        </button>
-                      </td> */}
-
-                      <td>
-                        {doctor.User.isActive && (
-                          <button
-                            className="btn btn-primary btn-sm"
-                            onClick={() => handleUpdate(doctor)}
-                          >
-                            <FaEdit />
-                          </button>
-                        )}
-                      </td>
-                      {/* <button
-                          className="btn btn-danger btn-sm mx-2"
-                          onClick={() => handleDelete(doctor.User)}
-                        >
-                          <FaTrashAlt />
-                        </button> */}
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="8" className="text-center">
-                      Không có dữ liệu.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+                          {Number(doc.User.isActive) === 0
+                            ? "Không hoạt động"
+                            : "Đang hoạt động"}
+                        </span>
+                      </p>
+                    </div>
+                  )}
+                </div>
+              ))
+            ) : (
+              <div className="text-center w-100">Không có dữ liệu.</div>
+            )}
+          </Slider>
         </div>
       </div>
-    </React.Fragment>
+    </>
   );
 };
 

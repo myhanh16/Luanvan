@@ -9,6 +9,7 @@ const {
   GetAllTimeSlot,
   CreateSchedules,
   getSchedule,
+  MarkAbsent,
 } = require("../services/Doctor");
 
 const handleGetAppointmentByDoctorID = async (req, res) => {
@@ -148,6 +149,26 @@ const handleGetMedicalRecords = async (req, res) => {
   }
 };
 
+const handleMarkAbsent = async (req, res) => {
+  const { bookingID } = req.body;
+  if (!bookingID) {
+    return res.status(400).json({
+      errCode: 1,
+      errMessage: "Thiếu bookingID",
+    });
+  }
+  console.log(bookingID);
+
+  try {
+    const results = await MarkAbsent(bookingID);
+    return res.status(200).json(results);
+  } catch (error) {
+    const errCode = error.errCode || -1;
+    const errMessage = error.errMessage || "Lỗi không xác định";
+    return res.status(500).json({ errCode, errMessage });
+  }
+};
+
 module.exports = {
   handleGetAppointmentByDoctorID,
   handleCreateMedicalRecord,
@@ -156,4 +177,5 @@ module.exports = {
   handleCreateSchedules,
   handlegetScheduleBydoctorID,
   handleGetMedicalRecords,
+  handleMarkAbsent,
 };

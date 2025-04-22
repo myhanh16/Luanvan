@@ -140,19 +140,18 @@ const MedicalRecords = () => {
             </button>
           </div>
 
-          <div className="user-table mt-4 mx-3">
+          <div className="user-table mt-3 mx-3">
             <table id="customers">
               <thead>
                 <tr>
-                  <th>Email</th>
                   <th>Họ Tên</th>
                   <th>Số Điện Thoại</th>
                   <th>Địa chỉ</th>
                   <th>Giới tính</th>
                   <th>Năm sinh</th>
-                  <th>Ngày khám</th>
+                  {/* <th>Ngày khám</th> */}
                   <th>Thời gian khám</th>
-                  <th>Ngày đặt lịch</th>
+                  {/* <th>Ngày đặt lịch</th> */}
                   <th>Chuẩn đoán</th>
                   <th>Phương pháp điều trị</th>
                 </tr>
@@ -161,7 +160,7 @@ const MedicalRecords = () => {
                 {filteredAppointments.length > 0 ? (
                   filteredAppointments.map((appointment, index) => (
                     <tr key={index}>
-                      <td>{appointment.booking?.User?.email || "N/A"}</td>
+                      {/* <td>{appointment.booking?.User?.email || "N/A"}</td> */}
                       <td>{appointment.booking?.User?.fullname || "N/A"}</td>
                       <td>{appointment.booking?.User?.phone || "N/A"}</td>
                       <td>{appointment.booking?.User?.address || "N/A"}</td>
@@ -171,23 +170,27 @@ const MedicalRecords = () => {
                           : "Nữ"}
                       </td>
                       <td>{appointment.booking?.User?.birthYear || "N/A"}</td>
-                      <td>
+                      {/* <td>
                         {formatDate(appointment.booking?.schedules?.date)}
-                      </td>
+                      </td> */}
                       <td>
                         {appointment.booking?.schedules?.Time
                           ? `${appointment.booking.schedules.Time.starttime} - ${appointment.booking.schedules.Time.endtime}`
                           : "Chưa có thời gian"}
                       </td>
 
-                      <td>{formatDate(appointment.booking?.booking_date)}</td>
+                      {/* <td>{formatDate(appointment.booking?.booking_date)}</td> */}
                       <td>{appointment.diagnosis || "Chưa có"}</td>
                       <td>{appointment.treatment || "Chưa có"}</td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="11" className="text-center">
+                    <td
+                      colSpan="9"
+                      className="text-center"
+                      // style={{ textAlign: "center" }}
+                    >
                       Không có dữ liệu
                     </td>
                   </tr>

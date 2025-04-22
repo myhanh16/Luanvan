@@ -3,18 +3,16 @@ const cron = require("node-cron");
 require("dotenv").config();
 const nodemailer = require("nodemailer");
 
-// Hàm tạo Jitsi Meet khi đặt lịch
 function createJitsiMeet() {
-  const roomName = `meeting-${Date.now()}`; // ID phòng dựa trên timestamp
+  const roomName = `meeting-${Date.now()}`;
   return `https://meet.jit.si/${roomName}`;
 }
 
-// Hàm kiểm tra link đã hết hạn chưa (1 tiếng sau giờ hẹn)
 function isMeetLinkExpired(booking) {
   const scheduleTime = new Date(
     `${booking.schedules.date}T${booking.schedules.Time.starttime}`
   );
-  return Date.now() - scheduleTime.getTime() > 60 * 60000; // Quá 1 giờ → hết hạn
+  return Date.now() - scheduleTime.getTime() > 60 * 60000;
 }
 
 const formatDate = (dateString) => {
@@ -22,7 +20,8 @@ const formatDate = (dateString) => {
   return `${day}/${month}/${year}`;
 };
 
-const sentEmails = new Set(); // Lưu danh sách email đã gửi trong mỗi lần chạy
+// ✅ Biến toàn cục lưu email đã gửi (chống gửi lặp lại)
+const sentEmails = new Set();
 
 async function scheduleMeetingCheck() {
   console.log("🔄 Kiểm tra cuộc hẹn sắp diễn ra...");
@@ -45,7 +44,7 @@ async function scheduleMeetingCheck() {
         {
           model: db.booking,
           as: "Bookings",
-          where: { statusID: 1 }, // Lấy tất cả các cuộc hẹn đang chờ
+          where: { statusID: 1 },
           include: [
             { model: db.User, as: "User", attributes: ["email", "fullname"] },
           ],
@@ -61,7 +60,7 @@ async function scheduleMeetingCheck() {
       );
       const timeDiff = scheduleTime - now;
 
-      // 📌 Nếu gần đến giờ hẹn (<= 10 phút) mà chưa có meetlink, tạo mới
+      // Nếu sắp đến giờ hẹn (≤ 10 phút) và chưa có meetlink thì tạo
       if (timeDiff <= 10 * 60000 && !schedule.meetlink) {
         let meetlink = createJitsiMeet();
         await db.schedules.update({ meetlink }, { where: { id: schedule.id } });
@@ -70,13 +69,13 @@ async function scheduleMeetingCheck() {
         schedule.meetlink = meetlink;
       }
 
-      // 📩 Gửi email nhắc nhở cho từng bệnh nhân nếu chưa gửi
+      // Gửi email nếu có meetlink
       if (schedule.meetlink) {
         for (const booking of schedule.Bookings) {
           let patientEmail = booking.User.email;
+          let uniqueKey = `${booking.id}-${schedule.id}`; // Key duy nhất mỗi lịch
 
-          if (!sentEmails.has(patientEmail)) {
-            // Kiểm tra email đã gửi chưa
+          if (!sentEmails.has(uniqueKey)) {
             try {
               await sendEmail(
                 patientEmail,
@@ -88,7 +87,7 @@ async function scheduleMeetingCheck() {
               );
 
               console.log(`📩 Đã gửi email cho: ${patientEmail}`);
-              sentEmails.add(patientEmail); // Đánh dấu email đã gửi
+              sentEmails.add(uniqueKey);
             } catch (error) {
               console.error(`❌ Lỗi gửi email tới ${patientEmail}:`, error);
             }
@@ -101,25 +100,6 @@ async function scheduleMeetingCheck() {
   }
 }
 
-// Hàm gửi email cho bệnh nhân
-// async function sendEmail(to, subject, text) {
-//   const transporter = nodemailer.createTransport({
-//     service: "gmail",
-//     auth: {
-//       user: process.env.EMAIL_USER,
-//       pass: process.env.EMAIL_PASSWORD,
-//     },
-//   });
-
-//   const mailOptions = { from: process.env.EMAIL_USER, to, subject, text };
-
-//   try {
-//     await transporter.sendMail(mailOptions);
-//     console.log(`📧 Email đã gửi đến ${to}`);
-//   } catch (error) {
-//     console.error("❌ Lỗi gửi email:", error);
-//   }
-// }
 async function sendEmail(
   to,
   subject,
@@ -136,7 +116,7 @@ async function sendEmail(
     },
   });
 
-  const formattedDate = formatDate(appointmentDate); // Hàm format ngày tháng
+  const formattedDate = formatDate(appointmentDate);
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to,
@@ -167,7 +147,7 @@ async function sendEmail(
   }
 }
 
-// Chạy cron job mỗi phút
+// Cron job chạy mỗi phút
 cron.schedule("* * * * *", scheduleMeetingCheck);
 
 module.exports = scheduleMeetingCheck;

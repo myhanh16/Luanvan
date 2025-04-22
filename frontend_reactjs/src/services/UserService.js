@@ -77,6 +77,14 @@ const handleCallback = (data) => {
 const handelPaymentStatus = (bookingID) => {
   return axios.get(`/api/get-payment?bookingID=${bookingID}`);
 };
+
+const handleLogout = (userID) => {
+  return axios.post("/api/logout", { userID });
+};
+
+const handleChangePass = (data) => {
+  return axios.post("/api/changePass", data);
+};
 export default {
   Login,
   GetAllUser,
@@ -97,4 +105,6 @@ export default {
   handelPayMent,
   handleCallback,
   handelPaymentStatus,
+  handleLogout,
+  handleChangePass,
 };

@@ -1,6 +1,6 @@
 const session = require("express-session");
 const { format } = require("date-fns");
-const { vi, el, ca } = require("date-fns/locale");
+const { vi, el, ca, da } = require("date-fns/locale");
 const crypto = require("crypto");
 const db = require("../models");
 const { getUserbyID } = require("../controllers/CRUDController");
@@ -10,6 +10,58 @@ const { rejects } = require("assert");
 const { Op } = require("sequelize");
 const { ppid } = require("process");
 
+// const handelLogin = (email, password) => {
+//   return new Promise(async (resolve, reject) => {
+//     try {
+//       const userData = {};
+//       const isExit = await checkUserEmail(email);
+//       if (isExit) {
+//         // Người dùng đã tồn tại
+//         const user = await db.User.findOne({
+//           attributes: ["email", "fullname", "password", "role", "isActive"],
+
+//           where: {
+//             email: email,
+//           },
+//           raw: true,
+//         });
+
+//         if (user) {
+//           if (!user.isActive) {
+//             userData.errCode = 4;
+//             userData.errMessage = "Tài khoản của bạn đã bị vô hiệu hóa";
+//           } else {
+//             // Hash mật khẩu người dùng nhập vào
+//             const hashedPassword = crypto
+//               .createHash("sha1")
+//               .update(password)
+//               .digest("hex");
+
+//             // So sánh mật khẩu đã băm với mật khẩu trong DB
+//             if (hashedPassword === user.password) {
+//               userData.errCode = 0;
+//               userData.errMessage = "Đăng nhập thành công";
+//               delete user.password;
+//               userData.user = user;
+//             } else {
+//               userData.errCode = 3;
+//               userData.errMessage = "Sai mật khẩu";
+//             }
+//           }
+//         } else {
+//           userData.errCode = 2;
+//           userData.errMessage = "Tài khoản không tồn tại";
+//         }
+//       } else {
+//         userData.errCode = 1;
+//         userData.errMessage = "Tài khoản không tồn tại";
+//       }
+//       resolve(userData);
+//     } catch (e) {
+//       reject(e);
+//     }
+//   });
+// };
 const handelLogin = (email, password) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -18,11 +70,15 @@ const handelLogin = (email, password) => {
       if (isExit) {
         // Người dùng đã tồn tại
         const user = await db.User.findOne({
-          attributes: ["email", "fullname", "password", "role", "isActive"],
-
-          where: {
-            email: email,
-          },
+          attributes: [
+            "id",
+            "email",
+            "fullname",
+            "password",
+            "role",
+            "isActive",
+          ],
+          where: { email: email },
           raw: true,
         });
 
@@ -30,23 +86,29 @@ const handelLogin = (email, password) => {
           if (!user.isActive) {
             userData.errCode = 4;
             userData.errMessage = "Tài khoản của bạn đã bị vô hiệu hóa";
-          } else {
-            // Hash mật khẩu người dùng nhập vào
-            const hashedPassword = crypto
-              .createHash("sha1")
-              .update(password)
-              .digest("hex");
+            resolve(userData);
+            return;
+          }
 
-            // So sánh mật khẩu đã băm với mật khẩu trong DB
-            if (hashedPassword === user.password) {
-              userData.errCode = 0;
-              userData.errMessage = "Đăng nhập thành công";
-              delete user.password;
-              userData.user = user;
-            } else {
-              userData.errCode = 3;
-              userData.errMessage = "Sai mật khẩu";
-            }
+          const hashedPassword = crypto
+            .createHash("sha1")
+            .update(password)
+            .digest("hex");
+
+          if (hashedPassword === user.password) {
+            // Cập nhật trạng thái isActive = true
+            await db.User.update(
+              { isActive: true },
+              { where: { id: user.id } }
+            );
+
+            userData.errCode = 0;
+            userData.errMessage = "Đăng nhập thành công";
+            delete user.password;
+            userData.user = { ...user, isActive: true }; // cập nhật lại giá trị trả về
+          } else {
+            userData.errCode = 3;
+            userData.errMessage = "Sai mật khẩu";
           }
         } else {
           userData.errCode = 2;
@@ -56,6 +118,7 @@ const handelLogin = (email, password) => {
         userData.errCode = 1;
         userData.errMessage = "Tài khoản không tồn tại";
       }
+
       resolve(userData);
     } catch (e) {
       reject(e);
@@ -302,7 +365,7 @@ const getDoctorsBySpecialtyID = (specialtyID) => {
             model: db.User, // Kiểm tra lại tên và cách sử dụng model
             as: "User", // Kiểm tra xem alias có đúng không
             attributes: ["fullname", "email", "phone", "address", "gender"],
-            where: { isActive: true },
+            // where: { isActive: true },
           },
           {
             model: db.specialty, // Lấy chuyên khoa
@@ -339,7 +402,7 @@ const getTopExperiencedDoctor = () => {
             model: db.User,
             as: "User",
             attributes: ["fullname", "email", "phone", "address", "gender"],
-            where: { isActive: true },
+            // where: { isActive: true },
           },
           {
             model: db.specialty, // Thêm bảng chuyên khoa
@@ -429,7 +492,6 @@ const getDoctorByid = (doctorID) => {
             model: db.User, // Kiểm tra lại tên và cách sử dụng model
             as: "User", // Kiểm tra xem alias có đúng không
             attributes: ["fullname", "email", "phone", "address", "gender"],
-            where: { isActive: true },
           },
           {
             model: db.specialty, // Thêm bảng chuyên khoa
@@ -480,6 +542,7 @@ const getAlltDoctors = () => {
           {
             model: db.specialty, // Lấy chuyên khoa
             as: "specialty",
+            attributes: ["id", "name"],
             include: [
               {
                 model: db.price, // Lấy giá từ chuyên khoa
@@ -491,6 +554,7 @@ const getAlltDoctors = () => {
         ],
         attributes: [
           "id",
+          "description",
           "experience_years",
           "workroom",
           "onlineConsultation",
@@ -799,6 +863,61 @@ const editSpecitalty = (data) => {
   });
 };
 
+const CreateSpecialty = async (data) => {
+  try {
+    // Kiểm tra xem đã tồn tại chuyên khoa trùng tên chưa
+    const existingSpecialty = await db.specialty.findOne({
+      where: { name: data.name },
+    });
+
+    if (existingSpecialty) {
+      return {
+        errCode: 1,
+        message: "Chuyên khoa đã tồn tại. Vui lòng chọn tên khác.",
+      };
+    }
+
+    // Nếu chưa có, tiến hành tạo mới
+    const newSpecialty = await db.specialty.create({
+      name: data.name,
+      description: data.description,
+      img: data.img,
+    });
+
+    return {
+      errCode: 0,
+      message: "Chuyên khoa đã được tạo thành công.",
+      specialty: newSpecialty,
+    };
+  } catch (error) {
+    console.error("Lỗi khi tạo chuyên khoa:", error);
+    return {
+      errCode: -1,
+      message: "Đã xảy ra lỗi trong quá trình tạo chuyên khoa.",
+    };
+  }
+};
+
+const SearchDoctor = (doctorName) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const Doctor = await db.doctor.findAll({
+        include: [
+          {
+            model: db.User,
+            as: "User",
+            where: {
+              fullname: { [db.Sequelize.Op.like]: `%${doctorName}%` },
+            },
+          },
+        ],
+      });
+      resolve(Doctor);
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
 module.exports = {
   handelLogin,
   getAllSpecialty,
@@ -814,4 +933,6 @@ module.exports = {
   getWorkingDaysByDoctor,
   getWorkroom,
   editSpecitalty,
+  CreateSpecialty,
+  SearchDoctor,
 };

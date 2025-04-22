@@ -29,6 +29,11 @@ const handlegetjitsi = (data) => {
 const handleGetMedicalRecords = () => {
   return axios.get("/api/get-MedicalRecords");
 };
+
+const handleMarkAbsent = (bookingID) => {
+  console.log("Gửi bookingID đến server:", bookingID);
+  return axios.post("/api/mark-absent", { bookingID });
+};
 export default {
   handleGetAppointmentByDoctorID,
   handleCreateMedicalRecord,
@@ -38,4 +43,5 @@ export default {
   handlegetScheduleBydoctorID,
   handlegetjitsi,
   handleGetMedicalRecords,
+  handleMarkAbsent,
 };

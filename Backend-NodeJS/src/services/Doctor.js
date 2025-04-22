@@ -136,7 +136,7 @@ const GetAppointmentByDoctorID = (doctorID) => {
         ],
         attributes: ["id", "booking_date", "statusID"],
         order: [
-          ["booking_date", "DESC"], // Sắp xếp theo ngày đặt lịch
+          ["booking_date", "ASC"], // Sắp xếp theo ngày đặt lịch
           [{ model: db.schedules, as: "schedules" }, "date", "DESC"], // Sắp xếp theo ngày khám
           [
             { model: db.schedules, as: "schedules" },
@@ -517,6 +517,37 @@ const GetMedicalRecords = () => {
     }
   });
 };
+
+const MarkAbsent = (bookingID) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const booking = await db.booking.findOne({
+        where: { id: bookingID },
+      });
+
+      if (!booking) {
+        reject({
+          errCode: 2,
+          errMessage: "Không tìm thấy đặt lịch",
+        });
+      }
+      await db.booking.update(
+        {
+          statusID: 4,
+        },
+        {
+          where: { id: bookingID },
+        }
+      );
+      resolve({
+        errCode: 0,
+        errMessage: "Cập nhật trạng thái thành công: Bệnh nhân không đến khám",
+      });
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
 module.exports = {
   GetAppointmentByDoctorID,
   CreateMedicalRecord,
@@ -526,4 +557,5 @@ module.exports = {
   CreateSchedules,
   getSchedule,
   GetMedicalRecords,
+  MarkAbsent,
 };

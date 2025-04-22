@@ -38,6 +38,14 @@ const handlegetSpecialty = () => {
 const handleEditSpecialty = (data) => {
   return axios.post("api/edit-specialty", data);
 };
+
+const handleCreateSpecialty = (data) => {
+  return axios.post("/api/create-specialty", data);
+};
+
+const handleSearchDoctor = (name) => {
+  return axios.get(`/api/search-doctor?fullname=${name}`);
+};
 export default {
   Login,
   GetAllUser,
@@ -48,4 +56,5 @@ export default {
   handlegetWorkroom,
   handleEditSpecialty,
   handlegetSpecialty,
+  handleCreateSpecialty,
 };

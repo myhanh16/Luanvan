@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
+import emitter from "../../utils/emitter";
 import {
   FaBars,
   FaQuestionCircle,
@@ -33,6 +34,19 @@ const Homeheader = () => {
       setIsLoggedIn(true);
       setUserName(name);
     }
+  }, []);
+
+  useEffect(() => {
+    const updateUserName = () => {
+      const name = sessionStorage.getItem("userName");
+      setUserName(name);
+    };
+
+    emitter.on("USER_ADDED", updateUserName);
+
+    return () => {
+      emitter.off("USER_ADDED", updateUserName);
+    };
   }, []);
 
   const handeleSearch = async () => {

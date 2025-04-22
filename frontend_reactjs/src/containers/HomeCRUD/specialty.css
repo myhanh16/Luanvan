@@ -1,0 +1,70 @@
+.grid-container-specialty {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.specialty-card-01 {
+  position: relative;
+  background: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  padding: 20px;
+  text-align: center;
+  transition: transform 0.3s ease;
+  overflow: visible;
+  margin: 10px;
+}
+
+.specialty-info-tooltip {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 260px;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 255, 255, 0.97);
+  padding: 16px;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  z-index: 10;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  pointer-events: none;
+}
+
+.edit-btn {
+  font-size: 14px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.specialty-card-01:hover .specialty-info-tooltip {
+  opacity: 1; /* Hiện tooltip khi hover */
+  visibility: visible; /* Đảm bảo tooltip hiển thị */
+}
+
+.specialty-info-tooltip p {
+  margin: 4px 0;
+  font-size: 14px;
+  text-align: left;
+}
+
+.specialty-card-01:hover .img-doctor {
+  transform: scale(1); /* Giữ nguyên kích thước */
+}
+
+.img-specialty {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 12px;
+  border: 2px solid #ccc;
+  cursor: pointer;
+}

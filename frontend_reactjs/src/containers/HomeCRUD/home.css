@@ -97,3 +97,95 @@
     display: block;
   }
 }
+
+.grid-container {
+  margin-top: 20px;
+  padding: 0 10px;
+}
+
+.doctor-card-01 {
+  position: relative;
+  background: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  padding: 20px;
+  text-align: center;
+  transition: transform 0.3s ease;
+  overflow: visible;
+  margin: 10px;
+}
+
+/* .doctor-card-01:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+} */
+
+.card-header {
+  z-index: 1;
+}
+
+.img-doctor {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 12px;
+  border: 2px solid #ccc;
+  cursor: pointer;
+}
+
+.doctor-name {
+  font-size: 18px;
+  margin: 0 0 8px;
+  color: #343a40;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.doctor-name:hover {
+  background-color: #007bff;
+  color: #fff;
+  border-radius: 8px;
+}
+
+.edit-btn {
+  font-size: 14px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.doctor-info-tooltip {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 260px;
+  transform: translate(-50%, -50%); /* Đảm bảo tooltip luôn căn giữa */
+  background: rgba(255, 255, 255, 0.97);
+  padding: 16px;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  z-index: 10;
+  opacity: 0; /* Tooltip ẩn mặc định */
+  visibility: hidden; /* Tooltip ẩn mặc định */
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  pointer-events: none;
+}
+
+.doctor-card-01:hover .doctor-info-tooltip {
+  opacity: 1;
+  visibility: visible; /* Đảm bảo tooltip hiển thị */
+}
+
+.doctor-info-tooltip p {
+  margin: 4px 0;
+  font-size: 14px;
+  text-align: left;
+}
+
+.doctor-card-01:hover .img-doctor {
+  transform: scale(1); /* Giữ nguyên kích thước */
+}

@@ -3,7 +3,7 @@ const { format } = require("date-fns");
 const { vi } = require("date-fns/locale");
 // const { handle } = require("express/lib/application");
 const {
-  handelUserLogin,
+  handleUserLogin,
   getAllUsers,
   CreateUser,
   DeleteUser,
@@ -16,6 +16,8 @@ const {
   createPayment,
   processZaloPayCallback,
   PaymentStatus,
+  Logout,
+  changeUserPassword,
 } = require("../services/UserService");
 
 const handleLogin = async (req, res) => {
@@ -28,7 +30,7 @@ const handleLogin = async (req, res) => {
       message: "Email hoặc mật khẩu không được để trống",
     });
   }
-  const userData = await handelUserLogin(email, password);
+  const userData = await handleUserLogin(email, password);
 
   if (userData.errCode === 0) {
     // Đăng nhập thành công
@@ -227,7 +229,37 @@ const handleSearchSpecialty = async (req, res) => {
   }
 };
 
-//PAYMENT
+const changePassword = async (req, res) => {
+  const userID = req.body.userId;
+  const { oldPassword, newPassword } = req.body;
+
+  if (!userID || !oldPassword || !newPassword) {
+    return res.status(400).json({
+      errCode: 1,
+      errMessage: "Vui lòng cung cấp đầy đủ thông tin.",
+    });
+  }
+
+  try {
+    // Gọi dịch vụ đổi mật khẩu
+    const result = await changeUserPassword(userID, oldPassword, newPassword);
+
+    // Trả về kết quả
+    if (result.errCode === 0) {
+      return res.status(200).json(result);
+    } else {
+      return res.status(400).json(result);
+    }
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({
+      errCode: 3,
+      errMessage: "Lỗi server. Vui lòng thử lại.",
+    });
+  }
+};
+
+//--------------------PAYMENT------------------------------
 const handlecreatePayment = async (req, res) => {
   try {
     console.log("Du lieu nhan tu Frontend:", req.body);
@@ -294,6 +326,18 @@ const handelPayment = async (req, res) => {
   }
 };
 
+const handleLogout = async (req, res) => {
+  try {
+    const id = req.body.userID;
+    const results = await Logout(id);
+    console.log("ID tu FE: ", id);
+
+    return res.status(200).json(results);
+  } catch (e) {
+    return res.status(500).json(e);
+  }
+};
+
 module.exports = {
   handleLogin,
   handleGetAll,
@@ -308,4 +352,6 @@ module.exports = {
   handlecreatePayment,
   handleZaloPayCallback,
   handelPayment,
+  handleLogout,
+  changePassword,
 };

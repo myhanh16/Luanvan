@@ -1,18 +1,44 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "./home.css";
+import "./specialty.css";
 import AdminService from "../../services/AdminService";
-import { FaEdit } from "react-icons/fa";
+import { FaEdit, FaPlus } from "react-icons/fa";
 import UpdateSpecialtyModal from "./modalEditSpecialty";
 import AdminHeader from "./adminheader";
+import Slider from "react-slick";
+import CreateSpecialtyModal from "./CreateSpecialtyModal";
+
+function SampleNextArrow(props) {
+  const { className, style, onClick } = props;
+  return (
+    <div
+      className={className}
+      style={{ ...style, display: "block" }}
+      onClick={onClick}
+    />
+  );
+}
+
+function SamplePrevArrow(props) {
+  const { className, style, onClick } = props;
+  return (
+    <div
+      className={className}
+      style={{ ...style, display: "block" }}
+      onClick={onClick}
+    />
+  );
+}
 
 const Specialty = () => {
   const navigate = useNavigate();
-  const [specialties, setSpecialties] = useState([]); // Lưu danh sách chuyên khoa
+  const [specialties, setSpecialties] = useState([]);
   const [error, setError] = useState("");
   const [selectedSpecialty, setSelectedSpecialty] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [hoveredSpecialtyId, setHoveredSpecialtyId] = useState(null); // Chỉnh lại state
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   useEffect(() => {
     const token = sessionStorage.getItem("userToken");
@@ -33,25 +59,18 @@ const Specialty = () => {
     }
   };
 
-  const handleUpdate = (specialties) => {
+  const handleUpdate = (specialty) => {
     const selectedSpecialty = {
-      id: specialties.id,
-      name: specialties.name,
-      description: specialties.description,
+      id: specialty.id,
+      name: specialty.name,
+      description: specialty.description,
       img:
-        `${process.env.REACT_APP_BACKEND_URL}/img/doctor/${specialties.id}/${specialties.img}` ||
+        `${process.env.REACT_APP_BACKEND_URL}/img/doctor/${specialty.id}/${specialty.img}` ||
         0,
     };
-
-    console.log("Dữ liệu cập nhật:", selectedSpecialty);
     setSelectedSpecialty(selectedSpecialty);
     setIsEditModalOpen(true);
   };
-
-  //   const handleUpdate = (specialty) => {
-  //     setSelectedSpecialty(specialty);
-  //     setIsEditModalOpen(true);
-  //   };
 
   const toggleEditModal = () => {
     setIsEditModalOpen(!isEditModalOpen);
@@ -73,68 +92,111 @@ const Specialty = () => {
     }
   };
 
+  const handleMouseEnter = useCallback((specialtyId) => {
+    setHoveredSpecialtyId(specialtyId);
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    setHoveredSpecialtyId(null);
+  }, []);
+
+  const toggleCreateModal = () => {
+    setIsCreateModalOpen(!isCreateModalOpen);
+  };
+
+  // const handleConfirmCreate = async (formData) => {
+  //   try {
+  //     const response = await AdminService.handleCreateSpecialty(formData);
+  //     if (response?.data?.errCode === 0) {
+  //       alert("Thêm chuyên khoa thành công!");
+  //       await fetchSpecialties();
+  //       toggleCreateModal();
+  //     } else {
+  //       alert("Thêm chuyên khoa không thành công.");
+  //     }
+  //   } catch (e) {
+  //     alert("Có lỗi xảy ra khi thêm chuyên khoa.");
+  //     console.error(e);
+  //   }
+  // };
+
+  const settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 3,
+    slidesToScroll: 3,
+    nextArrow: <SampleNextArrow />,
+    prevArrow: <SamplePrevArrow />,
+  };
+
   return (
     <>
       <AdminHeader />
-      <div className="users-container">
+      <div className="container mt-4">
+        <h2 className="text-center">Danh Sách Chuyên Khoa</h2>
+        {/* <div className="text-end mb-3">
+          <button className="btn btn-success" onClick={toggleCreateModal}>
+            <FaPlus /> Thêm Chuyên Khoa
+          </button>
+        </div> */}
+
+        {/* <CreateSpecialtyModal
+          isOpen={isCreateModalOpen}
+          toggle={toggleCreateModal}
+          onConfirm={handleConfirmCreate}
+        /> */}
+
         <UpdateSpecialtyModal
           isOpen={isEditModalOpen}
           toggle={toggleEditModal}
-          currentSpecialty={selectedSpecialty} // Truyền đúng dữ liệu chuyên khoa
+          currentSpecialty={selectedSpecialty}
           onConfirm={handleConfirmUpdate}
         />
 
-        <div className="title text-center" style={{ fontSize: "20px" }}>
-          Danh Sách Chuyên Khoa
-        </div>
         {error && <div className="alert alert-danger">{error}</div>}
 
-        <div className="user-table mt-4 mx-3">
-          <table id="customers">
-            <thead>
-              <tr>
-                <th>Tên chuyên khoa</th>
-                <th>Mô tả</th>
-                {/* <th>Hình ảnh</th> */}
-                <th>Cập nhật</th>
-              </tr>
-            </thead>
-            <tbody>
-              {specialties.length > 0 ? (
-                specialties.map((specialty) => (
-                  <tr key={specialty.id}>
-                    <td>{specialty.name}</td>
-                    <td>{specialty.description}</td>
-                    {/* <td>
-                      {specialty.img ? (
-                        <img
-                          src={`${process.env.REACT_APP_BACKEND_URL}/img/specialty/${specialty.id}/${specialty.img}`}
-                          alt={specialty.name}
-                          style={{ width: "100px", height: "60px" }}
-                        />
-                      ) : (
-                        "Không có ảnh"
-                      )}
-                    </td> */}
-                    <td>
-                      <button
-                        className="btn btn-primary btn-sm"
-                        onClick={() => handleUpdate(specialty)}
-                      >
-                        <FaEdit />
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="4" className="text-center">
-                    Không có dữ liệu.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+        <div className="grid-container">
+          <Slider {...settings}>
+            {specialties.length > 0 ? (
+              specialties.map((specialty) => (
+                <div className="doctor-card-01" key={specialty.id}>
+                  <div className="card-header">
+                    <img
+                      className="img-doctor"
+                      src={`${process.env.REACT_APP_BACKEND_URL}/img/doctor/${specialty.id}/${specialty.img}`}
+                      alt={specialty.name}
+                      onMouseEnter={() => handleMouseEnter(specialty.id)}
+                      onMouseLeave={handleMouseLeave}
+                    />
+                    <h5
+                      className="doctor-name"
+                      onMouseEnter={() => handleMouseEnter(specialty.id)}
+                      onMouseLeave={handleMouseLeave}
+                    >
+                      {specialty.name}
+                    </h5>
+                    <button
+                      className="btn btn-sm btn-primary edit-btn"
+                      onClick={() => handleUpdate(specialty)}
+                    >
+                      <FaEdit /> Cập nhật
+                    </button>
+                  </div>
+
+                  {hoveredSpecialtyId === specialty.id && (
+                    <div className="doctor-info-tooltip">
+                      <p>
+                        <strong>Mô tả:</strong> {specialty.description}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              ))
+            ) : (
+              <div className="text-center w-100">Không có dữ liệu.</div>
+            )}
+          </Slider>
         </div>
       </div>
     </>

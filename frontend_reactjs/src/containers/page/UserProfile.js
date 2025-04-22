@@ -6,6 +6,7 @@ import Homeheader from "./header";
 import HomeFooter from "./homefooter";
 import emitter from "../../utils/emitter";
 import UpdateUserModal from "./modalEditUser";
+import ChangePasswordModal from "./ChangePasswordModal";
 
 const UserProfile = () => {
   const { id } = useParams();
@@ -14,6 +15,8 @@ const UserProfile = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] =
+    useState(false);
 
   const fetchUserInfo = async () => {
     const userID = sessionStorage.getItem("userID");
@@ -43,6 +46,15 @@ const UserProfile = () => {
         await fetchUserInfo();
         emitter.emit("USER_ADDED");
         toggleEditModal();
+        console.log("data update", response.data.updatedUser);
+
+        const updatedUser = response.data.updatedUser; // 👈 Dùng đúng key
+        sessionStorage.setItem("userName", updatedUser.fullname);
+        sessionStorage.setItem("userPhone", updatedUser.phone);
+        sessionStorage.setItem("userAddress", updatedUser.address);
+        sessionStorage.setItem("userGender", updatedUser.gender);
+        sessionStorage.setItem("userEmail", updatedUser.email);
+        sessionStorage.setItem("userbirthYear", updatedUser.birthYear);
       } else {
         alert("Cập nhật không thành công.");
       }
@@ -50,6 +62,31 @@ const UserProfile = () => {
       alert("Có lỗi xảy ra khi cập nhật.");
       console.error(e);
     }
+  };
+
+  const handleConfirmChangePassword = async (formData) => {
+    try {
+      const userID = sessionStorage.getItem("userID");
+      const response = await UserService.handleChangePass({
+        userId: userID,
+        oldPassword: formData.oldPassword,
+        newPassword: formData.newPassword,
+      });
+
+      if (response.data.errCode === 0) {
+        alert("Đổi mật khẩu thành công!");
+        toggleChangePasswordModal();
+      } else {
+        alert(response.errMessage || "Đổi mật khẩu không thành công.");
+      }
+    } catch (e) {
+      alert("Có lỗi xảy ra khi đổi mật khẩu.");
+      console.error(e);
+    }
+  };
+
+  const toggleChangePasswordModal = () => {
+    setIsChangePasswordModalOpen(!isChangePasswordModalOpen);
   };
 
   const toggleEditModal = () => {
@@ -88,6 +125,12 @@ const UserProfile = () => {
             currentUser={selectedUser}
             onConfirm={handleConfirmUpdate}
           />
+
+          <ChangePasswordModal
+            isOpen={isChangePasswordModalOpen}
+            toggle={toggleChangePasswordModal}
+            onConfirm={handleConfirmChangePassword}
+          />
           <h1 className="booking-title">Thông tin cá nhân</h1>
           <div className="user-info">
             <p>
@@ -119,6 +162,17 @@ const UserProfile = () => {
             }}
           >
             Chỉnh sửa thông tin
+          </button>
+          <button
+            className="abort"
+            onClick={toggleChangePasswordModal}
+            style={{
+              backgroundColor: "#007bff",
+              color: "white",
+              margin: "3px",
+            }}
+          >
+            Đổi mật khẩu
           </button>
         </div>
       </div>
